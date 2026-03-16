@@ -398,3 +398,189 @@ def odredi_nadlezni_sud(tip_stranke1, tip_stranke2, zadani_sud="OPĆINSKI GRAĐA
     if tip_stranke1 == "Pravna" and tip_stranke2 == "Pravna":
         return "TRGOVAČKI SUD U ZAGREBU"
     return zadani_sud
+
+
+# =============================================================================
+# PRIMJERI / PREDLOŠCI - "Napuni primjerom" za brži unos
+# =============================================================================
+
+# Rjecnik primjera za razne tipove dokumenata
+PRIMJERI = {
+    'tuzba': {
+        'opis': 'Tužba radi isplate - naplata dugovanja po računu',
+        'stranke': {
+            't1_ime': 'Ante Kovačević',
+            't1_oib': '12345678903',
+            't1_adresa': 'Ilica 42, 10000 Zagreb',
+            't2_ime': 'Marko Novak',
+            't2_oib': '98765432101',
+            't2_adresa': 'Vukovarska 15, 21000 Split',
+        },
+        'podaci': {
+            'vps': 5000.0,
+            'vrsta': 'Isplate (dugovanja po računu)',
+        },
+        'cinjenice': [
+            {'tekst': 'Dana 15.03.2024. tužitelj je tuženiku isporučio robu prema narudžbi br. 45/2024, za što je ispostavio račun br. R-78/2024 na iznos od 5.000,00 EUR s rokom plaćanja od 30 dana.',
+             'dokaz': 'Račun br. R-78/2024 od 15.03.2024.'},
+            {'tekst': 'Tuženik je robu zaprimio bez prigovora, što je potvrdio potpisom na otpremnici br. OTP-78/2024.',
+             'dokaz': 'Otpremnica br. OTP-78/2024 s potpisom tuženika'},
+            {'tekst': 'Unatoč proteku roka plaćanja i pisanoj opomeni od 20.05.2024., tuženik do danas nije podmirio dugovanje.',
+             'dokaz': 'Opomena pred tužbu od 20.05.2024. s povratnicom'},
+        ],
+        'trosak_sastav': 312.50,
+    },
+    'ovrha': {
+        'opis': 'Ovrha na temelju vjerodostojne isprave (nenaplaćeni račun)',
+        'stranke': {
+            'o1_ime': 'ABC d.o.o.',
+            'o1_oib': '11223344556',
+            'o1_sjediste': 'Heinzelova 33, 10000 Zagreb',
+            'o2_ime': 'DEF d.o.o.',
+            'o2_oib': '66554433221',
+            'o2_sjediste': 'Radnička 47, 10000 Zagreb',
+        },
+    },
+    'opomena': {
+        'opis': 'Opomena pred tužbu za nepodmireni račun',
+        'stranke': {
+            'op_ime': 'Ivan Horvat',
+            'op_oib': '12345678903',
+            'op_adresa': 'Savska 25, 10000 Zagreb',
+        },
+        'podaci': {
+            'glavnica': 3500.0,
+            'opis': 'Pozivamo Vas da u roku od 8 dana od primitka ove opomene podmiriite dugovanje u iznosu od 3.500,00 EUR po osnovi računa br. R-123/2024 od 01.02.2024., u protivnom ćemo bez daljnjeg upozorenja pokrenuti ovršni postupak.',
+        },
+    },
+    'kaznena_prijava': {
+        'opis': 'Kaznena prijava za prijevaru (čl. 236. KZ)',
+        'stranke': {
+            'kp_ime': 'Ana Marić',
+            'kp_oib': '12345678903',
+            'kp_adresa': 'Gundulićeva 8, 10000 Zagreb',
+        },
+        'podaci': {
+            'clanak_kz': 'čl. 236. st. 1. KZ (Prijevara)',
+            'osumnjicenik': 'Petar Babić, Draškovićeva 12, Zagreb, OIB: 99887766554',
+        },
+        'opis_djela': [
+            {'tekst': 'Dana 10.01.2025. osumnjičenik je prijaviteljici lažno predstavio da prodaje rabljeni automobil marke VW Golf, reg. oznake ZG-1234-AB, te da je vozilo u ispravnom tehničkom stanju.',
+             'dokaz': 'Oglas na njuskalo.hr (screenshot), WhatsApp prepiska'},
+            {'tekst': 'Prijaviteljica je na temelju lažnih navoda osumnjičeniku uplatila kupoprodajnu cijenu od 8.500,00 EUR na IBAN HR1234567890123456789.',
+             'dokaz': 'Potvrda o uplati od 11.01.2025.'},
+            {'tekst': 'Nakon uplate, osumnjičenik je prestao odgovarati na pozive i poruke, a vozilo nikada nije predano prijaviteljici.',
+             'dokaz': 'Evidencija poziva, WhatsApp poruke (screenshot)'},
+        ],
+    },
+    'zalba_zup': {
+        'opis': 'Žalba na rješenje o odbijanju zahtjeva (ZUP)',
+        'podaci': {
+            'prvostupanjsko_tijelo': 'Upravni odjel za komunalno gospodarstvo Grada Zagreba',
+            'drugostupanjsko_tijelo': 'Ministarstvo prostornoga uređenja, graditeljstva i državne imovine',
+            'klasa': 'UP/I-361-01/24-01/123',
+            'urbroj': '251-13-11/2-24-5',
+        },
+        'razlozi': [
+            {'tekst': 'Prvostupanjsko tijelo nije pravilno primijenilo čl. 136. Zakona o gradnji jer je odbilo zahtjev za izdavanje građevinske dozvole bez navođenja konkretnih nedostataka projektne dokumentacije.',
+             'dokaz': 'Rješenje KLASA: UP/I-361-01/24-01/123 od 15.01.2025.'},
+            {'tekst': 'Stranka nije saslušana u postupku čime je povrijeđeno pravo na saslušanje stranke iz čl. 30. ZUP-a.',
+             'dokaz': 'Spis predmeta - nedostaje zapisnik o saslušanju'},
+        ],
+    },
+}
+
+
+def napuni_primjerom(tip_dokumenta, key_prefix=""):
+    """Prikazuje gumb 'Napuni primjerom' i vraca dict s primjerom ili None."""
+    if tip_dokumenta not in PRIMJERI:
+        return None
+
+    primjer = PRIMJERI[tip_dokumenta]
+    btn_key = f"_primjer_{key_prefix}_{tip_dokumenta}" if key_prefix else f"_primjer_{tip_dokumenta}"
+
+    with st.expander(f"Primjer: {primjer['opis']}", expanded=False):
+        st.caption(
+            "Kliknite gumb za automatsko popunjavanje forme primjerom. "
+            "Zatim prilagodite podatke svojem slučaju."
+        )
+        if st.button("Napuni primjerom", key=btn_key, type="secondary"):
+            for k, v in primjer.get('stranke', {}).items():
+                full_key = f"{key_prefix}_{k}" if key_prefix else k
+                st.session_state[full_key] = v
+            for k, v in primjer.get('podaci', {}).items():
+                full_key = f"{key_prefix}_{k}" if key_prefix else k
+                st.session_state[full_key] = v
+            st.rerun()
+    return primjer
+
+
+# =============================================================================
+# PROVJERA ROKOVA I ZASTARE
+# =============================================================================
+
+def provjeri_zastaru(datum_dospijeca, rok_godina=5, opis_roka="opći zastarni rok"):
+    """Provjerava zastaru i prikazuje upozorenje ako je blizu ili istekao.
+    Args:
+        datum_dospijeca: date objekt
+        rok_godina: broj godina zastarnog roka (default 5 za opći rok, čl. 225. ZOO)
+        opis_roka: opis pravnog temelja roka
+    """
+    if not datum_dospijeca:
+        return
+    from datetime import date as _date
+    danas = _date.today()
+    razlika = danas - datum_dospijeca
+    dana = razlika.days
+    godina = dana / 365.25
+
+    rok_dana = rok_godina * 365
+
+    if dana > rok_dana:
+        prekoracenje = dana - rok_dana
+        st.error(
+            f"**Moguća zastara!** Od datuma dospijeća prošlo je {godina:.1f} godina "
+            f"({opis_roka}: {rok_godina} god, čl. 225. ZOO). "
+            f"Rok je istekao prije ~{prekoracenje} dana. "
+            f"Razmotrite je li zastara prekinuta ili odgođena."
+        )
+    elif dana > rok_dana - 180:  # Unutar 6 mjeseci od zastare
+        preostalo = rok_dana - dana
+        st.warning(
+            f"**Zastara se približava!** Od datuma dospijeća prošlo je {godina:.1f} godina. "
+            f"{opis_roka} ({rok_godina} god) istječe za ~{preostalo} dana. "
+            f"Preporučujemo hitno podnošenje tužbe."
+        )
+    elif dana > rok_dana - 365:  # Unutar godinu dana od zastare
+        preostalo = rok_dana - dana
+        st.info(
+            f"Do isteka zastarnog roka ({opis_roka}: {rok_godina} god) preostalo je ~{preostalo} dana "
+            f"({preostalo // 30} mjeseci)."
+        )
+
+
+def provjeri_rok_zalbe(datum_dostave=None, rok_dana=15, opis="rok za žalbu"):
+    """Provjerava je li rok za žalbu istekao."""
+    if not datum_dostave:
+        return
+    from datetime import date as _date
+    danas = _date.today()
+    razlika = danas - datum_dostave
+    dana = razlika.days
+
+    if dana > rok_dana:
+        prekoracenje = dana - rok_dana
+        st.error(
+            f"**Rok istekao!** {opis.capitalize()} od {rok_dana} dana istekao je prije {prekoracenje} dana. "
+            f"Žalba podnesena nakon roka bit će odbačena kao nepravodobna."
+        )
+    elif dana >= rok_dana - 3:
+        preostalo = rok_dana - dana
+        st.warning(
+            f"**Hitno!** {opis.capitalize()} istječe za {preostalo} dan{'a' if preostalo != 1 else ''}!"
+        )
+    elif dana >= 0:
+        preostalo = rok_dana - dana
+        st.info(
+            f"{opis.capitalize()}: preostalo {preostalo} dana (rok {rok_dana} dana od dostave)."
+        )

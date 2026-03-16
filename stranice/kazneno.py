@@ -2,7 +2,7 @@
 # STRANICA: Kazneno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, formatiraj_troskovnik, odabir_suda, unos_tocaka
+from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, formatiraj_troskovnik, odabir_suda, unos_tocaka, napuni_primjerom
 from generatori.kazneno import (
     generiraj_kaznenu_prijavu,
     generiraj_privatnu_tuzbu,
@@ -12,6 +12,8 @@ from generatori.kazneno import (
 
 def _render_kaznena_prijava():
     """Kaznena prijava."""
+    napuni_primjerom('kaznena_prijava', 'kp')
+
     prijavitelj, _, _ = unos_stranke("PRIJAVITELJ", "kp_prij")
 
     st.subheader("Podaci o prijavi")

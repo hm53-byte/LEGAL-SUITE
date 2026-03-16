@@ -102,6 +102,12 @@ st.sidebar.markdown(
 # Odredimo koji je radio zadnji kliknut
 def _get_active_module():
     """Vraca aktivni modul na temelju session_state radio widgeta."""
+    # Ako je korisnik kliknuo gumb na pocetnoj stranici
+    if "_force_module" in st.session_state:
+        forced = st.session_state._force_module
+        del st.session_state._force_module
+        return forced
+
     # Streamlit radio ne podrzava medusobno iskljucivanje grupa
     # pa koristimo tracker za zadnju promjenu
     current = {
@@ -129,6 +135,11 @@ def _get_active_module():
     return current[active_group]
 
 
+def _navigate_to(module_name):
+    """Navigira na zadani modul postavljanjem session_state."""
+    st.session_state._force_module = module_name
+
+
 def _render_pocetna():
     """Informativna pocetna stranica - Trust-Centric dizajn."""
 
@@ -152,64 +163,66 @@ def _render_pocetna():
 
     st.markdown("")
 
-    # Dva stupca - kartice modula
+    # Definicija modula za kartice
+    _ugovori_moduli = [
+        ("Ugovori i odluke", "10 tipova — radno pravo, otkaz, aneks, NDA, potvrda..."),
+        ("Obvezno pravo", "8 tipova — darovanje, cesija, kompenzacija, jamstvo..."),
+        ("Trgovačko pravo", "5 tipova — društveni ugovor, prijenos udjela, NDA..."),
+        ("Obiteljsko pravo", "5 tipova — razvod, bračni ugovor, skrb, uzdržavanje..."),
+        ("Opomena pred tužbu", "Opomena pred tužbu ili ovrhu s rokom za plaćanje"),
+        ("Punomoć", "Opća i posebna punomoć za zastupanje"),
+    ]
+    _sudski_moduli = [
+        ("Tužbe", "Parnični postupak, brisovna tužba, auto-pristojba"),
+        ("Ovršno pravo", "7 tipova — ovrha JB, prigovor, nekretnina, plaća..."),
+        ("Žalbe", "Žalba na presudu s obrazloženjem i troškovnikom"),
+        ("Zemljišne knjige", "7 tipova — uknjižba, hipoteka, služnost, brisanje..."),
+        ("Upravno pravo", "Žalba ZUP, tužba ZUS, pristup informacijama..."),
+        ("Kazneno pravo", "Kaznena prijava, privatna tužba, žalba na presudu"),
+        ("Stečajno pravo", "Prijedlog za stečaj, prijava tražbine, osobni stečaj"),
+    ]
+
+    # Dva stupca s gumbima
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("##### Ugovori i dokumenti")
-        st.markdown(
-            "<div class='module-card'><h4>Ugovori i odluke</h4>"
-            "<p>10 tipova — radno pravo, otkaz, aneks, NDA, upozorenje, potvrda...</p></div>"
-            "<div class='module-card'><h4>Obvezno pravo</h4>"
-            "<p>8 tipova — darovanje, cesija, kompenzacija, jamstvo, građenje...</p></div>"
-            "<div class='module-card'><h4>Trgovačko pravo</h4>"
-            "<p>5 tipova — društveni ugovor, prijenos udjela, NDA, zapisnik...</p></div>"
-            "<div class='module-card'><h4>Obiteljsko pravo</h4>"
-            "<p>5 tipova — razvod, bračni ugovor, roditeljska skrb, uzdržavanje...</p></div>"
-            "<div class='module-card'><h4>Opomena &middot; Punomoć</h4>"
-            "<p>Opomena pred tužbu/ovrhu, opća i posebna punomoć</p></div>",
-            unsafe_allow_html=True,
-        )
+        for naziv, opis in _ugovori_moduli:
+            with st.container(border=True):
+                st.markdown(f"**{naziv}**")
+                st.caption(opis)
+                if st.button("Otvori →", key=f"_nav_{naziv}", type="primary", use_container_width=True):
+                    _navigate_to(naziv)
+                    st.rerun()
 
     with col2:
         st.markdown("##### Sudski postupci")
-        st.markdown(
-            "<div class='module-card'><h4>Tužbe</h4>"
-            "<p>Parnični postupak, brisovna tužba, auto-pristojba</p></div>"
-            "<div class='module-card'><h4>Ovršno pravo</h4>"
-            "<p>7 tipova — ovrha JB, prigovor, nekretnina, plaća, privremena mjera...</p></div>"
-            "<div class='module-card'><h4>Žalbe</h4>"
-            "<p>Žalba na presudu s obrazloženjem po točkama i troškovnikom</p></div>"
-            "<div class='module-card'><h4>Zemljišne knjige</h4>"
-            "<p>7 tipova — uknjižba, hipoteka, služnost, brisanje, zabilježba...</p></div>"
-            "<div class='module-card'><h4>Upravno &middot; Kazneno &middot; Stečajno</h4>"
-            "<p>Žalba ZUP, tužba ZUS, kaznena prijava, privatna tužba, osobni stečaj...</p></div>",
-            unsafe_allow_html=True,
-        )
+        for naziv, opis in _sudski_moduli:
+            with st.container(border=True):
+                st.markdown(f"**{naziv}**")
+                st.caption(opis)
+                if st.button("Otvori →", key=f"_nav_{naziv}", type="primary", use_container_width=True):
+                    _navigate_to(naziv)
+                    st.rerun()
 
     st.markdown("")
 
     # Alati
     st.markdown("##### Alati")
     col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown(
-            "<div class='module-card'><h4>Kalkulator kamata</h4>"
-            "<p>Zakonske zatezne kamate prema HNB stopama. DOCX export.</p></div>",
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.markdown(
-            "<div class='module-card'><h4>Kalkulator pristojbi</h4>"
-            "<p>Sudske pristojbe prema VPS-u, žalbe, ovrhe, ZK.</p></div>",
-            unsafe_allow_html=True,
-        )
-    with col3:
-        st.markdown(
-            "<div class='module-card'><h4>Zaštita potrošača</h4>"
-            "<p>Reklamacija, jednostrani raskid, prijava inspekciji.</p></div>",
-            unsafe_allow_html=True,
-        )
+    _alati = [
+        ("Kalkulator kamata", "Zakonske zatezne kamate prema HNB stopama. DOCX export."),
+        ("Kalkulator pristojbi", "Sudske pristojbe prema VPS-u, žalbe, ovrhe, ZK."),
+        ("Zaštita potrošača", "Reklamacija, jednostrani raskid, prijava inspekciji."),
+    ]
+    for col, (naziv, opis) in zip([col1, col2, col3], _alati):
+        with col:
+            with st.container(border=True):
+                st.markdown(f"**{naziv}**")
+                st.caption(opis)
+                if st.button("Otvori", key=f"_nav_{naziv}", type="primary"):
+                    _navigate_to(naziv)
+                    st.rerun()
 
     st.caption(
         "Svi dokumenti generiraju se u DOCX formatu (Microsoft Word) "

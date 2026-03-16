@@ -11,6 +11,8 @@ from pomocne import (
     odredi_nadlezni_sud,
     odabir_suda,
     unos_tocaka,
+    napuni_primjerom,
+    provjeri_zastaru,
 )
 from generatori.tuzbe import generiraj_tuzbu_pro
 from pristojbe import pristojba_tuzba
@@ -20,6 +22,8 @@ def render_tuzbe():
     st.header("Tužba (parnični postupak)")
 
     zastupanje = zaglavlje_sastavljaca()
+
+    napuni_primjerom('tuzba', 't')
 
     # Vise tuzitelja/tuzenika
     vise_stranaka = st.checkbox("Više tužitelja / tuženika", key="tuzbe_vise")
@@ -55,6 +59,7 @@ def render_tuzbe():
                           help="Iznos u EUR koji se potražuje. Određuje nadležnost suda i visinu pristojbe.")
     datum_dospijeca = st.date_input("Datum dospijeća (Od kada teku kamate?)",
                                     help="Datum od kojeg se obračunavaju zakonske zatezne kamate (čl. 29. ZOO).")
+    provjeri_zastaru(datum_dospijeca, rok_godina=5, opis_roka="opći zastarni rok (čl. 225. ZOO)")
     vrsta = st.text_input("Radi (kratki opis)", "Isplate (Dugovanja)",
                           help="Kratki opis predmeta spora, npr. 'Isplate', 'Naknade štete', 'Ispunjenja ugovora'.")
 

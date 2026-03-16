@@ -2,7 +2,7 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca
+from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
 
@@ -18,10 +18,13 @@ def render_zalbe():
             sud_prvi = odabir_suda("Prvostupanjski sud", vrsta="opcinski", key="zal_sud1")
         with col_s2:
             sud_drugi = odabir_suda("Drugostupanjski sud", vrsta="zupanijski", key="zal_sud2")
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         broj_presude = c1.text_input("Poslovni broj presude")
-        datum_presude = c2.text_input("Datum donošenja presude")
-        mjesto = st.text_input("Mjesto sastava žalbe", value="Zagreb")
+        datum_presude_input = c2.date_input("Datum dostave presude", key="zal_datum_dostave",
+                                             help="Datum kad ste primili presudu. Rok za žalbu je 15 dana od dostave.")
+        datum_presude = datum_presude_input.strftime('%d.%m.%Y.')
+        mjesto = c3.text_input("Mjesto", value="Zagreb")
+        provjeri_rok_zalbe(datum_presude_input, rok_dana=15, opis="rok za žalbu (čl. 348. ZPP)")
 
     with st.expander("Stranke", expanded=False):
         col_tuz, col_tuzen = st.columns(2)
