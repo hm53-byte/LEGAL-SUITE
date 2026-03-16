@@ -69,23 +69,32 @@ CSS_STILOVI = f"""
         padding-bottom: 0.2rem;
     }}
 
-    /* Sidebar radio - cistiji razmak, hover s visokim kontrastom */
-    [data-testid="stSidebar"] .stRadio > div {{
-        gap: 0px !important;
-    }}
-    [data-testid="stSidebar"] .stRadio label {{
+    /* Sidebar gumbi - navigacija */
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] {{
+        background-color: transparent !important;
+        border: 1px solid rgba(203, 213, 225, 0.15) !important;
+        color: {_SIDEBAR_TEXT} !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 400 !important;
-        padding: 0.5rem 0.75rem !important;
+        padding: 0.45rem 0.75rem !important;
         border-radius: 6px !important;
-        margin: 1px 0 !important;
-        transition: background-color 0.15s ease !important;
-        cursor: pointer !important;
+        transition: all 0.15s ease !important;
     }}
-    [data-testid="stSidebar"] .stRadio label:hover {{
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover {{
         background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(203, 213, 225, 0.3) !important;
         color: #FFFFFF !important;
+    }}
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] {{
+        background: linear-gradient(135deg, {_BRAND} 0%, {_BRAND_LIGHT} 100%) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        padding: 0.45rem 0.75rem !important;
+        border-radius: 6px !important;
     }}
 
     /* Sidebar markdown */
