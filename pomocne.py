@@ -265,26 +265,53 @@ def spoji_stranke_html(stranke_lista, oznaka_jednine="TUŽITELJ", oznaka_mnozine
     return "<br>".join(parts)
 
 
-def unos_tocaka(oznaka, key_prefix, placeholder="", min_tocaka=1, max_tocaka=20, height=80):
+def unos_tocaka(oznaka, key_prefix, placeholder="", min_tocaka=1, max_tocaka=20, height=80,
+                s_dokazima=False, dokaz_placeholder="Dokaz za ovu točku..."):
     """Dinamicki unos vise tekstualnih tocaka za dokument.
     Koristi se za: cinjenicne navode, dokazne prijedloge, razloge, tocke tuzbenog zahtjeva itd.
-    Vraca: lista stringova (nepraznih)
+
+    Ako s_dokazima=True, svaka tocka ima opcionalni dokaz.
+    Vraca:
+        - ako s_dokazima=False: lista stringova (nepraznih)
+        - ako s_dokazima=True: lista dict-ova {'tekst': str, 'dokaz': str}
     """
     count_key = f"{key_prefix}_tocke_count"
     if count_key not in st.session_state:
-        st.session_state[count_key] = min_tocaka
+        st.session_state[count_key] = max(min_tocaka, 1)
 
     tocke = []
     for i in range(st.session_state[count_key]):
-        label = f"Točka {i + 1}" if st.session_state[count_key] > 1 else oznaka
-        t = st.text_area(
-            label,
-            key=f"{key_prefix}_t_{i}",
-            placeholder=placeholder,
-            height=height,
-        )
-        if t and t.strip():
-            tocke.append(t.strip())
+        redni = i + 1
+        label = f"Točka {redni}" if st.session_state[count_key] > 1 else oznaka
+
+        if s_dokazima:
+            with st.container():
+                st.markdown(f"**{redni}.** točka")
+                t = st.text_area(
+                    f"Navod / činjenica ({redni})",
+                    key=f"{key_prefix}_t_{i}",
+                    placeholder=placeholder,
+                    height=height,
+                    label_visibility="collapsed",
+                )
+                d = st.text_input(
+                    f"Dokaz ({redni})",
+                    key=f"{key_prefix}_d_{i}",
+                    placeholder=dokaz_placeholder,
+                )
+                if t and t.strip():
+                    tocke.append({'tekst': t.strip(), 'dokaz': d.strip() if d else ''})
+                if i < st.session_state[count_key] - 1:
+                    st.markdown("---")
+        else:
+            t = st.text_area(
+                label,
+                key=f"{key_prefix}_t_{i}",
+                placeholder=placeholder,
+                height=height,
+            )
+            if t and t.strip():
+                tocke.append(t.strip())
 
     col_add, col_rem = st.columns(2)
     with col_add:
@@ -303,10 +330,28 @@ def unos_tocaka(oznaka, key_prefix, placeholder="", min_tocaka=1, max_tocaka=20,
 
 def formatiraj_tocke_html(tocke, stil="numbered"):
     """Formatira listu tocaka u HTML. Koristi se u generatorima.
+    tocke: lista stringova ILI lista dict-ova {'tekst': str, 'dokaz': str}
     stil: 'numbered' (ol), 'bulleted' (ul), 'paragraphs' (br razmak)
     """
     if not tocke:
         return ""
+
+    # Provjeri je li lista dict-ova (tocke s dokazima)
+    ima_dokaze = isinstance(tocke[0], dict)
+
+    if ima_dokaze:
+        items = []
+        for t in tocke:
+            tekst = format_text(t['tekst'])
+            dokaz = t.get('dokaz', '')
+            if dokaz:
+                items.append(f"<li>{tekst}<br><i>Dokaz: {format_text(dokaz)}</i></li>")
+            else:
+                items.append(f"<li>{tekst}</li>")
+        if stil == "bulleted":
+            return f"<ul>{''.join(items)}</ul>"
+        return f"<ol>{''.join(items)}</ol>"
+
     if stil == "numbered":
         items = "".join(f"<li>{format_text(t)}</li>" for t in tocke)
         return f"<ol>{items}</ol>"

@@ -52,14 +52,25 @@ def render_zalbe():
 
         st.markdown("---")
         st.markdown("**Obrazloženje žalbe**")
-        st.caption("Strukturirajte obrazloženje po točkama - svaka točka obrazlaže jedan žalbeni razlog ili navod.")
+        st.caption("Svaku tvrdnju navedite u zasebnu točku. Svakoj točki možete pridružiti dokaz ili poziv na spis.")
 
         obrazlozenje_tocke = unos_tocaka(
             "Obrazloženje", "zal_obrazlozenje",
             placeholder="Npr. Prvostupanjski sud pogrešno je utvrdio činjenično stanje jer nije izveo dokaz saslušanjem svjedoka...",
             min_tocaka=1, max_tocaka=15, height=120,
+            s_dokazima=True,
+            dokaz_placeholder="Npr. Zapisnik s rasprave od 01.01.2025., str. 3-5 spisa",
         )
-        obrazlozenje = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(obrazlozenje_tocke)) if obrazlozenje_tocke else ""
+        if obrazlozenje_tocke:
+            parts = []
+            for i, t in enumerate(obrazlozenje_tocke):
+                line = f"{i+1}. {t['tekst']}"
+                if t.get('dokaz'):
+                    line += f"\n   Dokaz: {t['dokaz']}"
+                parts.append(line)
+            obrazlozenje = "\n\n".join(parts)
+        else:
+            obrazlozenje = ""
 
     with st.expander("Troškovnik žalbe", expanded=False):
         vps_zalba = st.number_input("Vrijednost predmeta spora (VPS) za izračun pristojbe", min_value=0.0, key="zal_vps")

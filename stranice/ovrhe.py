@@ -26,16 +26,62 @@ def _render_prijedlog_ovrhe():
     with col2:
         o2, _, _ = unos_stranke("OVRŠENIK (Dužnik)", "o2")
 
-    st.subheader("Dugovanje")
-    c1, c2, c3 = st.columns(3)
-    opis_isprave = c1.text_input("Vjerodostojna isprava", placeholder="Račun br. 100-2024",
-                                help="Račun, mjenica, ček, izvadak iz poslovnih knjiga ili druga isprava po čl. 279. OZ.")
-    dat_racuna = c2.date_input("Datum izdavanja računa",
-                               help="Datum kada je izdana vjerodostojna isprava.")
-    glavnica = c3.number_input("Glavnica duga (EUR)", min_value=0.0,
-                               help="Iznos dospjele nenaplaćene tražbine u EUR.")
-    dospjece = st.date_input("Datum dospijeća",
-                             help="Datum dospijeća obveze - od ovog datuma teku zatezne kamate.")
+    st.subheader("Dugovanje - vjerodostojne isprave")
+    st.caption("Dodajte jednu ili više isprava na temelju kojih tražite ovrhu.")
+
+    # Dinamicke isprave
+    isprave_key = "ovrha_isprave_count"
+    if isprave_key not in st.session_state:
+        st.session_state[isprave_key] = 1
+
+    ukupna_glavnica = 0.0
+    isprave_tekst = []
+    for idx in range(st.session_state[isprave_key]):
+        with st.container():
+            if st.session_state[isprave_key] > 1:
+                st.markdown(f"**Isprava {idx + 1}**")
+            c1, c2, c3 = st.columns(3)
+            isp_opis = c1.text_input("Vjerodostojna isprava", placeholder="Račun br. 100-2024",
+                                     key=f"ovrha_isp_opis_{idx}",
+                                     help="Račun, mjenica, ček, izvadak iz poslovnih knjiga ili druga isprava po čl. 279. OZ.")
+            isp_datum = c2.date_input("Datum isprave", key=f"ovrha_isp_dat_{idx}")
+            isp_glavnica = c3.number_input("Glavnica (EUR)", min_value=0.0, key=f"ovrha_isp_glav_{idx}")
+            isp_dospjece = st.date_input("Datum dospijeća", key=f"ovrha_isp_dosp_{idx}",
+                                          help="Od ovog datuma teku zatezne kamate.")
+            if isp_opis:
+                isprave_tekst.append({
+                    'opis': isp_opis,
+                    'datum': isp_datum.strftime('%d.%m.%Y.'),
+                    'glavnica': isp_glavnica,
+                    'dospjece': isp_dospjece.strftime('%d.%m.%Y.'),
+                })
+                ukupna_glavnica += isp_glavnica
+            if idx < st.session_state[isprave_key] - 1:
+                st.markdown("---")
+
+    col_a, col_r = st.columns(2)
+    with col_a:
+        if st.session_state[isprave_key] < 20:
+            if st.button("+ Dodaj ispravu", key="ovrha_add_isp"):
+                st.session_state[isprave_key] += 1
+                st.rerun()
+    with col_r:
+        if st.session_state[isprave_key] > 1:
+            if st.button("- Ukloni zadnju", key="ovrha_rem_isp"):
+                st.session_state[isprave_key] -= 1
+                st.rerun()
+
+    # Za kompatibilnost s generatorom koristimo prvu ispravu ili spojimo sve
+    if isprave_tekst:
+        opis_isprave = ", ".join(f"{isp['opis']} od {isp['datum']}" for isp in isprave_tekst)
+        glavnica = ukupna_glavnica
+        dat_racuna_str = isprave_tekst[0]['datum']
+        dospjece_str = isprave_tekst[0]['dospjece']
+    else:
+        opis_isprave = ""
+        glavnica = 0.0
+        dat_racuna_str = ""
+        dospjece_str = ""
 
     st.subheader("Troškovnik")
     predlozena_pristojba = pristojba_ovrha_jb(glavnica) if glavnica > 0 else 0.0
@@ -51,8 +97,8 @@ def _render_prijedlog_ovrhe():
             jb, o1, o2,
             {
                 'glavnica': glavnica,
-                'datum_racuna': dat_racuna.strftime('%d.%m.%Y.'),
-                'dospjece': dospjece.strftime('%d.%m.%Y.'),
+                'datum_racuna': dat_racuna_str,
+                'dospjece': dospjece_str,
             },
             opis_isprave,
             {
@@ -167,7 +213,31 @@ def _render_ovrha_ovrsna_isprava():
     c1, c2 = st.columns(2)
     glavnica = c1.number_input("Glavnica duga (EUR)", min_value=0.0, key="ooi_glav")
     kamate_od = c2.date_input("Kamate od", key="ooi_kam")
-    sredstvo_ovrhe = st.selectbox("Sredstvo ovrhe", ["novčana sredstva", "nekretnina", "plaća"], key="ooi_sredstvo")
+    sredstvo_ovrhe = st.selectbox(
+        "Sredstvo ovrhe",
+        [
+            ("novčana sredstva", "Novčana sredstva (računi kod banaka)"),
+            ("nekretnina", "Nekretnina"),
+            ("plaća", "Plaća i stalna primanja"),
+            ("pokretnine", "Pokretnine"),
+            ("vise_sredstava", "Više sredstava ovrhe"),
+        ],
+        format_func=lambda x: x[1],
+        key="ooi_sredstvo",
+        help="Odaberite na čemu se provodi ovrha. Može se odabrati više sredstava.",
+    )
+
+    # Ako je više sredstava, omogući unos
+    if sredstvo_ovrhe[0] == "vise_sredstava":
+        st.caption("Navedite sredstva ovrhe po točkama.")
+        sredstva_tocke = unos_tocaka(
+            "Sredstvo ovrhe", "ooi_sredstva",
+            placeholder="Npr. Novčana sredstva na svim računima kod banaka...",
+            min_tocaka=1, max_tocaka=5, height=60,
+        )
+        sredstvo_za_gen = "\n".join(sredstva_tocke) if sredstva_tocke else "novčana sredstva"
+    else:
+        sredstvo_za_gen = sredstvo_ovrhe[0]
 
     st.subheader("Troškovnik")
     predlozena_ooi = pristojba_ovrha_ovrsna_isprava(glavnica) if glavnica > 0 else 0.0
@@ -189,7 +259,7 @@ def _render_ovrha_ovrsna_isprava():
                 'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
                 'glavnica': glavnica,
                 'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
-                'sredstvo_ovrhe': sredstvo_ovrhe,
+                'sredstvo_ovrhe': sredstvo_za_gen,
                 'mjesto': mjesto,
             },
             {

@@ -268,6 +268,36 @@ class TestFormatTockeHtml:
         assert "<script>" not in result
         assert "&lt;script&gt;" in result
 
+    def test_dict_with_dokaz(self):
+        """formatiraj_tocke_html s dict tockama i dokazom."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html([
+            {'tekst': 'Činjenica prva', 'dokaz': 'Ugovor br. 1'},
+            {'tekst': 'Činjenica druga', 'dokaz': ''},
+        ])
+        assert "Činjenica prva" in result
+        assert "Ugovor br. 1" in result
+        assert "Činjenica druga" in result
+        assert result.count("Dokaz:") == 1
+
+    def test_dict_without_dokaz(self):
+        """formatiraj_tocke_html s dict tockama bez dokaza."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html([
+            {'tekst': 'Samo tekst', 'dokaz': ''},
+        ])
+        assert "Samo tekst" in result
+        assert "Dokaz:" not in result
+
+    def test_dict_escapes_xss(self):
+        """formatiraj_tocke_html s dict mora escapati XSS u tekstu i dokazu."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html([
+            {'tekst': '<script>evil</script>', 'dokaz': '<img onerror=alert(1)>'},
+        ])
+        assert "<script>" not in result
+        assert "<img " not in result
+
 
 # =============================================================================
 # BRISANJE HIPOTEKE: Razlozi brisanja

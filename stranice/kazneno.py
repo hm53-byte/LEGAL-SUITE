@@ -32,28 +32,34 @@ def _render_kaznena_prijava():
         key="kp_clanak",
     )
 
-    st.subheader("Opis kaznenog djela")
-    st.caption("Opišite okolnosti djela po točkama - kronološki.")
+    st.subheader("Opis kaznenog djela i dokazi")
+    st.caption("Opišite okolnosti djela po točkama. Svakoj točki možete pridružiti dokaz.")
     opis_tocke = unos_tocaka(
         "Opis okolnosti", "kp_opis",
         placeholder="Npr. Dana 01.01.2025. osumnjičenik je na adresi...",
         min_tocaka=1, max_tocaka=10, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Fotografija, video snimka, svjedok Ime Prezime...",
     )
-    opis_djela = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(opis_tocke)) if opis_tocke else ""
-
-    st.subheader("Dokazi")
-    dokazi_tocke = unos_tocaka(
-        "Dokaz", "kp_dokazi",
-        placeholder="Npr. Ugovor, isprava, fotografija, svjedok...",
-        min_tocaka=1, max_tocaka=15, height=60,
-    )
+    # Spoji opis i dokaze za generator
+    if opis_tocke:
+        opis_parts = []
+        dok_lista = []
+        for i, t in enumerate(opis_tocke):
+            opis_parts.append(f"{i+1}. {t['tekst']}")
+            if t.get('dokaz'):
+                dok_lista.append(t['dokaz'])
+        opis_djela = "\n\n".join(opis_parts)
+    else:
+        opis_djela = ""
+        dok_lista = []
 
     mjesto = st.text_input("Mjesto", "Zagreb", key="kp_mjesto")
 
     st.markdown("---")
 
     if st.button("Generiraj kaznenu prijavu", type="primary", key="kp_btn"):
-        dokazi_lista = dokazi_tocke
+        dokazi_lista = dok_lista
         doc = generiraj_kaznenu_prijavu(
             prijavitelj,
             {
@@ -92,21 +98,26 @@ def _render_privatna_tuzba():
     datum_djela = c1.date_input("Datum počinjenja djela", key="pt_datum")
     mjesto_djela = c2.text_input("Mjesto počinjenja djela", key="pt_mjesto_djela")
 
-    st.subheader("Opis kaznenog djela")
-    st.caption("Opišite okolnosti djela po točkama.")
+    st.subheader("Opis kaznenog djela i dokazi")
+    st.caption("Opišite okolnosti djela po točkama. Svakoj točki možete pridružiti dokaz.")
     opis_tocke_pt = unos_tocaka(
         "Opis okolnosti", "pt_opis",
         placeholder="Npr. Dana 01.01.2025. okrivljenik je na javnom mjestu...",
         min_tocaka=1, max_tocaka=10, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Svjedok, medicinska dokumentacija, fotografija...",
     )
-    opis_djela = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(opis_tocke_pt)) if opis_tocke_pt else ""
-
-    st.subheader("Dokazi")
-    dokazi_tocke_pt = unos_tocaka(
-        "Dokaz", "pt_dokazi",
-        placeholder="Npr. Svjedok, isprava, medicinska dokumentacija...",
-        min_tocaka=1, max_tocaka=15, height=60,
-    )
+    if opis_tocke_pt:
+        opis_parts_pt = []
+        dok_lista_pt = []
+        for i, t in enumerate(opis_tocke_pt):
+            opis_parts_pt.append(f"{i+1}. {t['tekst']}")
+            if t.get('dokaz'):
+                dok_lista_pt.append(t['dokaz'])
+        opis_djela = "\n\n".join(opis_parts_pt)
+    else:
+        opis_djela = ""
+        dok_lista_pt = []
 
     kazneni_zahtjev = st.text_area(
         "Kazneni zahtjev (prijedlog kazne)",
@@ -126,7 +137,7 @@ def _render_privatna_tuzba():
     st.markdown("---")
 
     if st.button("Generiraj privatnu tužbu", type="primary", key="pt_btn"):
-        dokazi_lista = dokazi_tocke_pt
+        dokazi_lista = dok_lista_pt
         doc = generiraj_privatnu_tuzbu(
             tuzitelj,
             okrivljenik,

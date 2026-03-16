@@ -44,13 +44,24 @@ def _render_zalba_zup():
     mjesto = st.text_input("Mjesto", "Zagreb", key="zup_mjesto")
 
     st.subheader("Sadržaj žalbe")
-    st.caption("Navedite razloge žalbe - svaki razlog u zasebnu točku za preglednost.")
+    st.caption("Svaki razlog žalbe navedite u zasebnu točku. Možete pridružiti dokaz svakoj točki.")
     razlozi_tocke = unos_tocaka(
         "Razlog žalbe", "zup_razlozi",
         placeholder="Npr. Prvostupanjsko tijelo nije pravilno primijenilo čl. XX Zakona o...",
         min_tocaka=1, max_tocaka=10, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Rješenje KLASA: ..., dopis od ...",
     )
-    razlozi = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(razlozi_tocke)) if razlozi_tocke else ""
+    if razlozi_tocke:
+        parts = []
+        for i, t in enumerate(razlozi_tocke):
+            line = f"{i+1}. {t['tekst']}"
+            if t.get('dokaz'):
+                line += f"\n   Dokaz: {t['dokaz']}"
+            parts.append(line)
+        razlozi = "\n\n".join(parts)
+    else:
+        razlozi = ""
 
     zalbeni_prijedlog = st.radio(
         "Žalbeni prijedlog",
@@ -107,13 +118,24 @@ def _render_tuzba_zus():
     mjesto = st.text_input("Mjesto", "Zagreb", key="zus_mjesto")
 
     st.subheader("Sadržaj tužbe")
-    st.caption("Navedite razloge nezakonitosti - svaki u zasebnu točku.")
+    st.caption("Navedite razloge nezakonitosti - svakom možete pridružiti dokaz.")
     razlozi_tocke = unos_tocaka(
         "Razlog nezakonitosti", "zus_razlozi",
         placeholder="Npr. Tuženik nije proveo postupak sukladno čl. XX ZUP-a...",
         min_tocaka=1, max_tocaka=10, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Rješenje, zapisnik, dopis...",
     )
-    razlozi_nezakonitosti = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(razlozi_tocke)) if razlozi_tocke else ""
+    if razlozi_tocke:
+        parts = []
+        for i, t in enumerate(razlozi_tocke):
+            line = f"{i+1}. {t['tekst']}"
+            if t.get('dokaz'):
+                line += f"\n   Dokaz: {t['dokaz']}"
+            parts.append(line)
+        razlozi_nezakonitosti = "\n\n".join(parts)
+    else:
+        razlozi_nezakonitosti = ""
 
     tuzbeni_zahtjev = st.radio(
         "Tužbeni zahtjev",
@@ -246,12 +268,25 @@ def _render_prigovor_predstavka():
         horizontal=True,
     )
 
-    opis_problema = st.text_area(
-        "Opis problema",
-        key="pp_opis",
-        height=200,
+    st.markdown("**Opis problema**")
+    st.caption("Opišite problem po točkama. Svakoj točki možete pridružiti dokaz.")
+    opis_tocke = unos_tocaka(
+        "Opis problema", "pp_opis",
         placeholder="Opišite problem, nepravilnost ili nezakonito postupanje...",
+        min_tocaka=1, max_tocaka=10, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Dopis, zapisnik, svjedok...",
     )
+    if opis_tocke:
+        parts = []
+        for i, t in enumerate(opis_tocke):
+            line = f"{i+1}. {t['tekst']}"
+            if t.get('dokaz'):
+                line += f"\n   Dokaz: {t['dokaz']}"
+            parts.append(line)
+        opis_problema = "\n\n".join(parts)
+    else:
+        opis_problema = ""
 
     st.markdown("---")
     if st.button("Generiraj prigovor / predstavku", type="primary", key="pp_btn"):

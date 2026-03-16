@@ -58,24 +58,28 @@ def render_tuzbe():
     vrsta = st.text_input("Radi (kratki opis)", "Isplate (Dugovanja)",
                           help="Kratki opis predmeta spora, npr. 'Isplate', 'Naknade štete', 'Ispunjenja ugovora'.")
 
-    st.subheader("I. Činjenični navodi")
-    st.caption("Navedite kronološki relevantne činjenice - svaku činjenicu u zasebnu točku.")
+    st.subheader("I. Činjenični navodi i dokazi")
+    st.caption("Svaku činjenicu navedite u zasebnu točku. Svakoj točki možete pridružiti dokaz.")
     cinjenice_tocke = unos_tocaka(
         "Činjenični navod", "tuzba_cinj",
         placeholder="Npr. Dana 15.03.2024. tužitelj i tuženik sklopili su Ugovor o kupoprodaji robe br. 123/2024...",
         min_tocaka=1, max_tocaka=20, height=100,
+        s_dokazima=True,
+        dokaz_placeholder="Npr. Ugovor o kupoprodaji br. 123/2024 od 15.03.2024.",
     )
-    # Spoji u jedan tekst za generator (kompatibilnost)
-    cinjenice = "\n\n".join(f"{i+1}. {c}" for i, c in enumerate(cinjenice_tocke)) if cinjenice_tocke else ""
-
-    st.subheader("II. Dokazni prijedlozi")
-    st.caption("Navedite dokaze kojima potkrjepljujete tužbeni zahtjev.")
-    dokazi_tocke = unos_tocaka(
-        "Dokaz", "tuzba_dokazi",
-        placeholder="Npr. Ugovor o kupoprodaji br. 123/2024 od 15.03.2024.",
-        min_tocaka=1, max_tocaka=15, height=60,
-    )
-    dokazi = "\n".join(f"- {d}" for d in dokazi_tocke) if dokazi_tocke else ""
+    # Spoji u tekst za generator (kompatibilnost)
+    if cinjenice_tocke:
+        cinj_parts = []
+        dok_parts = []
+        for i, t in enumerate(cinjenice_tocke):
+            cinj_parts.append(f"{i+1}. {t['tekst']}")
+            if t.get('dokaz'):
+                dok_parts.append(f"- {t['dokaz']}")
+        cinjenice = "\n\n".join(cinj_parts)
+        dokazi = "\n".join(dok_parts) if dok_parts else ""
+    else:
+        cinjenice = ""
+        dokazi = ""
 
     st.subheader("Troškovnik")
     # Auto-izracun sudske pristojbe prema VPS
