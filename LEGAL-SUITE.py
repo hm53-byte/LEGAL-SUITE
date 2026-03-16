@@ -131,63 +131,86 @@ def _get_active_module():
 
 def _render_pocetna():
     """Informativna pocetna stranica - Trust-Centric dizajn."""
-    st.title("LegalTech Suite Pro")
+
+    # Hero sekcija
     st.markdown(
-        "Profesionalni generator pravnih dokumenata. "
-        "Odaberite modul u navigaciji za izradu dokumenta."
+        "<div class='hero-section'>"
+        "<h2>LegalTech Suite Pro</h2>"
+        "<p>Profesionalni generator pravnih dokumenata u DOCX formatu. "
+        "60+ dokumenata iz 15 pravnih područja, baza 74 hrvatska suda, "
+        "kalkulator kamata i pristojbi.</p>"
+        "</div>",
+        unsafe_allow_html=True,
     )
 
-    st.markdown("")
-
-    # Metrike - brz pregled kapaciteta
+    # Metrike
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Dokumenata", "60+")
     col2.metric("Pravnih područja", "15")
     col3.metric("Format", "DOCX")
     col4.metric("Sudova u bazi", "74")
 
-    st.markdown("---")
+    st.markdown("")
 
-    # Dva stupca - pregled modula
+    # Dva stupca - kartice modula
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("#### Ugovori i dokumenti")
+        st.markdown("##### Ugovori i dokumenti")
         st.markdown(
-            "- **Ugovori** (10 tipova) — radno pravo, otkaz, aneks, NDA...\n"
-            "- **Opomena** pred tužbu / ovrhu\n"
-            "- **Punomoć** — opća, posebna, procesna\n"
-            "- **Obvezno pravo** (8) — darovanje, cesija, jamstvo...\n"
-            "- **Trgovačko pravo** (5) — društveni ugovor, prijenos udjela...\n"
-            "- **Obiteljsko pravo** (5) — razvod, bračni ugovor..."
+            "<div class='module-card'><h4>Ugovori i odluke</h4>"
+            "<p>10 tipova — radno pravo, otkaz, aneks, NDA, upozorenje, potvrda...</p></div>"
+            "<div class='module-card'><h4>Obvezno pravo</h4>"
+            "<p>8 tipova — darovanje, cesija, kompenzacija, jamstvo, građenje...</p></div>"
+            "<div class='module-card'><h4>Trgovačko pravo</h4>"
+            "<p>5 tipova — društveni ugovor, prijenos udjela, NDA, zapisnik...</p></div>"
+            "<div class='module-card'><h4>Obiteljsko pravo</h4>"
+            "<p>5 tipova — razvod, bračni ugovor, roditeljska skrb, uzdržavanje...</p></div>"
+            "<div class='module-card'><h4>Opomena &middot; Punomoć</h4>"
+            "<p>Opomena pred tužbu/ovrhu, opća i posebna punomoć</p></div>",
+            unsafe_allow_html=True,
         )
 
     with col2:
-        st.markdown("#### Sudski postupci")
+        st.markdown("##### Sudski postupci")
         st.markdown(
-            "- **Tužbe** — parnični postupak, brisovna tužba\n"
-            "- **Ovršno pravo** (7) — ovrha JB, prigovor, nekretnina...\n"
-            "- **Žalbe** — protiv presude\n"
-            "- **Zemljišne knjige** (7) — uknjižba, hipoteka, služnost...\n"
-            "- **Upravno pravo** (4) — žalba ZUP, tužba ZUS...\n"
-            "- **Kazneno pravo** (3) — prijava, privatna tužba...\n"
-            "- **Stečajno pravo** (3) — prijedlog, osobni stečaj..."
+            "<div class='module-card'><h4>Tužbe</h4>"
+            "<p>Parnični postupak, brisovna tužba, auto-pristojba</p></div>"
+            "<div class='module-card'><h4>Ovršno pravo</h4>"
+            "<p>7 tipova — ovrha JB, prigovor, nekretnina, plaća, privremena mjera...</p></div>"
+            "<div class='module-card'><h4>Žalbe</h4>"
+            "<p>Žalba na presudu s obrazloženjem po točkama i troškovnikom</p></div>"
+            "<div class='module-card'><h4>Zemljišne knjige</h4>"
+            "<p>7 tipova — uknjižba, hipoteka, služnost, brisanje, zabilježba...</p></div>"
+            "<div class='module-card'><h4>Upravno &middot; Kazneno &middot; Stečajno</h4>"
+            "<p>Žalba ZUP, tužba ZUS, kaznena prijava, privatna tužba, osobni stečaj...</p></div>",
+            unsafe_allow_html=True,
         )
-
-    st.markdown("---")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("#### Kalkulator kamata")
-        st.markdown("Zakonske zatezne kamate prema HNB stopama. DOCX export obračuna.")
-    with col2:
-        st.markdown("#### Kalkulator pristojbi")
-        st.markdown("Sudske pristojbe prema VPS-u, žalbe, ovrhe, ZK prijedlozi.")
-    with col3:
-        st.markdown("#### Zaštita potrošača")
-        st.markdown("Reklamacija, jednostrani raskid, prijava inspekciji.")
 
     st.markdown("")
+
+    # Alati
+    st.markdown("##### Alati")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(
+            "<div class='module-card'><h4>Kalkulator kamata</h4>"
+            "<p>Zakonske zatezne kamate prema HNB stopama. DOCX export.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with col2:
+        st.markdown(
+            "<div class='module-card'><h4>Kalkulator pristojbi</h4>"
+            "<p>Sudske pristojbe prema VPS-u, žalbe, ovrhe, ZK.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with col3:
+        st.markdown(
+            "<div class='module-card'><h4>Zaštita potrošača</h4>"
+            "<p>Reklamacija, jednostrani raskid, prijava inspekciji.</p></div>",
+            unsafe_allow_html=True,
+        )
+
     st.caption(
         "Svi dokumenti generiraju se u DOCX formatu (Microsoft Word) "
         "s hrvatskim pravnim formatiranjem — Times New Roman 12pt, margine 2.5cm."

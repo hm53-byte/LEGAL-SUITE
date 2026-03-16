@@ -208,18 +208,15 @@ def render_potrosaci():
 
     zaglavlje_sastavljaca()
 
-    tip = st.selectbox(
-        "Odaberite dokument:",
-        [
-            "Reklamacija (pisani prigovor trgovcu)",
-            "Jednostrani raskid ugovora na daljinu",
-            "Prijava tržišnoj inspekciji",
-        ],
-    )
+    tab1, tab2, tab3 = st.tabs([
+        "Reklamacija",
+        "Jednostrani raskid",
+        "Prijava inspekciji",
+    ])
 
-    if tip == "Reklamacija (pisani prigovor trgovcu)":
+    with tab1:
         _render_reklamacija()
-    elif tip == "Jednostrani raskid ugovora na daljinu":
+    with tab2:
         _render_jednostrani_raskid()
-    elif tip == "Prijava tržišnoj inspekciji":
+    with tab3:
         _render_prijava_inspekciji()

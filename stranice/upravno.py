@@ -307,21 +307,19 @@ def _render_prigovor_predstavka():
 
 def render_upravno():
     st.header("Upravno pravo")
-    tip = st.selectbox(
-        "Odaberite dokument:",
-        [
-            "Žalba u upravnom postupku (ZUP)",
-            "Tužba u upravnom sporu (ZUS)",
-            "Zahtjev za pristup informacijama (ZPPI)",
-            "Prigovor / predstavka na rad tijela",
-        ],
-    )
 
-    if tip == "Žalba u upravnom postupku (ZUP)":
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Žalba (ZUP)",
+        "Tužba (ZUS)",
+        "Pristup informacijama",
+        "Prigovor / predstavka",
+    ])
+
+    with tab1:
         _render_zalba_zup()
-    elif tip == "Tužba u upravnom sporu (ZUS)":
+    with tab2:
         _render_tuzba_zus()
-    elif tip == "Zahtjev za pristup informacijama (ZPPI)":
+    with tab3:
         _render_zahtjev_informacije()
-    elif tip == "Prigovor / predstavka na rad tijela":
+    with tab4:
         _render_prigovor_predstavka()

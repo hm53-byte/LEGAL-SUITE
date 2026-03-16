@@ -246,14 +246,85 @@ CSS_STILOVI = f"""
         color: {_TEXT_SEC} !important;
     }}
 
-    /* Tabs */
+    /* Tabs - Dokument odabir */
     .stTabs [data-baseweb="tab-list"] {{
-        gap: 4px;
+        gap: 2px;
+        background-color: {_BRAND_SURFACE};
+        padding: 4px;
+        border-radius: 10px;
+        border: 1px solid {_BORDER};
     }}
     .stTabs [data-baseweb="tab"] {{
         font-family: 'Inter', sans-serif !important;
         font-weight: 500 !important;
-        border-radius: 6px 6px 0 0 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.85rem !important;
+        color: {_TEXT_SEC} !important;
+        background-color: transparent !important;
+        border: none !important;
+        transition: all 0.15s ease !important;
+    }}
+    .stTabs [data-baseweb="tab"]:hover {{
+        background-color: rgba(30, 58, 95, 0.06) !important;
+        color: {_TEXT} !important;
+    }}
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {{
+        background-color: {_CARD} !important;
+        color: {_BRAND} !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    }}
+    .stTabs [data-baseweb="tab-highlight"] {{
+        display: none !important;
+    }}
+    .stTabs [data-baseweb="tab-border"] {{
+        display: none !important;
+    }}
+
+    /* Pocetna stranica - kartice modula */
+    .module-card {{
+        background: {_CARD};
+        border: 1px solid {_BORDER};
+        border-radius: 10px;
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 0.8rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }}
+    .module-card:hover {{
+        border-color: {_BRAND};
+        box-shadow: 0 2px 8px rgba(30, 58, 95, 0.08);
+    }}
+    .module-card h4 {{
+        color: {_BRAND} !important;
+        font-size: 1rem !important;
+        margin-bottom: 0.4rem !important;
+        font-weight: 600 !important;
+    }}
+    .module-card p {{
+        color: {_TEXT_SEC} !important;
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+        line-height: 1.4 !important;
+    }}
+
+    /* Hero sekcija na pocetnoj */
+    .hero-section {{
+        background: linear-gradient(135deg, {_BRAND} 0%, {_BRAND_LIGHT} 100%);
+        color: white;
+        padding: 2rem 2.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }}
+    .hero-section h2 {{
+        color: white !important;
+        font-size: 1.6rem !important;
+        margin-bottom: 0.5rem !important;
+    }}
+    .hero-section p {{
+        color: rgba(255,255,255,0.85) !important;
+        font-size: 0.95rem !important;
+        margin: 0 !important;
     }}
 
     /* ================================================================

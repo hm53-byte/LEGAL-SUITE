@@ -238,22 +238,19 @@ def _render_stecaj_potrosaca():
 
 
 def render_stecajno():
-    st.header("Stecajno pravo")
+    st.header("Stečajno pravo")
 
     zaglavlje_sastavljaca()
 
-    tip = st.selectbox(
-        "Odaberite dokument:",
-        [
-            "Prijedlog za otvaranje stecajnog postupka",
-            "Prijava trazbine u stecajnom postupku",
-            "Stecaj potrosaca",
-        ],
-    )
+    tab1, tab2, tab3 = st.tabs([
+        "Prijedlog za stečaj",
+        "Prijava tražbine",
+        "Stečaj potrošača",
+    ])
 
-    if tip == "Prijedlog za otvaranje stecajnog postupka":
+    with tab1:
         _render_prijedlog_stecaj()
-    elif tip == "Prijava trazbine u stecajnom postupku":
+    with tab2:
         _render_prijava_trazbine()
-    elif tip == "Stecaj potrosaca":
+    with tab3:
         _render_stecaj_potrosaca()

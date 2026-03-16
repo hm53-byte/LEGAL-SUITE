@@ -2,13 +2,15 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import prikazi_dokument, odabir_suda, unos_tocaka
+from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
 
 
 def render_zalbe():
     st.header("Žalba na presudu")
+
+    zaglavlje_sastavljaca()
 
     with st.expander("Podaci o sudu i presudi", expanded=True):
         col_s1, col_s2 = st.columns(2)

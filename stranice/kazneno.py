@@ -277,18 +277,15 @@ def render_kazneno():
 
     zaglavlje_sastavljaca()
 
-    tip = st.selectbox(
-        "Odaberite dokument:",
-        [
-            "Kaznena prijava",
-            "Privatna tužba",
-            "Žalba na kaznenu presudu",
-        ],
-    )
+    tab1, tab2, tab3 = st.tabs([
+        "Kaznena prijava",
+        "Privatna tužba",
+        "Žalba na presudu",
+    ])
 
-    if tip == "Kaznena prijava":
+    with tab1:
         _render_kaznena_prijava()
-    elif tip == "Privatna tužba":
+    with tab2:
         _render_privatna_tuzba()
-    elif tip == "Žalba na kaznenu presudu":
+    with tab3:
         _render_zalba_kaznena_presuda()

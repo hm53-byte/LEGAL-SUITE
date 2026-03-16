@@ -2,7 +2,7 @@
 # STRANICA: Ovrsno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca
 from pristojbe import pristojba_ovrha_jb, pristojba_ovrha_ovrsna_isprava
 from generatori.ovrhe import (
     generiraj_ovrhu_pro,
@@ -498,6 +498,9 @@ def _render_privremena_mjera():
 
 def render_ovrhe():
     st.header("Ovršno pravo")
+
+    zaglavlje_sastavljaca()
+
     tip = st.selectbox(
         "Odaberite dokument:",
         [

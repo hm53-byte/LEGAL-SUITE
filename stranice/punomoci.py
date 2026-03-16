@@ -2,12 +2,14 @@
 # STRANICA: Punomoc (opca i posebna)
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, zaglavlje_sastavljaca
 from generatori.punomoci import generiraj_punomoc
 
 
 def render_punomoci():
     st.header("Punomoć")
+
+    zaglavlje_sastavljaca()
 
     vrsta = st.radio(
         "Vrsta punomoći:",
