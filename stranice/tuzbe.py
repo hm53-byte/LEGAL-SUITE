@@ -10,6 +10,7 @@ from pomocne import (
     prikazi_dokument,
     odredi_nadlezni_sud,
     odabir_suda,
+    unos_tocaka,
 )
 from generatori.tuzbe import generiraj_tuzbu_pro
 from pristojbe import pristojba_tuzba
@@ -57,15 +58,24 @@ def render_tuzbe():
     vrsta = st.text_input("Radi (kratki opis)", "Isplate (Dugovanja)",
                           help="Kratki opis predmeta spora, npr. 'Isplate', 'Naknade štete', 'Ispunjenja ugovora'.")
 
-    st.subheader("Sadržaj")
-    cinjenice = st.text_area(
-        "I. Činjenice (Kronologija)", height=150, placeholder="Opišite nastanak duga...",
-        help="Kronološki opis relevantnih činjenica. Navedite kada je nastao odnos, što je dogovoreno i kada je obveza dospjela."
+    st.subheader("I. Činjenični navodi")
+    st.caption("Navedite kronološki relevantne činjenice - svaku činjenicu u zasebnu točku.")
+    cinjenice_tocke = unos_tocaka(
+        "Činjenični navod", "tuzba_cinj",
+        placeholder="Npr. Dana 15.03.2024. tužitelj i tuženik sklopili su Ugovor o kupoprodaji robe br. 123/2024...",
+        min_tocaka=1, max_tocaka=20, height=100,
     )
-    dokazi = st.text_area(
-        "II. Dokazi", placeholder="- Ugovor o kupoprodaji\n- Račun broj 10/2023...",
-        help="Popis dokaznih prijedloga. Navedite isprave, svjedoke i druge dokaze kojima potkrjepljujete tužbeni zahtjev."
+    # Spoji u jedan tekst za generator (kompatibilnost)
+    cinjenice = "\n\n".join(f"{i+1}. {c}" for i, c in enumerate(cinjenice_tocke)) if cinjenice_tocke else ""
+
+    st.subheader("II. Dokazni prijedlozi")
+    st.caption("Navedite dokaze kojima potkrjepljujete tužbeni zahtjev.")
+    dokazi_tocke = unos_tocaka(
+        "Dokaz", "tuzba_dokazi",
+        placeholder="Npr. Ugovor o kupoprodaji br. 123/2024 od 15.03.2024.",
+        min_tocaka=1, max_tocaka=15, height=60,
     )
+    dokazi = "\n".join(f"- {d}" for d in dokazi_tocke) if dokazi_tocke else ""
 
     st.subheader("Troškovnik")
     # Auto-izracun sudske pristojbe prema VPS

@@ -265,6 +265,58 @@ def spoji_stranke_html(stranke_lista, oznaka_jednine="TUŽITELJ", oznaka_mnozine
     return "<br>".join(parts)
 
 
+def unos_tocaka(oznaka, key_prefix, placeholder="", min_tocaka=1, max_tocaka=20, height=80):
+    """Dinamicki unos vise tekstualnih tocaka za dokument.
+    Koristi se za: cinjenicne navode, dokazne prijedloge, razloge, tocke tuzbenog zahtjeva itd.
+    Vraca: lista stringova (nepraznih)
+    """
+    count_key = f"{key_prefix}_tocke_count"
+    if count_key not in st.session_state:
+        st.session_state[count_key] = min_tocaka
+
+    tocke = []
+    for i in range(st.session_state[count_key]):
+        label = f"Točka {i + 1}" if st.session_state[count_key] > 1 else oznaka
+        t = st.text_area(
+            label,
+            key=f"{key_prefix}_t_{i}",
+            placeholder=placeholder,
+            height=height,
+        )
+        if t and t.strip():
+            tocke.append(t.strip())
+
+    col_add, col_rem = st.columns(2)
+    with col_add:
+        if st.session_state[count_key] < max_tocaka:
+            if st.button("+ Dodaj točku", key=f"{key_prefix}_add_t"):
+                st.session_state[count_key] += 1
+                st.rerun()
+    with col_rem:
+        if st.session_state[count_key] > min_tocaka:
+            if st.button("- Ukloni zadnju", key=f"{key_prefix}_rem_t"):
+                st.session_state[count_key] -= 1
+                st.rerun()
+
+    return tocke
+
+
+def formatiraj_tocke_html(tocke, stil="numbered"):
+    """Formatira listu tocaka u HTML. Koristi se u generatorima.
+    stil: 'numbered' (ol), 'bulleted' (ul), 'paragraphs' (br razmak)
+    """
+    if not tocke:
+        return ""
+    if stil == "numbered":
+        items = "".join(f"<li>{format_text(t)}</li>" for t in tocke)
+        return f"<ol>{items}</ol>"
+    elif stil == "bulleted":
+        items = "".join(f"<li>{format_text(t)}</li>" for t in tocke)
+        return f"<ul>{items}</ul>"
+    else:
+        return "<br><br>".join(format_text(t) for t in tocke)
+
+
 def docx_opcije():
     """Prikazuje opcije za DOCX export (watermark, header). Poziva se prije generiranja."""
     with st.expander("DOCX opcije (watermark, zaglavlje)", expanded=False):

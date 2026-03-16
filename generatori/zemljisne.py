@@ -242,7 +242,87 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
         z_broj = podaci.get('z_broj', '')
         vjerovnik_naziv = podaci.get('vjerovnik_naziv', '')
         mjesto = podaci.get('mjesto', '')
+        razlog_brisanja = podaci.get('razlog_brisanja', 'otplata_kredita')
+        dodatni_razlozi = podaci.get('dodatni_razlozi', [])
         datum = date.today().strftime('%d.%m.%Y.')
+
+        # Temelj brisanja ovisno o razlogu
+        razlog_map = {
+            'otplata_kredita': (
+                f"Predlagatelj, kao vlasnik nekretnine, predlaže brisanje založnog prava (hipoteke) "
+                f"upisanog u korist vjerovnika <b>{format_text(vjerovnik_naziv)}</b>, "
+                f"temeljem brisovnog očitovanja izdanog od strane vjerovnika nakon otplate kredita u cijelosti."
+            ),
+            'sudska_odluka': (
+                f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
+                f"<b>{format_text(vjerovnik_naziv)}</b>, temeljem pravomoćne sudske odluke "
+                f"kojom je utvrđeno da založno pravo ne postoji, odnosno da je prestalo."
+            ),
+            'zastara': (
+                f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
+                f"<b>{format_text(vjerovnik_naziv)}</b>, jer je tražbina osigurana hipotekom "
+                f"zastarjela sukladno odredbama Zakona o obveznim odnosima, a time je prestalo i "
+                f"založno pravo kao akcesorni pravni odnos (čl. 336. ZV)."
+            ),
+            'nagodba': (
+                f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
+                f"<b>{format_text(vjerovnik_naziv)}</b>, temeljem nagodbe sklopljene između "
+                f"predlagatelja i vjerovnika, kojom je uređen prestanak založnog prava."
+            ),
+            'kompenzacija': (
+                f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
+                f"<b>{format_text(vjerovnik_naziv)}</b>, jer je tražbina osigurana hipotekom "
+                f"prestala kompenzacijom (prijebojem) s protutražbinom predlagatelja."
+            ),
+            'zakonska_hipoteka_prestanak': (
+                f"Predlagatelj predlaže brisanje zakonske hipoteke upisane u korist "
+                f"<b>{format_text(vjerovnik_naziv)}</b>, jer su prestali uvjeti koji su bili "
+                f"temelj za nastanak zakonskog založnog prava."
+            ),
+        }
+        temelj_tekst = razlog_map.get(razlog_brisanja, razlog_map['otplata_kredita'])
+
+        # Dodatni razlozi/obrazloženje
+        dodatni_html = ""
+        if dodatni_razlozi:
+            dodatni_items = "".join(f"<li>{format_text(r)}</li>" for r in dodatni_razlozi)
+            dodatni_html = (
+                f"<br><b>Dodatno obrazloženje:</b><ol>{dodatni_items}</ol>"
+            )
+
+        # Prilagodeni prilozi ovisno o razlogu
+        prilog_map = {
+            'otplata_kredita': f"<li>Brisovno očitovanje s ovjerenim potpisom {format_text(vjerovnik_naziv)} i clausulom intabulandi za brisanje</li>",
+            'sudska_odluka': "<li>Pravomoćna sudska presuda/rješenje s potvrdom pravomoćnosti</li>",
+            'zastara': "<li>Dokaz o zastari tražbine (presuda, izjava, ostalo)</li><li>Brisovno očitovanje (ako postoji)</li>",
+            'nagodba': "<li>Nagodba (sudska ili izvansudska) s ovjerenim potpisima</li>",
+            'kompenzacija': "<li>Izjava o kompenzaciji s dokazom uručenja vjerovniku</li><li>Brisovno očitovanje (ako postoji)</li>",
+            'zakonska_hipoteka_prestanak': "<li>Dokaz o prestanku uvjeta za zakonsku hipoteku</li><li>Brisovno očitovanje ili sudska odluka</li>",
+        }
+        prilog_specifican = prilog_map.get(razlog_brisanja, prilog_map['otplata_kredita'])
+
+        # Napomena ovisno o razlogu
+        napomena_map = {
+            'otplata_kredita': (
+                "Otplata kredita ne dovodi do automatskog brisanja hipoteke iz zemljišne knjige. "
+                "Vlasnik nekretnine mora proaktivno zatražiti brisanje podnošenjem prijedloga uz brisovno očitovanje."
+            ),
+            'sudska_odluka': (
+                "Brisanje temeljem sudske odluke provodi se po službenoj dužnosti ili na prijedlog stranke "
+                "uz dostavu pravomoćne presude s potvrdom pravomoćnosti."
+            ),
+            'zastara': (
+                "Založno pravo je akcesorno pravo - prestaje prestankom tražbine koju osigurava. "
+                "Zastara tražbine dovodi do prestanka hipoteke (čl. 336. ZV). Ukoliko vjerovnik "
+                "ne izda brisovno očitovanje, vlasnik može pokrenuti postupak za brisanje."
+            ),
+            'zakonska_hipoteka_prestanak': (
+                "Zakonska hipoteka nastaje ex lege (po samom zakonu) bez upisa u zemljišnu knjigu, "
+                "ali za brisanje iz zemljišne knjige potreban je formalni prijedlog s dokazom prestanka uvjeta."
+            ),
+        }
+        napomena = napomena_map.get(razlog_brisanja,
+            "Brisanje založnog prava provodi se na prijedlog vlasnika nekretnine uz odgovarajuću dokumentaciju.")
 
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
@@ -250,9 +330,7 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
             f"<div class='party-info'><b>VLASNIK (PREDLAGATELJ):</b><br>{format_text(vlasnik)}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA BRISANJE ZALOŽNOG PRAVA</div>"
             f"<div class='doc-body'><b>I. TEMELJ BRISANJA</b><br><br>"
-            f"Predlagatelj, kao vlasnik nekretnine, predlaže brisanje založnog prava (hipoteke) "
-            f"upisanog u korist vjerovnika <b>{format_text(vjerovnik_naziv)}</b>, "
-            f"temeljem brisovnog očitovanja izdanog od strane vjerovnika nakon otplate kredita u cijelosti.</div>"
+            f"{temelj_tekst}{dodatni_html}</div>"
             f"<div class='doc-body'><b>II. NEKRETNINA I UPIS</b><br><br>"
             f"<b>Katastarska općina (k.o.):</b> {format_text(ko)}<br>"
             f"<b>Broj zk. uloška:</b> {format_text(ulozak)}<br>"
@@ -265,11 +343,10 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
             f"BRISANJE ZALOŽNOG PRAVA<br>"
             f"upisanog pod Z-{format_text(z_broj)} u C listu (Teretovnici)<br>"
             f"u korist {format_text(vjerovnik_naziv)}</div><br>"
-            f"<i>Napomena: Otplata kredita ne dovodi do automatskog brisanja hipoteke iz zemljišne knjige. "
-            f"Vlasnik nekretnine mora proaktivno zatražiti brisanje podnošenjem prijedloga uz brisovno očitovanje.</i></div>"
+            f"<i>Napomena: {napomena}</i></div>"
             f"<div class='section-title'>POPIS PRILOGA:</div>"
             f"<div class='doc-body'><ol>"
-            f"<li>Brisovno očitovanje s ovjerenim potpisom {format_text(vjerovnik_naziv)} i clausulom intabulandi za brisanje</li>"
+            f"{prilog_specifican}"
             f"<li>Izvadak iz zemljišne knjige</li>"
             f"<li>Dokaz o uplati sudske pristojbe</li>"
             f"</ol></div>"

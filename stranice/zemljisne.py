@@ -7,6 +7,7 @@ from pomocne import (
     zaglavlje_sastavljaca,
     prikazi_dokument,
     odabir_suda,
+    unos_tocaka,
 )
 from generatori.zemljisne import (
     generiraj_tabularnu_doc,
@@ -80,8 +81,37 @@ def render_zemljisne():
         c1, c2 = st.columns(2)
         z_broj = c1.text_input("Z-broj")
         dat_uknj = c2.date_input("Datum uknjižbe")
-        razlog = st.text_area("Razlog nevaljanosti")
-        tuzenik_znao = st.radio("Je li tuženik znao?", ["DA", "NE"])
+        vrsta_nevaljanosti = st.selectbox(
+            "Vrsta nevaljanosti isprave",
+            [
+                "Ugovor je ništetan (čl. 322. ZOO)",
+                "Isprava je falsificirana / krivotvorena",
+                "Nedostaje valjana clausula intabulandi",
+                "Ugovor je sklopljen pod prisilom ili prijevarom",
+                "Ugovor je sklopljen od neovlaštene osobe",
+                "Ostalo (ručni unos)",
+            ],
+            key="bt_vrsta_neval",
+            help="Odaberite pravni temelj nevaljanosti isprave na kojoj se zasniva brisovna tužba.",
+        )
+        if vrsta_nevaljanosti == "Ostalo (ručni unos)":
+            razlog_tekst = st.text_area("Razlog nevaljanosti", key="bt_razlog_rucni")
+        else:
+            razlog_tekst = vrsta_nevaljanosti
+
+        st.markdown("**Obrazloženje** *(detaljniji opis činjenica)*")
+        razlog_tocke = unos_tocaka(
+            "Obrazloženje", "bt_razlozi",
+            placeholder="Npr. Prodavatelj nikada nije potpisao navedeni ugovor...",
+            min_tocaka=1, max_tocaka=10, height=80,
+        )
+        if razlog_tocke:
+            razlog = razlog_tekst + "\n\n" + "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(razlog_tocke))
+        else:
+            razlog = razlog_tekst
+
+        tuzenik_znao = st.radio("Je li tuženik znao za nevaljanost?", ["DA", "NE"],
+                                help="Utječe na tekst tužbe - savjesnost/nesavjesnost stjecatelja.")
         vps = st.number_input("VPS", 10000.0)
         sastav = st.number_input("Cijena sastava", 0.0)
         pdv = sastav * 0.25
@@ -188,17 +218,44 @@ def render_zemljisne():
         sud = odabir_suda("Sud", vrsta="opcinski", key="bh_sud")
         vlasnik, _, _ = unos_stranke("VLASNIK", "bh_")
         c1, c2, c3 = st.columns(3)
-        ko = c1.text_input("K.O.", key="bh_ko")
+        ko = c1.text_input("K.O.", key="bh_ko", help="Katastarska općina u kojoj se nalazi nekretnina.")
         ulozak = c2.text_input("Uložak", key="bh_ulozak")
         cestica = c3.text_input("Čestica", key="bh_cestica")
-        z_broj = st.text_input("Z-broj", key="bh_z_broj")
-        vjerovnik_naziv = st.text_input("Naziv vjerovnika", key="bh_vjerovnik")
+        z_broj = st.text_input("Z-broj upisa hipoteke", key="bh_z_broj",
+                               help="Z-broj pod kojim je hipoteka upisana u C list (Teretovnicu).")
+        vjerovnik_naziv = st.text_input("Naziv vjerovnika (hipotekarni)", key="bh_vjerovnik",
+                                        help="Banka, fizička ili pravna osoba u čiju korist je upisana hipoteka.")
+
+        razlog_brisanja = st.selectbox(
+            "Razlog / temelj brisanja",
+            [
+                ("otplata_kredita", "Otplata kredita (brisovno očitovanje)"),
+                ("sudska_odluka", "Pravomoćna sudska odluka"),
+                ("zastara", "Zastara tražbine"),
+                ("nagodba", "Nagodba (sudska ili izvansudska)"),
+                ("kompenzacija", "Kompenzacija (prijeboj)"),
+                ("zakonska_hipoteka_prestanak", "Prestanak zakonske hipoteke"),
+            ],
+            format_func=lambda x: x[1],
+            key="bh_razlog",
+            help="Odaberite pravni temelj na kojem se zasniva zahtjev za brisanje hipoteke.",
+        )
+
+        st.markdown("**Dodatno obrazloženje** *(opcionalno - razlozi zašto se traži brisanje)*")
+        dodatni_razlozi = unos_tocaka(
+            "Obrazloženje", "bh_razlozi",
+            placeholder="Npr. Kredit je otplaćen dana 01.01.2025., što potvrđuje brisovno očitovanje banke...",
+            min_tocaka=0, max_tocaka=5, height=80,
+        )
+
         mjesto = st.text_input("Mjesto", key="bh_mjesto")
         if st.button("Generiraj brisanje hipoteke", type="primary"):
             podaci = {
                 'ko': ko, 'ulozak': ulozak, 'cestica': cestica,
                 'z_broj': z_broj,
                 'vjerovnik_naziv': vjerovnik_naziv,
+                'razlog_brisanja': razlog_brisanja[0],
+                'dodatni_razlozi': dodatni_razlozi,
                 'mjesto': mjesto,
             }
             doc = generiraj_brisanje_hipoteke(sud, vlasnik, podaci)

@@ -2,7 +2,7 @@
 # STRANICA: Upravno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka
 from generatori.upravno import (
     generiraj_zalbu_zup,
     generiraj_tuzbu_zus,
@@ -44,12 +44,13 @@ def _render_zalba_zup():
     mjesto = st.text_input("Mjesto", "Zagreb", key="zup_mjesto")
 
     st.subheader("Sadržaj žalbe")
-    razlozi = st.text_area(
-        "Razlozi žalbe",
-        key="zup_razlozi",
-        height=200,
-        placeholder="Navedite razloge zbog kojih smatrate da je rješenje nezakonito ili nepravilno...",
+    st.caption("Navedite razloge žalbe - svaki razlog u zasebnu točku za preglednost.")
+    razlozi_tocke = unos_tocaka(
+        "Razlog žalbe", "zup_razlozi",
+        placeholder="Npr. Prvostupanjsko tijelo nije pravilno primijenilo čl. XX Zakona o...",
+        min_tocaka=1, max_tocaka=10, height=100,
     )
+    razlozi = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(razlozi_tocke)) if razlozi_tocke else ""
 
     zalbeni_prijedlog = st.radio(
         "Žalbeni prijedlog",
@@ -106,12 +107,13 @@ def _render_tuzba_zus():
     mjesto = st.text_input("Mjesto", "Zagreb", key="zus_mjesto")
 
     st.subheader("Sadržaj tužbe")
-    razlozi_nezakonitosti = st.text_area(
-        "Razlozi nezakonitosti",
-        key="zus_razlozi",
-        height=200,
-        placeholder="Navedite razloge zbog kojih smatrate da je rješenje nezakonito...",
+    st.caption("Navedite razloge nezakonitosti - svaki u zasebnu točku.")
+    razlozi_tocke = unos_tocaka(
+        "Razlog nezakonitosti", "zus_razlozi",
+        placeholder="Npr. Tuženik nije proveo postupak sukladno čl. XX ZUP-a...",
+        min_tocaka=1, max_tocaka=10, height=100,
     )
+    razlozi_nezakonitosti = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(razlozi_tocke)) if razlozi_tocke else ""
 
     tuzbeni_zahtjev = st.radio(
         "Tužbeni zahtjev",

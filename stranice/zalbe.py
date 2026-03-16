@@ -2,7 +2,7 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import prikazi_dokument, odabir_suda
+from pomocne import prikazi_dokument, odabir_suda, unos_tocaka
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
 
@@ -34,7 +34,7 @@ def render_zalbe():
             ["u cijelosti", "u dijelu odluke o trošku", "u dosuđujućem dijelu"],
             horizontal=True,
         )
-        st.markdown("**Žalbeni razlozi:**")
+        st.markdown("**Žalbeni razlozi (čl. 353. ZPP):**")
         r1 = st.checkbox("Bitna povreda odredaba parničnog postupka")
         r2 = st.checkbox("Pogrešno ili nepotpuno utvrđeno činjenično stanje")
         r3 = st.checkbox("Pogrešna primjena materijalnog prava")
@@ -49,7 +49,17 @@ def render_zalbe():
         ]
         if not razlozi_lista:
             razlozi_lista.append("(Navesti razloge)")
-        obrazlozenje = st.text_area("OBRAZLOŽENJE", height=300)
+
+        st.markdown("---")
+        st.markdown("**Obrazloženje žalbe**")
+        st.caption("Strukturirajte obrazloženje po točkama - svaka točka obrazlaže jedan žalbeni razlog ili navod.")
+
+        obrazlozenje_tocke = unos_tocaka(
+            "Obrazloženje", "zal_obrazlozenje",
+            placeholder="Npr. Prvostupanjski sud pogrešno je utvrdio činjenično stanje jer nije izveo dokaz saslušanjem svjedoka...",
+            min_tocaka=1, max_tocaka=15, height=120,
+        )
+        obrazlozenje = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(obrazlozenje_tocke)) if obrazlozenje_tocke else ""
 
     with st.expander("Troškovnik žalbe", expanded=False):
         vps_zalba = st.number_input("Vrijednost predmeta spora (VPS) za izračun pristojbe", min_value=0.0, key="zal_vps")

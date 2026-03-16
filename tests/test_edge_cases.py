@@ -226,6 +226,111 @@ class TestDocxWatermarkHeader:
 # KAMATE: Kalkulator obracun
 # =============================================================================
 
+# =============================================================================
+# FORMATIRAJ TOCKE HTML: Helper za strukturirane tocke
+# =============================================================================
+
+class TestFormatTockeHtml:
+    def test_numbered_list(self):
+        """formatiraj_tocke_html numbered mora vratiti ol/li HTML."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html(["Prva", "Druga"], "numbered")
+        assert "<ol>" in result
+        assert "<li>" in result
+        assert "Prva" in result
+        assert "Druga" in result
+
+    def test_bulleted_list(self):
+        """formatiraj_tocke_html bulleted mora vratiti ul/li HTML."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html(["A", "B"], "bulleted")
+        assert "<ul>" in result
+        assert "<li>" in result
+
+    def test_paragraphs(self):
+        """formatiraj_tocke_html paragraphs mora vratiti tekst bez liste."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html(["Jedan", "Dva"], "paragraphs")
+        assert "<ol>" not in result
+        assert "<ul>" not in result
+        assert "Jedan" in result
+
+    def test_empty_list(self):
+        """formatiraj_tocke_html s praznom listom mora vratiti prazan string."""
+        from pomocne import formatiraj_tocke_html
+        assert formatiraj_tocke_html([]) == ""
+        assert formatiraj_tocke_html(None) == ""
+
+    def test_escapes_html_in_points(self):
+        """formatiraj_tocke_html mora escapati HTML u tockama."""
+        from pomocne import formatiraj_tocke_html
+        result = formatiraj_tocke_html(["<script>alert('xss')</script>"], "numbered")
+        assert "<script>" not in result
+        assert "&lt;script&gt;" in result
+
+
+# =============================================================================
+# BRISANJE HIPOTEKE: Razlozi brisanja
+# =============================================================================
+
+class TestBrisanjeHipotekeRazlozi:
+    def test_otplata_kredita(self):
+        """Brisanje hipoteke s razlogom otplata_kredita mora imati brisovno ocitovanje."""
+        from generatori.zemljisne import generiraj_brisanje_hipoteke
+        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
+            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
+            'z_broj': '789', 'vjerovnik_naziv': 'Banka',
+            'razlog_brisanja': 'otplata_kredita', 'mjesto': 'Zagreb',
+        })
+        assert "brisovnog očitovanja" in doc
+        assert "Banka" in doc
+
+    def test_sudska_odluka(self):
+        """Brisanje hipoteke s razlogom sudska_odluka mora imati pravomoćnu presudu."""
+        from generatori.zemljisne import generiraj_brisanje_hipoteke
+        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
+            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
+            'z_broj': '789', 'vjerovnik_naziv': 'Banka',
+            'razlog_brisanja': 'sudska_odluka', 'mjesto': 'Zagreb',
+        })
+        assert "pravomoćne sudske odluke" in doc
+
+    def test_zastara(self):
+        """Brisanje hipoteke s razlogom zastara mora citirati ZV."""
+        from generatori.zemljisne import generiraj_brisanje_hipoteke
+        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
+            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
+            'z_broj': '789', 'vjerovnik_naziv': 'Banka',
+            'razlog_brisanja': 'zastara', 'mjesto': 'Zagreb',
+        })
+        assert "zastarjela" in doc
+        assert "336. ZV" in doc
+
+    def test_zakonska_hipoteka(self):
+        """Brisanje zakonske hipoteke mora imati specifican tekst."""
+        from generatori.zemljisne import generiraj_brisanje_hipoteke
+        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
+            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
+            'z_broj': '789', 'vjerovnik_naziv': 'Drzava',
+            'razlog_brisanja': 'zakonska_hipoteka_prestanak', 'mjesto': 'Zagreb',
+        })
+        assert "zakonske hipoteke" in doc
+        assert "ex lege" in doc
+
+    def test_dodatni_razlozi(self):
+        """Brisanje hipoteke s dodatnim razlozima mora ih ukljuciti."""
+        from generatori.zemljisne import generiraj_brisanje_hipoteke
+        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
+            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
+            'z_broj': '789', 'vjerovnik_naziv': 'Banka',
+            'razlog_brisanja': 'otplata_kredita',
+            'dodatni_razlozi': ['Kredit otplaćen 01.01.2025.', 'Banka izdala potvrdu.'],
+            'mjesto': 'Zagreb',
+        })
+        assert "Kredit otpla" in doc
+        assert "Banka izdala potvrdu" in doc
+
+
 class TestKamateKalkulator:
     def test_kamate_stope_importable(self):
         """Provjera da se kamate stope mogu importirati iz stranice."""

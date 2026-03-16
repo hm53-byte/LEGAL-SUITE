@@ -2,7 +2,7 @@
 # STRANICA: Ovrsno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka
 from pristojbe import pristojba_ovrha_jb, pristojba_ovrha_ovrsna_isprava
 from generatori.ovrhe import (
     generiraj_ovrhu_pro,
@@ -84,12 +84,41 @@ def _render_prigovor():
     jb = st.text_input("Javni bilježnik koji je donio rješenje", placeholder="Ivan Horvat, Zagreb",
                        help="Javni bilježnik koji je donio rješenje o ovrsi na temelju vjerodostojne isprave.")
 
-    razlozi = st.text_area(
-        "Razlozi prigovora",
-        placeholder="Navedite razloge zbog kojih osporavate rješenje o ovrsi...",
-        height=200,
-        help="Razlozi iz čl. 58. OZ: tražbina ne postoji, nije dospjela, isprava nije vjerodostojna, dug je plaćen itd."
+    st.subheader("Razlozi prigovora")
+    st.caption("Označite uobičajene razloge i/ili dodajte vlastite točke obrazloženja.")
+
+    # Uobicajeni razlozi prigovora (čl. 58. OZ)
+    r_ne_postoji = st.checkbox("Tražbina ne postoji (nikada nije ni nastala)", key="pr_r1")
+    r_nije_dospjela = st.checkbox("Tražbina nije dospjela", key="pr_r2")
+    r_placeno = st.checkbox("Tražbina je već podmirena (plaćena)", key="pr_r3")
+    r_zastara = st.checkbox("Tražbina je zastarjela", key="pr_r4")
+    r_isprava = st.checkbox("Isprava nije vjerodostojna", key="pr_r5")
+    r_kompenzacija = st.checkbox("Tražbina je prestala kompenzacijom (prijebojem)", key="pr_r6")
+
+    uobicajeni = []
+    if r_ne_postoji:
+        uobicajeni.append("Tražbina iz vjerodostojne isprave ne postoji - obveza između stranaka nikada nije nastala.")
+    if r_nije_dospjela:
+        uobicajeni.append("Tražbina nije dospjela - rok za ispunjenje obveze nije istekao.")
+    if r_placeno:
+        uobicajeni.append("Tražbina je već u cijelosti podmirena, što se dokazuje priloženim dokazima o uplati.")
+    if r_zastara:
+        uobicajeni.append("Tražbina je zastarjela sukladno odredbama Zakona o obveznim odnosima.")
+    if r_isprava:
+        uobicajeni.append("Isprava na temelju koje je doneseno rješenje o ovrsi nije vjerodostojna isprava u smislu čl. 279. Ovršnog zakona.")
+    if r_kompenzacija:
+        uobicajeni.append("Tražbina je prestala kompenzacijom (prijebojem) s protutražbinom Ovršenika.")
+
+    st.markdown("**Dodatno obrazloženje** *(detaljniji opis razloga)*")
+    dodatne_tocke = unos_tocaka(
+        "Obrazloženje", "pr_obrazlozenje",
+        placeholder="Detaljnije obrazložite razlog prigovora...",
+        min_tocaka=1, max_tocaka=10, height=100,
     )
+
+    # Spoji sve razloge u jedan tekst
+    svi_razlozi = uobicajeni + dodatne_tocke
+    razlozi = "\n\n".join(f"{i+1}. {r}" for i, r in enumerate(svi_razlozi)) if svi_razlozi else ""
 
     mjesto = st.text_input("Mjesto", "Zagreb")
 
@@ -294,10 +323,17 @@ def _render_obustava_ovrhe():
     ovrhovoditelj_tekst = col1.text_input("Ovrhovoditelj", key="ob_ovrhovoditelj")
     ovrsenik_tekst = col2.text_input("Ovršenik", key="ob_ovrsenik")
 
-    razlog = st.selectbox("Razlog obustave", ["namirenje", "nagodba", "ostalo"], key="ob_razlog")
+    razlog = st.selectbox("Razlog obustave", ["namirenje", "nagodba", "ostalo"], key="ob_razlog",
+                          help="Najčešći razlozi: tražbina je namirena, stranke su sklopile nagodbu, ili drugi razlog.")
     razlog_tekst = ""
     if razlog == "ostalo":
-        razlog_tekst = st.text_area("Obrazloženje razloga obustave", key="ob_razlog_tekst", height=150)
+        st.markdown("**Obrazloženje razloga obustave**")
+        razlog_tocke = unos_tocaka(
+            "Razlog", "ob_razlog_tocke",
+            placeholder="Navedite razlog zašto se traži obustava ovršnog postupka...",
+            min_tocaka=1, max_tocaka=5, height=80,
+        )
+        razlog_tekst = "\n\n".join(razlog_tocke) if razlog_tocke else ""
 
     ima_zabilježbu = st.checkbox("Postoji zabilježba ovrhe u zemljišnoj knjizi", key="ob_zabilježba")
 
@@ -330,9 +366,36 @@ def _render_privremena_mjera():
         prot, _, _ = unos_stranke("PROTIVNIK OSIGURANJA", "pm_prot")
 
     vrsta_trazbine = st.selectbox("Vrsta tražbine", ["novčana", "nenovčana"], key="pm_vrsta")
-    fumus_boni_iuris = st.text_area("Fumus boni iuris (vjerojatnost tražbine)", key="pm_fumus", height=150)
-    periculum_in_mora = st.text_area("Periculum in mora (opasnost)", key="pm_periculum", height=150)
-    mjera = st.selectbox("Predložena mjera", ["zabrana_raspolaganja", "blokada_racuna", "zabrana_otudenja", "ostalo"], key="pm_mjera")
+
+    st.markdown("**Fumus boni iuris** *(vjerojatnost postojanja tražbine)*")
+    st.caption("Navedite činjenice i dokaze koji čine vjerojatnim da tražbina postoji.")
+    fumus_tocke = unos_tocaka(
+        "Vjerojatnost tražbine", "pm_fumus",
+        placeholder="Npr. Predlagatelj je s Protivnikom sklopio Ugovor o kupoprodaji od 01.01.2025...",
+        min_tocaka=1, max_tocaka=10, height=100,
+    )
+    fumus_boni_iuris = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(fumus_tocke)) if fumus_tocke else ""
+
+    st.markdown("**Periculum in mora** *(opasnost za ostvarenje tražbine)*")
+    st.caption("Navedite zašto postoji opasnost da bez privremene mjere tražbina neće moći biti naplaćena.")
+    periculum_tocke = unos_tocaka(
+        "Opasnost", "pm_periculum",
+        placeholder="Npr. Protivnik osiguranja ubrzano rasprodaje svoju imovinu...",
+        min_tocaka=1, max_tocaka=10, height=100,
+    )
+    periculum_in_mora = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(periculum_tocke)) if periculum_tocke else ""
+
+    mjera = st.selectbox(
+        "Predložena mjera",
+        [
+            ("zabrana_raspolaganja", "Zabrana raspolaganja imovinom"),
+            ("blokada_racuna", "Blokada bankovnih računa"),
+            ("zabrana_otudenja", "Zabrana otuđenja i opterećenja nekretnina"),
+            ("ostalo", "Drugo (ručni unos)"),
+        ],
+        format_func=lambda x: x[1],
+        key="pm_mjera",
+    )
     poslovni_broj_parnice = st.text_input("Poslovni broj parnice (neobavezno)", key="pm_parnica")
 
     st.subheader("Troškovnik")
@@ -350,7 +413,7 @@ def _render_privremena_mjera():
                 'vrsta_trazbine': vrsta_trazbine,
                 'fumus_boni_iuris': fumus_boni_iuris,
                 'periculum_in_mora': periculum_in_mora,
-                'mjera': mjera,
+                'mjera': mjera[0],
                 'poslovni_broj_parnice': poslovni_broj_parnice,
                 'mjesto': mjesto,
             },

@@ -2,7 +2,7 @@
 # STRANICA: Stecajno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, odabir_suda
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, odabir_suda, unos_tocaka
 from generatori.stecajno import (
     generiraj_prijedlog_stecaj,
     generiraj_prijavu_trazbine,
@@ -52,10 +52,14 @@ def _render_prijedlog_stecaj():
     if razlog == "nesposobnost_za_placanje" and blokada_dana < 60:
         st.warning("Nesposobnost za placanje pretpostavlja se ako je duznik u blokadi vise od 60 dana neprekidno.")
 
-    st.subheader("Trazbina predlagatelja")
-    opis_trazbine = st.text_area(
-        "Opis trazbine", placeholder="Navedite osnov i opis trazbine...", height=150, key="ps_opis"
+    st.subheader("Tražbina predlagatelja")
+    st.caption("Navedite osnov i opis tražbine po točkama.")
+    opis_tocke = unos_tocaka(
+        "Osnov tražbine", "ps_opis",
+        placeholder="Npr. Temeljem Ugovora o isporuci robe br. 123/2024, dužnik duguje iznos od...",
+        min_tocaka=1, max_tocaka=10, height=80,
     )
+    opis_trazbine = "\n\n".join(f"{i+1}. {t}" for i, t in enumerate(opis_tocke)) if opis_tocke else ""
     iznos_trazbine = st.number_input("Iznos trazbine (EUR)", min_value=0.0, key="ps_iznos")
 
     predujam = st.number_input(
