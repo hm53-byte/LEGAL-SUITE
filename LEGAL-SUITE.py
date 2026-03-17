@@ -26,7 +26,11 @@ from stranice import (
 # Konfiguracija stranice
 st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout=PAGE_LAYOUT)
 
-# Primjena CSS stilova
+# Primjena CSS stilova + Google Fonts (link tag je non-blocking, za razliku od @import)
+st.markdown(
+    "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' rel='stylesheet'>",
+    unsafe_allow_html=True,
+)
 st.markdown(CSS_STILOVI, unsafe_allow_html=True)
 
 # =============================================================================

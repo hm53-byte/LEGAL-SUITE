@@ -33,8 +33,9 @@ CSS_STILOVI = f"""
 <style>
     /* ================================================================
        TIPOGRAFIJA - Inter, Major Third skala (1.250)
+       Napomena: @import Google Fonts uklonjen jer blokira renderiranje
+       na Streamlit Cloud. Koristimo system font stack kao fallback.
        ================================================================ */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     /* ================================================================
        LAYOUT - Ogranicen sirinom za citljivost
