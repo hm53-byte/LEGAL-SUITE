@@ -373,7 +373,17 @@ def docx_opcije():
 
 def prikazi_dokument(doc_html, naziv_datoteke, label_preuzmi="Preuzmi"):
     """Pomocna funkcija za prikaz dokumenta i download gumb (.docx format)."""
-    st.markdown(f"<div class='legal-doc'>{doc_html}</div>", unsafe_allow_html=True)
+    # Success banner
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#059669 0%,#047857 100%);color:white;"
+        "padding:1rem 1.5rem;border-radius:10px;margin:1rem 0;text-align:center;'>"
+        "<span style='font-size:1.3rem;font-weight:700;'>"
+        "\u2705 Dokument je spreman!</span><br>"
+        "<span style='font-size:0.85rem;opacity:0.9;'>"
+        "Pregledajte dokument ispod i preuzmite ga u DOCX formatu.</span>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
     # Generiraj .docx
     docx_naziv = naziv_datoteke.replace('.doc', '.docx') if naziv_datoteke.endswith('.doc') else naziv_datoteke
@@ -385,12 +395,17 @@ def prikazi_dokument(doc_html, naziv_datoteke, label_preuzmi="Preuzmi"):
     naslov = docx_naziv.replace('.docx', '').replace('_', ' ') if st.session_state.get("_docx_header") else None
 
     docx_bytes = pripremi_za_docx(doc_html, watermark=watermark_tekst, naslov_dokumenta=naslov)
+
+    # Prominentan download gumb PRIJE dokumenta
     st.download_button(
-        label_preuzmi,
+        f"\u2b07\ufe0f {label_preuzmi} ({docx_naziv})",
         docx_bytes,
         docx_naziv,
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     )
+
+    # Pregled dokumenta
+    st.markdown(f"<div class='legal-doc'>{doc_html}</div>", unsafe_allow_html=True)
 
 
 def odredi_nadlezni_sud(tip_stranke1, tip_stranke2, zadani_sud="OPĆINSKI GRAĐANSKI SUD U ZAGREBU"):

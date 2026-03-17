@@ -3,7 +3,7 @@
 # =============================================================================
 import streamlit as st
 from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
-from pomocne import docx_opcije
+from pomocne import docx_opcije  # backward compat, docx opcije sada su u prikazi_dokument
 from stranice import (
     render_ugovori,
     render_tuzbe,
@@ -34,6 +34,27 @@ st.markdown(CSS_STILOVI, unsafe_allow_html=True)
 # =============================================================================
 
 # Definicija navigacijskih modula po sekcijama
+_NAV_ICONS = {
+    "Početna": "\U0001f3e0",
+    "Ugovori i odluke": "\U0001f4dd",
+    "Opomena pred tužbu": "\u2709\ufe0f",
+    "Punomoć": "\U0001f91d",
+    "Obvezno pravo": "\U0001f4d1",
+    "Trgovačko pravo": "\U0001f3e2",
+    "Obiteljsko pravo": "\U0001f46a",
+    "Tužbe": "\u2696\ufe0f",
+    "Ovršno pravo": "\U0001f4b0",
+    "Žalbe": "\U0001f4e3",
+    "Zemljišne knjige": "\U0001f3d7\ufe0f",
+    "Upravno pravo": "\U0001f3db\ufe0f",
+    "Kazneno pravo": "\U0001f6a8",
+    "Stečajno pravo": "\U0001f4c9",
+    "Vodič": "\U0001f9ed",
+    "Kalkulator kamata": "\U0001f4ca",
+    "Kalkulator pristojbi": "\U0001f9ee",
+    "Zaštita potrošača": "\U0001f6e1\ufe0f",
+}
+
 _NAV_SECTIONS = {
     "Ugovori i dokumenti": [
         "Početna",
@@ -74,8 +95,10 @@ for section_name, modules in _NAV_SECTIONS.items():
     for module_name in modules:
         is_active = st.session_state._active_module == module_name
         btn_type = "primary" if is_active else "secondary"
+        icon = _NAV_ICONS.get(module_name, "")
+        label = f"{'▸ ' if is_active else ''}{icon} {module_name}"
         if st.sidebar.button(
-            f"{'▸ ' if is_active else '  '}{module_name}",
+            label,
             key=f"_sb_{module_name}",
             type=btn_type,
             use_container_width=True,
@@ -88,8 +111,8 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align: center; font-size: 0.7rem; color: #94A3B8 !important; "
     "font-family: Inter, sans-serif; padding: 0.5rem 0;'>"
-    "v3.0 &middot; 60+ dokumenata &middot; 15 područja<br>"
-    "LegalTech Suite Pro &copy; 2025"
+    "v3.1 &middot; 60+ dokumenata &middot; 15 područja<br>"
+    "LegalTech Suite Pro &copy; 2026"
     "</div>",
     unsafe_allow_html=True,
 )
@@ -124,6 +147,30 @@ def _render_pocetna():
     col2.metric("Pravnih područja", "15")
     col3.metric("Format", "DOCX")
     col4.metric("Sudova u bazi", "74")
+
+    # Brzi pristup - najčešće korišteno
+    st.markdown("")
+    st.markdown("##### \u26a1 Najčešće korišteno")
+    _brzi = [
+        ("\u2709\ufe0f Opomena pred tužbu", "Opomena pred tužbu"),
+        ("\u2696\ufe0f Tužba za naplatu", "Tužbe"),
+        ("\U0001f4b0 Ovrha (JB)", "Ovršno pravo"),
+        ("\U0001f4dd Ugovor o radu", "Ugovori i odluke"),
+        ("\U0001f4e3 Žalba na presudu", "Žalbe"),
+        ("\U0001f6e1\ufe0f Reklamacija", "Zaštita potrošača"),
+    ]
+    brzi_cols = st.columns(3)
+    for i, (label, modul) in enumerate(_brzi):
+        with brzi_cols[i % 3]:
+            if st.button(label, key=f"_brzi_{i}", type="primary", use_container_width=True):
+                _navigate_to(modul)
+                st.rerun()
+
+    st.markdown("")
+    # Ne znate što trebate?
+    if st.button("\U0001f9ed Ne znate što vam treba? Pokrenite vodič", key="_brzi_vodic", use_container_width=True):
+        _navigate_to("Vodič")
+        st.rerun()
 
     st.markdown("")
 
@@ -200,198 +247,259 @@ def _render_pocetna():
 
 def _render_vodic():
     """Interaktivni vodic koji pomaze korisnicima odabrati pravi dokument."""
-    st.header("Koji dokument mi treba?")
-    st.markdown("Odgovorite na pitanja i sustav će preporučiti pravne korake i dokumente.")
+    st.header("\U0001f9ed Koji dokument mi treba?")
+    st.markdown("Odaberite situaciju u kojoj se nalazite i dobit ćete preporuku korak po korak.")
 
+    # Definicija kategorija s ikonama, procjenom tezine i vremena
+    _VODIC_KATEGORIJE = [
+        {
+            "ikona": "\U0001f4b8", "naslov": "Netko mi duguje novac",
+            "tezina": "Srednje", "vrijeme": "~15 min",
+            "opis": "Opomena, ovrha ili tužba za naplatu duga",
+        },
+        {
+            "ikona": "\U0001f4e3", "naslov": "Ne slažem se s presudom",
+            "tezina": "Složeno", "vrijeme": "~20 min",
+            "opis": "Žalba na presudu — rok je 15 dana!",
+        },
+        {
+            "ikona": "\U0001f3db\ufe0f", "naslov": "Problem s upravnim tijelom",
+            "tezina": "Srednje", "vrijeme": "~15 min",
+            "opis": "Žalba na rješenje, tužba, pristup informacijama",
+        },
+        {
+            "ikona": "\U0001f4dd", "naslov": "Trebam ugovor",
+            "tezina": "Jednostavno", "vrijeme": "~10 min",
+            "opis": "Kupoprodaja, najam, rad, NDA, raskid...",
+        },
+        {
+            "ikona": "\U0001f6a8", "naslov": "Žrtva sam kaznenog djela",
+            "tezina": "Srednje", "vrijeme": "~15 min",
+            "opis": "Kaznena prijava ili privatna tužba",
+        },
+        {
+            "ikona": "\U0001f3d7\ufe0f", "naslov": "Problem s nekretninom",
+            "tezina": "Srednje", "vrijeme": "~10 min",
+            "opis": "Uknjižba, hipoteka, služnost, brisovna tužba",
+        },
+        {
+            "ikona": "\U0001f6e1\ufe0f", "naslov": "Problem kao potrošač",
+            "tezina": "Jednostavno", "vrijeme": "~5 min",
+            "opis": "Reklamacija, raskid online kupnje, inspekcija",
+        },
+        {
+            "ikona": "\U0001f3e2", "naslov": "Tvrtka / poslovni spor",
+            "tezina": "Srednje", "vrijeme": "~15 min",
+            "opis": "Društveni ugovor, prijenos udjela, NDA",
+        },
+        {
+            "ikona": "\U0001f46a", "naslov": "Obiteljski spor",
+            "tezina": "Srednje", "vrijeme": "~15 min",
+            "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
+        },
+        {
+            "ikona": "\U0001f4c9", "naslov": "Financijske poteškoće",
+            "tezina": "Složeno", "vrijeme": "~20 min",
+            "opis": "Osobni stečaj, prijedlog za stečaj, prijava tražbine",
+        },
+    ]
+
+    _TEZINA_BOJA = {
+        "Jednostavno": "#059669",
+        "Srednje": "#D97706",
+        "Složeno": "#DC2626",
+    }
+
+    # Prikazi kategorije kao kartice u 2 stupca
     st.markdown("")
+    cols = st.columns(2)
+    for i, kat in enumerate(_VODIC_KATEGORIJE):
+        boja = _TEZINA_BOJA.get(kat["tezina"], "#475569")
+        with cols[i % 2]:
+            st.markdown(
+                f"<div class='module-card' style='cursor:pointer;'>"
+                f"<h4>{kat['ikona']} {kat['naslov']}</h4>"
+                f"<p>{kat['opis']}</p>"
+                f"<p style='margin-top:0.4rem !important;'>"
+                f"<span style='background:{boja};color:white;padding:2px 8px;border-radius:4px;"
+                f"font-size:0.7rem;font-weight:600;'>{kat['tezina']}</span>"
+                f"&nbsp;&nbsp;<span style='color:#94A3B8;font-size:0.75rem;'>{kat['vrijeme']}</span>"
+                f"</p></div>",
+                unsafe_allow_html=True,
+            )
+            if st.button(
+                f"Pokaži korake \u2192",
+                key=f"_vk_{i}",
+                use_container_width=True,
+            ):
+                st.session_state._vodic_odabir = kat["naslov"]
+                st.rerun()
 
-    problem = st.selectbox(
-        "Kakav problem imate?",
-        [
-            "— Odaberite —",
-            "Netko mi duguje novac",
-            "Dobio/la sam presudu s kojom se ne slažem",
-            "Imam problem s upravnim tijelom (rješenje, dozvola...)",
-            "Želim sklopiti ili raskinuti ugovor",
-            "Žrtva sam kaznenog djela",
-            "Imam problem s nekretninom (zemljišne knjige)",
-            "Imam problem kao potrošač",
-            "Tvrtka / poslovni spor",
-            "Obiteljski spor (razvod, djeca, uzdržavanje)",
-            "Dužnik sam u financijskim poteškoćama",
-        ],
-        key="_vodic_problem",
-    )
-
-    if problem == "— Odaberite —":
-        st.info("Odaberite vrstu problema iz padajućeg izbornika iznad.")
+    # Detalji odabrane kategorije
+    odabir = st.session_state.get("_vodic_odabir", "")
+    if not odabir:
         return
 
     st.markdown("---")
 
-    if problem == "Netko mi duguje novac":
-        st.markdown("### Koraci za naplatu dugovanja")
-        st.markdown("""
-**1. korak: Opomena pred tužbu** *(preporučeno prvi)*
-- Pošaljite dužniku pisanu opomenu s rokom od 8 dana
-- Ovo je obavezni preduvjet za ovrhu na temelju vjerodostojne isprave
-- Sačuvajte dokaz slanja (povratnica, email)
-        """)
-        if st.button("Izradi opomenu →", key="_v_opomena", type="primary"):
+    if odabir == "Netko mi duguje novac":
+        st.markdown("### \U0001f4b8 Koraci za naplatu dugovanja")
+
+        st.markdown(
+            "<div style='background:#EFF3F8;padding:1rem 1.2rem;border-radius:8px;"
+            "border-left:4px solid #1E3A5F;margin-bottom:1rem;'>"
+            "<b>1. Opomena pred tužbu</b> (preporučeno prvo)<br>"
+            "Pošaljite dužniku pisanu opomenu s rokom od 8 dana. "
+            "Ovo je obavezni preduvjet za ovrhu. Sačuvajte dokaz slanja."
+            "</div>",
+            unsafe_allow_html=True,
+        )
+        if st.button("\u2709\ufe0f Izradi opomenu", key="_v_opomena", type="primary"):
             _navigate_to("Opomena pred tužbu")
             st.rerun()
 
-        st.markdown("""
-**2. korak: Ovrha ili Tužba** *(ako dužnik ne plati)*
-- **Ovrha (brži put)** — ako imate račun, ugovor ili drugu vjerodostojnu ispravu → prijedlog javnom bilježniku
-- **Tužba (sporni put)** — ako dužnik osporava dug → parnični postupak pred sudom
-        """)
+        st.markdown(
+            "<div style='background:#EFF3F8;padding:1rem 1.2rem;border-radius:8px;"
+            "border-left:4px solid #1E3A5F;margin-bottom:1rem;'>"
+            "<b>2. Ovrha ili Tužba</b> (ako dužnik ne plati)<br>"
+            "<b>Ovrha</b> \u2014 brži put ako imate račun/ugovor \u2192 javni bilježnik<br>"
+            "<b>Tužba</b> \u2014 ako dužnik osporava dug \u2192 sud"
+            "</div>",
+            unsafe_allow_html=True,
+        )
         c1, c2 = st.columns(2)
-        if c1.button("Izradi prijedlog za ovrhu →", key="_v_ovrha", type="primary", use_container_width=True):
+        if c1.button("\U0001f4b0 Ovrha", key="_v_ovrha", type="primary", use_container_width=True):
             _navigate_to("Ovršno pravo")
             st.rerun()
-        if c2.button("Izradi tužbu →", key="_v_tuzba", type="primary", use_container_width=True):
+        if c2.button("\u2696\ufe0f Tužba", key="_v_tuzba", type="primary", use_container_width=True):
             _navigate_to("Tužbe")
             st.rerun()
 
-        st.markdown("""
-**3. korak: Žalba / prigovor** *(ako ovrha bude osporena)*
-- Dužnik može podnijeti prigovor na rješenje o ovrsi
-- Vi odgovarate podneskom ili podnosite tužbu
-
-**Kalkulator kamata** — izračunajte zakonske zatezne kamate na dugovanje
-        """)
-        if st.button("Kalkulator kamata →", key="_v_kamate"):
+        st.markdown(
+            "<div style='background:#EFF3F8;padding:1rem 1.2rem;border-radius:8px;"
+            "border-left:4px solid #1E3A5F;margin-bottom:1rem;'>"
+            "<b>3. Kalkulator kamata</b><br>"
+            "Izračunajte zakonske zatezne kamate na dugovanje."
+            "</div>",
+            unsafe_allow_html=True,
+        )
+        if st.button("\U0001f4ca Kalkulator kamata", key="_v_kamate"):
             _navigate_to("Kalkulator kamata")
             st.rerun()
 
-        with st.expander("Važni rokovi"):
-            st.markdown("""
-- **Opći zastarni rok:** 5 godina (čl. 225. ZOO)
-- **Ugovori o prometu robe/usluga:** 3 godine (čl. 226. ZOO)
-- **Naknada štete:** 3 godine od saznanja / 5 godina objektivno (čl. 230. ZOO)
-- **Radnopravna potraživanja:** 5 godina (čl. 135. ZR)
-            """)
+        with st.expander("Važni zastarni rokovi"):
+            st.markdown(
+                "- **Opći rok:** 5 godina (čl. 225. ZOO)\n"
+                "- **Roba/usluge:** 3 godine (čl. 226. ZOO)\n"
+                "- **Naknada štete:** 3 god. od saznanja / 5 god. objektivno\n"
+                "- **Radnopravna:** 5 godina (čl. 135. ZR)"
+            )
 
-    elif problem == "Dobio/la sam presudu s kojom se ne slažem":
-        st.markdown("### Žalba na presudu")
-        st.warning("**Rok za žalbu je 15 dana** od dana dostave presude (čl. 348. ZPP). Hitno!")
-        st.markdown("""
-- Žalba se podnosi prvostupanjskom sudu, a o njoj odlučuje drugostupanjski
-- Žalbeni razlozi: bitna povreda postupka, pogrešno činjenično stanje, pogrešna primjena prava
-- Potrebno: poslovni broj presude, datum dostave, obrazloženje
-        """)
-        if st.button("Izradi žalbu →", key="_v_zalba", type="primary"):
+    elif odabir == "Ne slažem se s presudom":
+        st.markdown("### \U0001f4e3 Žalba na presudu")
+        st.error("**Rok za žalbu je 15 dana** od dana dostave presude (čl. 348. ZPP). Hitno!")
+        st.markdown(
+            "- Žalba se podnosi prvostupanjskom sudu, a o njoj odlučuje drugostupanjski\n"
+            "- Žalbeni razlozi: bitna povreda postupka, pogrešno činjenično stanje, pogrešna primjena prava\n"
+            "- Trebate: poslovni broj presude, datum dostave, obrazloženje"
+        )
+        if st.button("\U0001f4e3 Izradi žalbu", key="_v_zalba", type="primary"):
             _navigate_to("Žalbe")
             st.rerun()
 
-    elif problem == "Imam problem s upravnim tijelom (rješenje, dozvola...)":
-        st.markdown("### Upravno pravo — žalba i tužba")
-        st.markdown("""
-**Žalba na rješenje (ZUP)** — rok **15 dana** od dostave
-- Podnosi se drugostupanjskom tijelu putem prvostupanjskog
-
-**Tužba upravnom sudu (ZUS)** — rok **30 dana** od dostave drugostupanjskog rješenja
-- Kada je iscrpljena žalba ili žalba nije dopuštena
-
-**Zahtjev za pristup informacijama (ZPPI)**
-- Tijelo mora odgovoriti u **15 dana**
-        """)
-        if st.button("Upravno pravo →", key="_v_upravno", type="primary"):
+    elif odabir == "Problem s upravnim tijelom":
+        st.markdown("### \U0001f3db\ufe0f Upravno pravo")
+        st.markdown(
+            "**Žalba na rješenje (ZUP)** \u2014 rok **15 dana** od dostave\n\n"
+            "**Tužba upravnom sudu (ZUS)** \u2014 rok **30 dana** od dostave drugostupanjskog rješenja\n\n"
+            "**Pristup informacijama (ZPPI)** \u2014 tijelo mora odgovoriti u **15 dana**"
+        )
+        if st.button("\U0001f3db\ufe0f Upravno pravo", key="_v_upravno", type="primary"):
             _navigate_to("Upravno pravo")
             st.rerun()
 
-    elif problem == "Želim sklopiti ili raskinuti ugovor":
-        st.markdown("### Ugovori")
-        st.markdown("""
-**Sklapanje ugovora** — 10 tipova ugovora (kupoprodaja, rad, najam, NDA...)
-**Raskid ugovora** — sporazumni raskid, otkaz, aneks
-**Obvezno pravo** — darovanje, cesija, kompenzacija, jamstvo, licencija...
-        """)
+    elif odabir == "Trebam ugovor":
+        st.markdown("### \U0001f4dd Ugovori")
+        st.markdown(
+            "**Građansko pravo** \u2014 kupoprodaja, najam, djelo, zajam\n\n"
+            "**Radno pravo** \u2014 ugovor o radu, otkaz, aneks, rad na daljinu\n\n"
+            "**Obvezno pravo** \u2014 darovanje, cesija, kompenzacija, jamstvo\n\n"
+            "**Slobodna forma** \u2014 ugovor po mjeri s bibliotekom klauzula"
+        )
         c1, c2 = st.columns(2)
-        if c1.button("Ugovori →", key="_v_ugovori", type="primary", use_container_width=True):
+        if c1.button("\U0001f4dd Ugovori", key="_v_ugovori", type="primary", use_container_width=True):
             _navigate_to("Ugovori i odluke")
             st.rerun()
-        if c2.button("Obvezno pravo →", key="_v_obvezno", type="primary", use_container_width=True):
+        if c2.button("\U0001f4d1 Obvezno pravo", key="_v_obvezno", type="primary", use_container_width=True):
             _navigate_to("Obvezno pravo")
             st.rerun()
 
-    elif problem == "Žrtva sam kaznenog djela":
-        st.markdown("### Kazneno pravo")
-        st.markdown("""
-**Kaznena prijava** — podnosi se Državnom odvjetništvu
-- Za teža kaznena djela (krađa, prijevara, tjelesna ozljeda...)
-- Nema roka za podnošenje, ali što prije to bolje
-
-**Privatna tužba** — za kaznena djela koja se gone po privatnoj tužbi
-- Rok: **3 mjeseca** od saznanja za djelo i počinitelja (čl. 60. KZ)
-- Npr. laka tjelesna ozljeda, kleveta, uvreda
-        """)
-        if st.button("Kazneno pravo →", key="_v_kazneno", type="primary"):
+    elif odabir == "Žrtva sam kaznenog djela":
+        st.markdown("### \U0001f6a8 Kazneno pravo")
+        st.markdown(
+            "**Kaznena prijava** \u2014 Državnom odvjetništvu, nema strogog roka\n\n"
+            "**Privatna tužba** \u2014 rok **3 mjeseca** od saznanja (čl. 60. KZ)\n"
+            "Npr. laka tjelesna ozljeda, kleveta, uvreda"
+        )
+        if st.button("\U0001f6a8 Kazneno pravo", key="_v_kazneno", type="primary"):
             _navigate_to("Kazneno pravo")
             st.rerun()
 
-    elif problem == "Imam problem s nekretninom (zemljišne knjige)":
-        st.markdown("### Zemljišne knjige")
-        st.markdown("""
-**Uknjižba prava vlasništva** — tabularna isprava za upis u ZK
-**Hipoteka** — upis/brisanje hipoteke
-**Služnost** — osnivanje prava služnosti
-**Zabilježba** — spora, ovrhe, prvokupa...
-**Brisovna tužba** — pobijanje nevaljanog ZK upisa
-        """)
-        if st.button("Zemljišne knjige →", key="_v_zk", type="primary"):
+    elif odabir == "Problem s nekretninom":
+        st.markdown("### \U0001f3d7\ufe0f Zemljišne knjige")
+        st.markdown(
+            "**Uknjižba vlasništva** \u2014 tabularna isprava za upis\n\n"
+            "**Hipoteka** \u2014 upis/brisanje\n\n"
+            "**Služnost** \u2014 osnivanje prava služnosti\n\n"
+            "**Brisovna tužba** \u2014 pobijanje nevaljanog upisa"
+        )
+        if st.button("\U0001f3d7\ufe0f Zemljišne knjige", key="_v_zk", type="primary"):
             _navigate_to("Zemljišne knjige")
             st.rerun()
 
-    elif problem == "Imam problem kao potrošač":
-        st.markdown("### Zaštita potrošača")
-        st.markdown("""
-**Reklamacija** — pisani prigovor trgovcu (rok za odgovor: **15 dana**)
-**Jednostrani raskid** — za online kupnju imate **14 dana** bez razloga
-**Prijava inspekciji** — ako trgovac ne poštuje prava potrošača
-        """)
-        if st.button("Zaštita potrošača →", key="_v_potrosaci", type="primary"):
+    elif odabir == "Problem kao potrošač":
+        st.markdown("### \U0001f6e1\ufe0f Zaštita potrošača")
+        st.markdown(
+            "**Reklamacija** \u2014 pisani prigovor trgovcu (rok odgovora: **15 dana**)\n\n"
+            "**Jednostrani raskid** \u2014 online kupnja, **14 dana** bez razloga\n\n"
+            "**Prijava inspekciji** \u2014 kad trgovac ne poštuje prava"
+        )
+        if st.button("\U0001f6e1\ufe0f Zaštita potrošača", key="_v_potrosaci", type="primary"):
             _navigate_to("Zaštita potrošača")
             st.rerun()
 
-    elif problem == "Tvrtka / poslovni spor":
-        st.markdown("### Trgovačko pravo")
-        st.markdown("""
-**Društveni ugovor** — za osnivanje d.o.o.
-**Prijenos udjela** — prodaja/darovanje poslovnog udjela
-**Odluka skupštine** — formalne odluke članova društva
-**NDA** — ugovor o povjerljivosti
-**Zapisnik skupštine** — formalni zapisnik sjednice
-        """)
-        if st.button("Trgovačko pravo →", key="_v_trgovacko", type="primary"):
+    elif odabir == "Tvrtka / poslovni spor":
+        st.markdown("### \U0001f3e2 Trgovačko pravo")
+        st.markdown(
+            "**Društveni ugovor** \u2014 osnivanje d.o.o.\n\n"
+            "**Prijenos udjela** \u2014 prodaja/darovanje udjela\n\n"
+            "**Odluka/Zapisnik skupštine** \u2014 formalne odluke\n\n"
+            "**NDA** \u2014 ugovor o povjerljivosti"
+        )
+        if st.button("\U0001f3e2 Trgovačko pravo", key="_v_trgovacko", type="primary"):
             _navigate_to("Trgovačko pravo")
             st.rerun()
 
-    elif problem == "Obiteljski spor (razvod, djeca, uzdržavanje)":
-        st.markdown("### Obiteljsko pravo")
-        st.markdown("""
-**Sporazumni razvod** — kad se oba supružnika slažu
-**Tužba za razvod** — kad nema sporazuma
-**Bračni ugovor** — reguliranje imovine
-**Roditeljska skrb** — sporazum o djeci
-**Uzdržavanje** — ugovor o uzdržavanju
-        """)
-        if st.button("Obiteljsko pravo →", key="_v_obiteljsko", type="primary"):
+    elif odabir == "Obiteljski spor":
+        st.markdown("### \U0001f46a Obiteljsko pravo")
+        st.markdown(
+            "**Sporazumni razvod** \u2014 kad se oba supružnika slažu\n\n"
+            "**Tužba za razvod** \u2014 kad nema sporazuma\n\n"
+            "**Bračni ugovor** \u2014 reguliranje imovine\n\n"
+            "**Roditeljska skrb / Uzdržavanje**"
+        )
+        if st.button("\U0001f46a Obiteljsko pravo", key="_v_obiteljsko", type="primary"):
             _navigate_to("Obiteljsko pravo")
             st.rerun()
 
-    elif problem == "Dužnik sam u financijskim poteškoćama":
-        st.markdown("### Stečajno pravo")
-        st.markdown("""
-**Stečaj potrošača (osobni stečaj)** — za fizičke osobe
-- Uvjeti: dug ≥ 3.981,68 EUR, blokada ≥ 90 dana
-- Plan otplate do 5 godina
-
-**Prijedlog za stečaj** — za tvrtke u blokadi > 60 dana
-**Prijava tražbine** — ako ste vjerovnik u stečaju
-        """)
-        if st.button("Stečajno pravo →", key="_v_stecajno", type="primary"):
+    elif odabir == "Financijske poteškoće":
+        st.markdown("### \U0001f4c9 Stečajno pravo")
+        st.markdown(
+            "**Osobni stečaj** \u2014 dug \u2265 3.981,68 EUR, blokada \u2265 90 dana\n\n"
+            "**Prijedlog za stečaj** \u2014 tvrtke u blokadi > 60 dana\n\n"
+            "**Prijava tražbine** \u2014 ako ste vjerovnik u stečaju"
+        )
+        if st.button("\U0001f4c9 Stečajno pravo", key="_v_stecajno", type="primary"):
             _navigate_to("Stečajno pravo")
             st.rerun()
 
@@ -402,7 +510,7 @@ def _render_vodic():
 
 active = st.session_state._active_module
 
-# DOCX opcije - prikazuju se na svim stranicama osim pocetne, vodica i kalkulatora
+# DOCX opcije - suptilan expander za napredne korisnike
 _NO_DOCX_OPTS = {"Početna", "Vodič", "Kalkulator kamata", "Kalkulator pristojbi"}
 if active not in _NO_DOCX_OPTS:
     docx_opcije()

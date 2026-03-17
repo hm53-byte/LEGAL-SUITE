@@ -78,10 +78,11 @@ def render_zalbe():
             obrazlozenje = ""
 
     with st.expander("Troškovnik žalbe", expanded=False):
-        vps_zalba = st.number_input("Vrijednost predmeta spora (VPS) za izračun pristojbe", min_value=0.0, key="zal_vps")
+        vps_zalba = st.number_input("Vrijednost predmeta spora - VPS (EUR)", min_value=0.0, key="zal_vps",
+                                     help="Isti iznos kao u prvostupanjskom postupku. Služi za izračun pristojbe za žalbu.")
         predlozena = pristojba_zalba(vps_zalba) if vps_zalba > 0 else 0.0
         if predlozena > 0:
-            st.info(f"Pristojba za žalbu (2x tužba): **{predlozena:,.2f} EUR** (Tbr. 3 Tarife)")
+            st.info(f"Pristojba za žalbu (dvostruka pristojba za tužbu): **{predlozena:,.2f} EUR**")
 
         troskovnik_data = {'stavka': 0.0, 'pdv': 0.0, 'pristojba': 0.0}
         if st.checkbox("Potražujem trošak", value=True):

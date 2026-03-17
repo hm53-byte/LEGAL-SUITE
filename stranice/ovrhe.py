@@ -86,10 +86,12 @@ def _render_prijedlog_ovrhe():
     st.subheader("Troškovnik")
     predlozena_pristojba = pristojba_ovrha_jb(glavnica) if glavnica > 0 else 0.0
     if predlozena_pristojba > 0:
-        st.info(f"Pristojba za ovrhu JB (½ tužbe, min 6,64): **{predlozena_pristojba:,.2f} EUR** (Tbr. 10)")
+        st.info(f"Pristojba za ovrhu kod javnog bilježnika (polovica pristojbe za tužbu, min 6,64 EUR): **{predlozena_pristojba:,.2f} EUR**")
     ct1, ct2, ct3 = st.columns(3)
-    trosak_odvjetnik = ct1.number_input("Odvjetnik", 0.0)
-    trosak_jb_nagrada = ct2.number_input("JB Nagrada", 0.0)
+    trosak_odvjetnik = ct1.number_input("Odvjetnička nagrada (EUR)", 0.0,
+                                         help="Nagrada odvjetniku za sastav prijedloga za ovrhu.")
+    trosak_jb_nagrada = ct2.number_input("Nagrada javnom bilježniku (EUR)", 0.0,
+                                          help="Nagrada javnom bilježniku za provođenje ovrhe.")
     trosak_pdv = (trosak_odvjetnik + trosak_jb_nagrada) * 0.25 if ct3.checkbox("Obračunaj PDV?") else 0.0
 
     if st.button("Generiraj ovršni prijedlog", type="primary"):

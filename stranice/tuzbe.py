@@ -55,8 +55,8 @@ def render_tuzbe():
     st.subheader("Predmet spora")
     vrsta_suda = "trgovacki" if (tip1 == "Pravna" and tip2 == "Pravna") else "opcinski"
     sud = odabir_suda("Naslovni sud", vrsta=vrsta_suda, key="tuzbe_sud")
-    vps = st.number_input("Vrijednost spora (Glavnica duga)", min_value=0.0,
-                          help="Iznos u EUR koji se potražuje. Određuje nadležnost suda i visinu pristojbe.")
+    vps = st.number_input("Vrijednost predmeta spora - VPS (EUR)", min_value=0.0,
+                          help="Iznos u EUR koji tražite od tuženika. Na temelju VPS-a izračunava se sudska pristojba i određuje nadležnost suda.")
     datum_dospijeca = st.date_input("Datum dospijeća (Od kada teku kamate?)",
                                     help="Datum od kojeg se obračunavaju zakonske zatezne kamate (čl. 29. ZOO).")
     provjeri_zastaru(datum_dospijeca, rok_godina=5, opis_roka="opći zastarni rok (čl. 225. ZOO)")
@@ -93,9 +93,11 @@ def render_tuzbe():
         st.info(f"Izracunata sudska pristojba za VPS {vps:,.2f} EUR: **{predlozena_pristojba:,.2f} EUR** (Tbr. 1 Tarife)")
 
     col_tr1, col_tr2, col_tr3 = st.columns(3)
-    trosak_sastav = col_tr1.number_input("Sastav tužbe (EUR)", 0.0)
+    trosak_sastav = col_tr1.number_input("Sastav tužbe (EUR)", 0.0,
+                                        help="Odvjetnička nagrada za sastav tužbe prema Tarifi o nagradama.")
     trosak_pdv = trosak_sastav * 0.25 if col_tr2.checkbox("Dodaj PDV (25%)", value=True) else 0.0
-    trosak_pristojba = col_tr3.number_input("Sudska pristojba (EUR)", value=predlozena_pristojba)
+    trosak_pristojba = col_tr3.number_input("Sudska pristojba (EUR)", value=predlozena_pristojba,
+                                             help="Pristojba koju plaćate sudu. Automatski izračunata prema VPS-u.")
 
     if st.button("Generiraj tužbu", type="primary"):
         if vps <= 0:

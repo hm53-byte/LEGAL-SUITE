@@ -2,7 +2,7 @@
 # STRANICA: Opomena pred tuzbu / ovrhu
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, napuni_primjerom
 from generatori.opomene import generiraj_opomenu
 
 
@@ -10,6 +10,8 @@ def render_opomene():
     st.header("Opomena pred tužbu / ovrhu")
 
     zastupanje = zaglavlje_sastavljaca()
+
+    napuni_primjerom('opomena', 'op')
 
     vrsta = st.radio(
         "Vrsta opomene:",

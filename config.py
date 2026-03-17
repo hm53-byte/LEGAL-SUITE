@@ -54,8 +54,14 @@ CSS_STILOVI = f"""
         border-right: 1px solid rgba(30, 58, 95, 0.3);
     }}
 
-    /* Sidebar tekst - svijetlo sivi na tamnoj pozadini */
-    [data-testid="stSidebar"] * {{
+    /* Sidebar tekst - svijetlo sivi na tamnoj pozadini
+       VAZNO: NE koristimo wildcard * jer nadjacava button text na Cloudu.
+       Ciljamo specificne elemente umjesto toga. */
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stMarkdown,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
         color: {_SIDEBAR_TEXT} !important;
     }}
 
@@ -69,9 +75,13 @@ CSS_STILOVI = f"""
         padding-bottom: 0.2rem;
     }}
 
-    /* Sidebar gumbi - navigacija */
-    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] {{
+    /* Sidebar gumbi - navigacija
+       Visestruki selektori za kompatibilnost sa svim Streamlit verzijama */
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"],
+    [data-testid="stSidebar"] .stButton button[kind="secondary"],
+    [data-testid="stSidebar"] .stButton > button:not([kind="primary"]) {{
         background-color: transparent !important;
+        background: transparent !important;
         border: 1px solid rgba(203, 213, 225, 0.15) !important;
         color: {_SIDEBAR_TEXT} !important;
         font-family: 'Inter', sans-serif !important;
@@ -81,12 +91,16 @@ CSS_STILOVI = f"""
         border-radius: 6px !important;
         transition: all 0.15s ease !important;
     }}
-    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover {{
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover,
+    [data-testid="stSidebar"] .stButton button[kind="secondary"]:hover,
+    [data-testid="stSidebar"] .stButton > button:not([kind="primary"]):hover {{
         background-color: rgba(255, 255, 255, 0.08) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
         border-color: rgba(203, 213, 225, 0.3) !important;
         color: #FFFFFF !important;
     }}
-    [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] {{
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"],
+    [data-testid="stSidebar"] .stButton button[kind="primary"] {{
         background: linear-gradient(135deg, {_BRAND} 0%, {_BRAND_LIGHT} 100%) !important;
         color: #FFFFFF !important;
         border: none !important;
@@ -95,6 +109,14 @@ CSS_STILOVI = f"""
         font-weight: 600 !important;
         padding: 0.45rem 0.75rem !important;
         border-radius: 6px !important;
+    }}
+    /* Fallback: SVE sidebar buttons moraju imati vidljiv tekst */
+    [data-testid="stSidebar"] button {{
+        color: {_SIDEBAR_TEXT} !important;
+    }}
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] p,
+    [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] span {{
+        color: #FFFFFF !important;
     }}
 
     /* Sidebar markdown */

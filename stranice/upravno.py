@@ -2,7 +2,7 @@
 # STRANICA: Upravno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, napuni_primjerom
 from generatori.upravno import (
     generiraj_zalbu_zup,
     generiraj_tuzbu_zus,
@@ -13,6 +13,8 @@ from generatori.upravno import (
 
 def _render_zalba_zup():
     """Žalba u upravnom postupku (ZUP)."""
+    napuni_primjerom('zalba_zup', 'zup')
+
     st.info(
         "Rok za žalbu u upravnom postupku je **15 dana** od dana dostave "
         "prvostupanjskog rješenja (čl. 109. ZUP-a)."
