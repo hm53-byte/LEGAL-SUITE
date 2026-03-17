@@ -2,8 +2,9 @@
 # LegalTech Suite Pro - Glavni ulaz (entry point)
 # =============================================================================
 import streamlit as st
+import streamlit.components.v1 as components
 from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
-from pomocne import docx_opcije  # backward compat, docx opcije sada su u prikazi_dokument
+from pomocne import docx_opcije
 from stranice import (
     render_ugovori,
     render_tuzbe,
@@ -26,7 +27,7 @@ from stranice import (
 # Konfiguracija stranice
 st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout=PAGE_LAYOUT)
 
-# Primjena CSS stilova + Google Fonts (link tag je non-blocking, za razliku od @import)
+# Primjena CSS stilova + Google Fonts (link tag je non-blocking)
 st.markdown(
     "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' rel='stylesheet'>",
     unsafe_allow_html=True,
@@ -34,10 +35,9 @@ st.markdown(
 st.markdown(CSS_STILOVI, unsafe_allow_html=True)
 
 # =============================================================================
-# SIDEBAR NAVIGACIJA - Gumbi umjesto radio (rjesava problem ponovnog klika)
+# SIDEBAR NAVIGACIJA
 # =============================================================================
 
-# Definicija navigacijskih modula po sekcijama
 _NAV_ICONS = {
     "Početna": "\U0001f3e0",
     "Ugovori i odluke": "\U0001f4dd",
@@ -53,7 +53,6 @@ _NAV_ICONS = {
     "Upravno pravo": "\U0001f3db\ufe0f",
     "Kazneno pravo": "\U0001f6a8",
     "Stečajno pravo": "\U0001f4c9",
-    "Vodič": "\U0001f9ed",
     "Kalkulator kamata": "\U0001f4ca",
     "Kalkulator pristojbi": "\U0001f9ee",
     "Zaštita potrošača": "\U0001f6e1\ufe0f",
@@ -79,14 +78,12 @@ _NAV_SECTIONS = {
         "Stečajno pravo",
     ],
     "Alati i ostalo": [
-        "Vodič",
         "Kalkulator kamata",
         "Kalkulator pristojbi",
         "Zaštita potrošača",
     ],
 }
 
-# Inicijaliziraj aktivni modul
 if "_active_module" not in st.session_state:
     st.session_state._active_module = "Početna"
 
@@ -110,12 +107,11 @@ for section_name, modules in _NAV_SECTIONS.items():
             st.session_state._active_module = module_name
             st.rerun()
 
-# Footer u sidebaru
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align: center; font-size: 0.7rem; color: #94A3B8 !important; "
     "font-family: Inter, sans-serif; padding: 0.5rem 0;'>"
-    "v3.1 &middot; 60+ dokumenata &middot; 15 područja<br>"
+    "v3.2 &middot; 60+ dokumenata &middot; 15 područja<br>"
     "LegalTech Suite Pro &copy; 2026"
     "</div>",
     unsafe_allow_html=True,
@@ -123,227 +119,103 @@ st.sidebar.markdown(
 
 
 # =============================================================================
-# POCETNA STRANICA
+# SCROLL-TO-TOP - Svaka promjena modula scrolla na vrh
 # =============================================================================
+
+def _scroll_to_top():
+    """Injektira JS koji scrolla Streamlit main container na vrh."""
+    components.html(
+        "<script>parent.document.querySelector('section.main').scrollTo(0, 0);</script>",
+        height=0,
+    )
+
+
+def _scroll_to_anchor(anchor_id):
+    """Injektira JS koji scrolla do specificnog elementa."""
+    components.html(
+        f"<script>"
+        f"var el = parent.document.getElementById('{anchor_id}');"
+        f"if (el) el.scrollIntoView({{behavior: 'smooth', block: 'start'}});"
+        f"</script>",
+        height=0,
+    )
+
 
 def _navigate_to(module_name):
     """Navigira na zadani modul."""
     st.session_state._active_module = module_name
 
 
-def _render_pocetna():
-    """Informativna pocetna stranica."""
-
-    # Hero sekcija
-    st.markdown(
-        "<div class='hero-section'>"
-        "<h2>LegalTech Suite Pro</h2>"
-        "<p>Profesionalni generator pravnih dokumenata u DOCX formatu. "
-        "60+ dokumenata iz 15 pravnih područja, baza 74 hrvatska suda, "
-        "kalkulator kamata i pristojbi.</p>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
-
-    # Metrike
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Dokumenata", "60+")
-    col2.metric("Pravnih područja", "15")
-    col3.metric("Format", "DOCX")
-    col4.metric("Sudova u bazi", "74")
-
-    # Brzi pristup - najčešće korišteno
-    st.markdown("")
-    st.markdown("##### \u26a1 Najčešće korišteno")
-    _brzi = [
-        ("\u2709\ufe0f Opomena pred tužbu", "Opomena pred tužbu"),
-        ("\u2696\ufe0f Tužba za naplatu", "Tužbe"),
-        ("\U0001f4b0 Ovrha (JB)", "Ovršno pravo"),
-        ("\U0001f4dd Ugovor o radu", "Ugovori i odluke"),
-        ("\U0001f4e3 Žalba na presudu", "Žalbe"),
-        ("\U0001f6e1\ufe0f Reklamacija", "Zaštita potrošača"),
-    ]
-    brzi_cols = st.columns(3)
-    for i, (label, modul) in enumerate(_brzi):
-        with brzi_cols[i % 3]:
-            if st.button(label, key=f"_brzi_{i}", type="primary", use_container_width=True):
-                _navigate_to(modul)
-                st.rerun()
-
-    st.markdown("")
-    # Ne znate što trebate?
-    if st.button("\U0001f9ed Ne znate što vam treba? Pokrenite vodič", key="_brzi_vodic", use_container_width=True):
-        _navigate_to("Vodič")
-        st.rerun()
-
-    st.markdown("")
-
-    # Definicija modula za kartice
-    _ugovori_moduli = [
-        ("Ugovori i odluke", "10 tipova — radno pravo, otkaz, aneks, NDA, potvrda..."),
-        ("Obvezno pravo", "8 tipova — darovanje, cesija, kompenzacija, jamstvo..."),
-        ("Trgovačko pravo", "5 tipova — društveni ugovor, prijenos udjela, NDA..."),
-        ("Obiteljsko pravo", "5 tipova — razvod, bračni ugovor, skrb, uzdržavanje..."),
-        ("Opomena pred tužbu", "Opomena pred tužbu ili ovrhu s rokom za plaćanje"),
-        ("Punomoć", "Opća i posebna punomoć za zastupanje"),
-    ]
-    _sudski_moduli = [
-        ("Tužbe", "Parnični postupak, brisovna tužba, auto-pristojba"),
-        ("Ovršno pravo", "7 tipova — ovrha JB, prigovor, nekretnina, plaća..."),
-        ("Žalbe", "Žalba na presudu s obrazloženjem i troškovnikom"),
-        ("Zemljišne knjige", "7 tipova — uknjižba, hipoteka, služnost, brisanje..."),
-        ("Upravno pravo", "Žalba ZUP, tužba ZUS, pristup informacijama..."),
-        ("Kazneno pravo", "Kaznena prijava, privatna tužba, žalba na presudu"),
-        ("Stečajno pravo", "Prijedlog za stečaj, prijava tražbine, osobni stečaj"),
-    ]
-
-    # Dva stupca s gumbima
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("##### Ugovori i dokumenti")
-        for naziv, opis in _ugovori_moduli:
-            with st.container(border=True):
-                st.markdown(f"**{naziv}**")
-                st.caption(opis)
-                if st.button("Otvori →", key=f"_nav_{naziv}", type="primary", use_container_width=True):
-                    _navigate_to(naziv)
-                    st.rerun()
-
-    with col2:
-        st.markdown("##### Sudski postupci")
-        for naziv, opis in _sudski_moduli:
-            with st.container(border=True):
-                st.markdown(f"**{naziv}**")
-                st.caption(opis)
-                if st.button("Otvori →", key=f"_nav_{naziv}", type="primary", use_container_width=True):
-                    _navigate_to(naziv)
-                    st.rerun()
-
-    st.markdown("")
-
-    # Alati
-    st.markdown("##### Alati")
-    col1, col2, col3 = st.columns(3)
-    _alati = [
-        ("Kalkulator kamata", "Zakonske zatezne kamate prema HNB stopama. DOCX export."),
-        ("Kalkulator pristojbi", "Sudske pristojbe prema VPS-u, žalbe, ovrhe, ZK."),
-        ("Zaštita potrošača", "Reklamacija, jednostrani raskid, prijava inspekciji."),
-    ]
-    for col, (naziv, opis) in zip([col1, col2, col3], _alati):
-        with col:
-            with st.container(border=True):
-                st.markdown(f"**{naziv}**")
-                st.caption(opis)
-                if st.button("Otvori →", key=f"_nav_{naziv}", type="primary", use_container_width=True):
-                    _navigate_to(naziv)
-                    st.rerun()
-
-    st.caption(
-        "Svi dokumenti generiraju se u DOCX formatu (Microsoft Word) "
-        "s hrvatskim pravnim formatiranjem — Times New Roman 12pt, margine 2.5cm."
-    )
-
-
 # =============================================================================
-# VODIČ - "Koji dokument mi treba?"
+# POCETNA STRANICA (s integriranim vodicem)
 # =============================================================================
 
-def _render_vodic():
-    """Interaktivni vodic koji pomaze korisnicima odabrati pravi dokument."""
-    st.header("\U0001f9ed Koji dokument mi treba?")
-    st.markdown("Odaberite situaciju u kojoj se nalazite i dobit ćete preporuku korak po korak.")
+# Vodic kategorije - definicija podataka
+_VODIC_KATEGORIJE = [
+    {
+        "ikona": "\U0001f4b8", "naslov": "Netko mi duguje novac",
+        "tezina": "Srednje", "vrijeme": "~15 min",
+        "opis": "Opomena, ovrha ili tužba za naplatu duga",
+    },
+    {
+        "ikona": "\U0001f4e3", "naslov": "Ne slažem se s presudom",
+        "tezina": "Složeno", "vrijeme": "~20 min",
+        "opis": "Žalba na presudu \u2014 rok je 15 dana!",
+    },
+    {
+        "ikona": "\U0001f3db\ufe0f", "naslov": "Problem s upravnim tijelom",
+        "tezina": "Srednje", "vrijeme": "~15 min",
+        "opis": "Žalba na rješenje, tužba, pristup informacijama",
+    },
+    {
+        "ikona": "\U0001f4dd", "naslov": "Trebam ugovor",
+        "tezina": "Jednostavno", "vrijeme": "~10 min",
+        "opis": "Kupoprodaja, najam, rad, NDA, raskid...",
+    },
+    {
+        "ikona": "\U0001f6a8", "naslov": "Žrtva sam kaznenog djela",
+        "tezina": "Srednje", "vrijeme": "~15 min",
+        "opis": "Kaznena prijava ili privatna tužba",
+    },
+    {
+        "ikona": "\U0001f3d7\ufe0f", "naslov": "Problem s nekretninom",
+        "tezina": "Srednje", "vrijeme": "~10 min",
+        "opis": "Uknjižba, hipoteka, služnost, brisovna tužba",
+    },
+    {
+        "ikona": "\U0001f6e1\ufe0f", "naslov": "Problem kao potrošač",
+        "tezina": "Jednostavno", "vrijeme": "~5 min",
+        "opis": "Reklamacija, raskid online kupnje, inspekcija",
+    },
+    {
+        "ikona": "\U0001f3e2", "naslov": "Tvrtka / poslovni spor",
+        "tezina": "Srednje", "vrijeme": "~15 min",
+        "opis": "Društveni ugovor, prijenos udjela, NDA",
+    },
+    {
+        "ikona": "\U0001f46a", "naslov": "Obiteljski spor",
+        "tezina": "Srednje", "vrijeme": "~15 min",
+        "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
+    },
+    {
+        "ikona": "\U0001f4c9", "naslov": "Financijske poteškoće",
+        "tezina": "Složeno", "vrijeme": "~20 min",
+        "opis": "Osobni stečaj, prijedlog za stečaj, prijava tražbine",
+    },
+]
 
-    # Definicija kategorija s ikonama, procjenom tezine i vremena
-    _VODIC_KATEGORIJE = [
-        {
-            "ikona": "\U0001f4b8", "naslov": "Netko mi duguje novac",
-            "tezina": "Srednje", "vrijeme": "~15 min",
-            "opis": "Opomena, ovrha ili tužba za naplatu duga",
-        },
-        {
-            "ikona": "\U0001f4e3", "naslov": "Ne slažem se s presudom",
-            "tezina": "Složeno", "vrijeme": "~20 min",
-            "opis": "Žalba na presudu — rok je 15 dana!",
-        },
-        {
-            "ikona": "\U0001f3db\ufe0f", "naslov": "Problem s upravnim tijelom",
-            "tezina": "Srednje", "vrijeme": "~15 min",
-            "opis": "Žalba na rješenje, tužba, pristup informacijama",
-        },
-        {
-            "ikona": "\U0001f4dd", "naslov": "Trebam ugovor",
-            "tezina": "Jednostavno", "vrijeme": "~10 min",
-            "opis": "Kupoprodaja, najam, rad, NDA, raskid...",
-        },
-        {
-            "ikona": "\U0001f6a8", "naslov": "Žrtva sam kaznenog djela",
-            "tezina": "Srednje", "vrijeme": "~15 min",
-            "opis": "Kaznena prijava ili privatna tužba",
-        },
-        {
-            "ikona": "\U0001f3d7\ufe0f", "naslov": "Problem s nekretninom",
-            "tezina": "Srednje", "vrijeme": "~10 min",
-            "opis": "Uknjižba, hipoteka, služnost, brisovna tužba",
-        },
-        {
-            "ikona": "\U0001f6e1\ufe0f", "naslov": "Problem kao potrošač",
-            "tezina": "Jednostavno", "vrijeme": "~5 min",
-            "opis": "Reklamacija, raskid online kupnje, inspekcija",
-        },
-        {
-            "ikona": "\U0001f3e2", "naslov": "Tvrtka / poslovni spor",
-            "tezina": "Srednje", "vrijeme": "~15 min",
-            "opis": "Društveni ugovor, prijenos udjela, NDA",
-        },
-        {
-            "ikona": "\U0001f46a", "naslov": "Obiteljski spor",
-            "tezina": "Srednje", "vrijeme": "~15 min",
-            "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
-        },
-        {
-            "ikona": "\U0001f4c9", "naslov": "Financijske poteškoće",
-            "tezina": "Složeno", "vrijeme": "~20 min",
-            "opis": "Osobni stečaj, prijedlog za stečaj, prijava tražbine",
-        },
-    ]
+_TEZINA_BOJA = {
+    "Jednostavno": "#059669",
+    "Srednje": "#D97706",
+    "Složeno": "#DC2626",
+}
 
-    _TEZINA_BOJA = {
-        "Jednostavno": "#059669",
-        "Srednje": "#D97706",
-        "Složeno": "#DC2626",
-    }
 
-    # Prikazi kategorije kao kartice u 2 stupca
-    st.markdown("")
-    cols = st.columns(2)
-    for i, kat in enumerate(_VODIC_KATEGORIJE):
-        boja = _TEZINA_BOJA.get(kat["tezina"], "#475569")
-        with cols[i % 2]:
-            st.markdown(
-                f"<div class='module-card' style='cursor:pointer;'>"
-                f"<h4>{kat['ikona']} {kat['naslov']}</h4>"
-                f"<p>{kat['opis']}</p>"
-                f"<p style='margin-top:0.4rem !important;'>"
-                f"<span style='background:{boja};color:white;padding:2px 8px;border-radius:4px;"
-                f"font-size:0.7rem;font-weight:600;'>{kat['tezina']}</span>"
-                f"&nbsp;&nbsp;<span style='color:#94A3B8;font-size:0.75rem;'>{kat['vrijeme']}</span>"
-                f"</p></div>",
-                unsafe_allow_html=True,
-            )
-            if st.button(
-                f"Pokaži korake \u2192",
-                key=f"_vk_{i}",
-                use_container_width=True,
-            ):
-                st.session_state._vodic_odabir = kat["naslov"]
-                st.rerun()
+def _render_vodic_detalji(odabir):
+    """Prikazuje detaljne korake za odabranu vodic kategoriju."""
 
-    # Detalji odabrane kategorije
-    odabir = st.session_state.get("_vodic_odabir", "")
-    if not odabir:
-        return
-
+    # Anchor za auto-scroll
+    st.markdown("<div id='vodic-detalji'></div>", unsafe_allow_html=True)
     st.markdown("---")
 
     if odabir == "Netko mi duguje novac":
@@ -508,22 +380,92 @@ def _render_vodic():
             st.rerun()
 
 
+def _render_pocetna():
+    """Pocetna stranica s integriranim vodicem."""
+
+    # Hero sekcija
+    st.markdown(
+        "<div class='hero-section'>"
+        "<h2>LegalTech Suite Pro</h2>"
+        "<p>Odaberite situaciju u kojoj se nalazite i dobit ćete upute korak po korak, "
+        "ili izaberite uslugu iz izbornika.</p>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    # ----- VODIC: kartice problema u 2 stupca -----
+    st.markdown("##### \U0001f9ed Što vam treba?")
+    st.caption("Kliknite na svoju situaciju \u2014 dobit ćete upute i link na pravi dokument.")
+
+    cols = st.columns(2)
+    for i, kat in enumerate(_VODIC_KATEGORIJE):
+        boja = _TEZINA_BOJA.get(kat["tezina"], "#475569")
+        with cols[i % 2]:
+            st.markdown(
+                f"<div class='module-card' style='cursor:pointer;'>"
+                f"<h4>{kat['ikona']} {kat['naslov']}</h4>"
+                f"<p>{kat['opis']}</p>"
+                f"<p style='margin-top:0.4rem !important;'>"
+                f"<span style='background:{boja};color:white;padding:2px 8px;border-radius:4px;"
+                f"font-size:0.7rem;font-weight:600;'>{kat['tezina']}</span>"
+                f"&nbsp;&nbsp;<span style='color:#94A3B8;font-size:0.75rem;'>{kat['vrijeme']}</span>"
+                f"</p></div>",
+                unsafe_allow_html=True,
+            )
+            if st.button(
+                f"Pokaži korake \u2192",
+                key=f"_vk_{i}",
+                use_container_width=True,
+            ):
+                st.session_state._vodic_odabir = kat["naslov"]
+                st.rerun()
+
+    # ----- VODIC DETALJI (ako je odabrana kategorija) -----
+    odabir = st.session_state.get("_vodic_odabir", "")
+    if odabir:
+        _render_vodic_detalji(odabir)
+        # Auto-scroll do detalja
+        _scroll_to_anchor("vodic-detalji")
+
+    # ----- ALATI (kompaktno) -----
+    st.markdown("---")
+    st.markdown("##### Alati")
+    col1, col2, col3 = st.columns(3)
+    _alati = [
+        ("\U0001f4ca Kalkulator kamata", "Kalkulator kamata"),
+        ("\U0001f9ee Kalkulator pristojbi", "Kalkulator pristojbi"),
+        ("\U0001f6e1\ufe0f Zaštita potrošača", "Zaštita potrošača"),
+    ]
+    for col, (label, modul) in zip([col1, col2, col3], _alati):
+        with col:
+            if st.button(label, key=f"_alat_{modul}", use_container_width=True):
+                _navigate_to(modul)
+                st.rerun()
+
+    st.caption(
+        "Svi dokumenti generiraju se u DOCX formatu (Microsoft Word) "
+        "s hrvatskim pravnim formatiranjem \u2014 Times New Roman 12pt, margine 2.5cm."
+    )
+
+
 # =============================================================================
 # ROUTING
 # =============================================================================
 
 active = st.session_state._active_module
 
-# DOCX opcije - suptilan expander za napredne korisnike
-_NO_DOCX_OPTS = {"Početna", "Vodič", "Kalkulator kamata", "Kalkulator pristojbi"}
+# Scroll na vrh pri svakoj promjeni modula (osim Pocetne pri prvom ulasku)
+if active != "Početna":
+    _scroll_to_top()
+
+# DOCX opcije
+_NO_DOCX_OPTS = {"Početna", "Kalkulator kamata", "Kalkulator pristojbi"}
 if active not in _NO_DOCX_OPTS:
     docx_opcije()
 
 # Routing
 if active == "Početna":
     _render_pocetna()
-elif active == "Vodič":
-    _render_vodic()
 elif active == "Ugovori i odluke":
     render_ugovori()
 elif active == "Opomena pred tužbu":
