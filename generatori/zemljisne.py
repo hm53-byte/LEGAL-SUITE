@@ -80,11 +80,11 @@ def generiraj_zabilježbu(sud, predlagatelj, podaci):
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
             f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
-            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{format_text(predlagatelj)}</div><br>"
+            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{predlagatelj}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA ZABILJEŽBU<br>"
             f"<span style='font-size: 12pt; font-weight: normal;'>zabilježba {vrsta_tekst}</span></div>"
             f"<div class='doc-body'><b>I. PREDLAGATELJ</b><br><br>"
-            f"{format_text(predlagatelj)}</div>"
+            f"{predlagatelj}</div>"
             f"<div class='doc-body'><b>II. NEKRETNINA</b><br><br>"
             f"<b>Katastarska općina (k.o.):</b> {format_text(ko)}<br>"
             f"<b>Broj zk. uloška:</b> {format_text(ulozak)}<br>"
@@ -134,13 +134,13 @@ def generiraj_predbiježbu(sud, predlagatelj, protustranka, podaci):
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
             f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
-            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{format_text(predlagatelj)}</div>"
-            f"<div class='party-info'><b>PROTUSTRANKA:</b><br>{format_text(protustranka)}</div><br>"
+            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{predlagatelj}</div>"
+            f"<div class='party-info'><b>PROTUSTRANKA:</b><br>{protustranka}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA PREDBILJEŽBU<br>"
             f"<span style='font-size: 12pt; font-weight: normal;'>{vrsta_tekst}</span></div>"
             f"<div class='doc-body'><b>I. STRANKE</b><br><br>"
-            f"<b>Predlagatelj:</b> {format_text(predlagatelj)}<br>"
-            f"<b>Protustranka:</b> {format_text(protustranka)}</div>"
+            f"<b>Predlagatelj:</b> {predlagatelj}<br>"
+            f"<b>Protustranka:</b> {protustranka}</div>"
             f"<div class='doc-body'><b>II. NEKRETNINA</b><br><br>"
             f"<b>Katastarska općina (k.o.):</b> {format_text(ko)}<br>"
             f"<b>Broj zk. uloška:</b> {format_text(ulozak)}<br>"
@@ -192,12 +192,12 @@ def generiraj_upis_hipoteke(sud, vjerovnik, zalozni_duznik, podaci, troskovi_dic
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
             f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
-            f"<div class='party-info'><b>VJEROVNIK (PREDLAGATELJ):</b><br>{format_text(vjerovnik)}</div>"
-            f"<div class='party-info'><b>ZALOŽNI DUŽNIK:</b><br>{format_text(zalozni_duznik)}</div><br>"
+            f"<div class='party-info'><b>VJEROVNIK (PREDLAGATELJ):</b><br>{vjerovnik}</div>"
+            f"<div class='party-info'><b>ZALOŽNI DUŽNIK:</b><br>{zalozni_duznik}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA UKNJIŽBU ZALOŽNOG PRAVA (HIPOTEKE)</div>"
             f"<div class='doc-body'><b>I. STRANKE</b><br><br>"
-            f"<b>Vjerovnik (predlagatelj):</b> {format_text(vjerovnik)}<br>"
-            f"<b>Založni dužnik (vlasnik nekretnine):</b> {format_text(zalozni_duznik)}</div>"
+            f"<b>Vjerovnik (predlagatelj):</b> {vjerovnik}<br>"
+            f"<b>Založni dužnik (vlasnik nekretnine):</b> {zalozni_duznik}</div>"
             f"<div class='doc-body'><b>II. NEKRETNINA</b><br><br>"
             f"<b>Katastarska općina (k.o.):</b> {format_text(ko)}<br>"
             f"<b>Broj zk. uloška:</b> {format_text(ulozak)}<br>"
@@ -327,7 +327,7 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
             f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
-            f"<div class='party-info'><b>VLASNIK (PREDLAGATELJ):</b><br>{format_text(vlasnik)}</div><br>"
+            f"<div class='party-info'><b>VLASNIK (PREDLAGATELJ):</b><br>{vlasnik}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA BRISANJE ZALOŽNOG PRAVA</div>"
             f"<div class='doc-body'><b>I. TEMELJ BRISANJA</b><br><br>"
             f"{temelj_tekst}{dodatni_html}</div>"
@@ -389,7 +389,7 @@ def generiraj_upis_sluznosti(sud, predlagatelj, podaci, troskovi_dict):
         elif not je_stvarna:
             povlasno_html = (
                 f"<div class='doc-body'><b>III. OVLAŠTENIK OSOBNE SLUŽNOSTI</b><br><br>"
-                f"{format_text(predlagatelj)}</div>"
+                f"{predlagatelj}</div>"
             )
 
         petitum_upis = (
@@ -411,11 +411,11 @@ def generiraj_upis_sluznosti(sud, predlagatelj, podaci, troskovi_dict):
         return (
             f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
             f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
-            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{format_text(predlagatelj)}</div><br>"
+            f"<div class='party-info'><b>PREDLAGATELJ:</b><br>{predlagatelj}</div><br>"
             f"<div class='header-doc'>PRIJEDLOG ZA UKNJIŽBU PRAVA SLUŽNOSTI<br>"
             f"<span style='font-size: 12pt; font-weight: normal;'>({vrsta_tekst})</span></div>"
             f"<div class='doc-body'><b>I. SUBJEKTI I OBJEKTI</b><br><br>"
-            f"<b>Predlagatelj:</b> {format_text(predlagatelj)}<br>"
+            f"<b>Predlagatelj:</b> {predlagatelj}<br>"
             f"<b>Vrsta služnosti:</b> {vrsta_tekst}<br>"
             f"<b>Sadržaj služnosti:</b> {format_text(sadrzaj_sluznosti)}<br>"
             f"<b>Pravni temelj:</b> {format_text(pravni_temelj)}</div>"

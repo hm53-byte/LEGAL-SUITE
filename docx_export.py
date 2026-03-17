@@ -202,7 +202,10 @@ class _HtmlToDocxParser(HTMLParser):
                 self.current_cell_text += "\n"
             elif self.current_paragraph:
                 self._flush_text()
-                self.current_paragraph.add_run("\n")
+                # Tvrd prijelom retka (w:br) umjesto mekog ("\n")
+                # Meki prijelom s obostranim poravnanjem rasteže kratke retke
+                run = self.current_paragraph.add_run()
+                run._element.append(OxmlElement('w:br'))
 
         elif tag == "hr":
             self._add_horizontal_line()

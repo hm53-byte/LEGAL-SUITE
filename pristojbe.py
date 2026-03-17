@@ -199,3 +199,45 @@ def izracunaj_pristojbu(tip_postupka, vps=0.0, **kwargs):
     if kalkulator:
         return kalkulator()
     return 0.0
+
+
+# =============================================================================
+# ODVJETNIČKA TARIFA - Nagrada za sastav podneska prema VPS-u
+# Prema Tarifi o nagradama i naknadi troškova za rad odvjetnika (NN 142/12, 103/14, 118/14, 107/15)
+# Tbr. 7 - Sastav tužbe, prijedloga, žalbe i dr. podnesaka
+# Svi iznosi konvertirani iz HRK u EUR po tečaju 7.53450
+# =============================================================================
+
+def odvjetnicka_nagrada_sastav(vps):
+    """Izracunava odvjetnicku nagradu za sastav podneska (tuzbe) prema VPS-u.
+    Tbr. 7 Tarife o nagradama i naknadi troskova za rad odvjetnika.
+    vps: vrijednost predmeta spora u EUR
+    Vraca: nagrada u EUR (bez PDV-a)
+    """
+    if vps <= 0:
+        return 0.0
+
+    # Tarifni razredi (konvertirani iz HRK u EUR)
+    if vps <= 664.0:        # do 5.000 HRK -> 250 HRK = 33.18 EUR (50 bodova)
+        return 33.18
+    elif vps <= 1_327.0:    # do 10.000 HRK -> 375 HRK = 49.77 EUR (75 bodova)
+        return 49.77
+    elif vps <= 3_318.0:    # do 25.000 HRK -> 500 HRK = 66.36 EUR (100 bodova)
+        return 66.36
+    elif vps <= 6_636.0:    # do 50.000 HRK -> 750 HRK = 99.54 EUR (150 bodova)
+        return 99.54
+    elif vps <= 13_272.0:   # do 100.000 HRK -> 1.000 HRK = 132.72 EUR (200 bodova)
+        return 132.72
+    elif vps <= 26_544.0:   # do 200.000 HRK -> 1.250 HRK = 165.91 EUR (250 bodova)
+        return 165.91
+    elif vps <= 39_816.0:   # do 300.000 HRK -> 1.500 HRK = 199.09 EUR (300 bodova)
+        return 199.09
+    elif vps <= 66_361.0:   # do 500.000 HRK -> 2.000 HRK = 265.45 EUR (400 bodova)
+        return 265.45
+    elif vps <= 132_722.0:  # do 1.000.000 HRK -> 2.500 HRK = 331.81 EUR (500 bodova)
+        return 331.81
+    else:
+        # Preko 1.000.000 HRK: baza 2.500 + 1% viška, max 5.000 HRK
+        visak = vps - 132_722.0
+        dodatak = visak * 0.01
+        return _zaokruzi_na_cente(min(331.81 + dodatak, 663.61))

@@ -142,7 +142,10 @@ def unos_stranke(oznaka, key_prefix):
     has_valid_data = False
 
     if tip == "Fizička osoba":
-        ime = col1.text_input(f"Ime i Prezime", key=f"{key_prefix}_ime")
+        ime = col1.text_input(
+            f"Ime i Prezime", key=f"{key_prefix}_ime",
+            help="Upišite ime u nominativu (tko? što?). Npr. 'Ivan Horvat', ne 'Ivana Horvata'.",
+        )
         oib = col2.text_input(f"OIB", max_chars=11, key=f"{key_prefix}_oib")
         adresa = st.text_input(f"Adresa (Ulica, Grad)", key=f"{key_prefix}_adresa")
         if oib:

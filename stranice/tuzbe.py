@@ -15,7 +15,7 @@ from pomocne import (
     provjeri_zastaru,
 )
 from generatori.tuzbe import generiraj_tuzbu_pro
-from pristojbe import pristojba_tuzba
+from pristojbe import pristojba_tuzba, odvjetnicka_nagrada_sastav
 
 
 def render_tuzbe():
@@ -87,17 +87,23 @@ def render_tuzbe():
         dokazi = ""
 
     st.subheader("Troškovnik")
-    # Auto-izracun sudske pristojbe prema VPS
+    # Auto-izracun prema VPS
     predlozena_pristojba = pristojba_tuzba(vps) if vps > 0 else 0.0
-    if predlozena_pristojba > 0:
-        st.info(f"Izracunata sudska pristojba za VPS {vps:,.2f} EUR: **{predlozena_pristojba:,.2f} EUR** (Tbr. 1 Tarife)")
+    predlozena_nagrada = odvjetnicka_nagrada_sastav(vps) if vps > 0 else 0.0
+    if vps > 0:
+        st.info(
+            f"**Automatski izračun za VPS {vps:,.2f} EUR:**\n\n"
+            f"- Sudska pristojba (Tbr. 1): **{predlozena_pristojba:,.2f} EUR**\n"
+            f"- Odvjetnička nagrada za sastav (Tbr. 7): **{predlozena_nagrada:,.2f} EUR**\n\n"
+            f"*Iznose možete ručno promijeniti ispod.*"
+        )
 
     col_tr1, col_tr2, col_tr3 = st.columns(3)
-    trosak_sastav = col_tr1.number_input("Sastav tužbe (EUR)", 0.0,
-                                        help="Odvjetnička nagrada za sastav tužbe prema Tarifi o nagradama.")
+    trosak_sastav = col_tr1.number_input("Odvjetnička nagrada (EUR)", value=predlozena_nagrada,
+                                        help="Nagrada za sastav tužbe prema Tbr. 7 Tarife. Automatski izračunata prema VPS-u, možete promijeniti.")
     trosak_pdv = trosak_sastav * 0.25 if col_tr2.checkbox("Dodaj PDV (25%)", value=True) else 0.0
     trosak_pristojba = col_tr3.number_input("Sudska pristojba (EUR)", value=predlozena_pristojba,
-                                             help="Pristojba koju plaćate sudu. Automatski izračunata prema VPS-u.")
+                                             help="Pristojba prema Tbr. 1 Tarife sudskih pristojbi. Automatski izračunata prema VPS-u.")
 
     if st.button("Generiraj tužbu", type="primary"):
         if vps <= 0:
