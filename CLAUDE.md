@@ -1,7 +1,7 @@
 # CLAUDE.md - LegalTech Suite Pro Handoff
 
-> **Last updated:** 2026-03-17 (Session 8)
-> **Status:** 60+ generators, 16 modules, 129 tests, court DB, fee calculator, vodič, button nav - COMPLETE
+> **Last updated:** 2026-03-17 (Session 9)
+> **Status:** 60+ generators, 16 modules, 129 tests, sidebar icons, redesigned vodič, success state, quick start - COMPLETE
 > **Deploy:** Streamlit Community Cloud from `hm53-byte/LEGAL-SUITE` main branch
 
 ---
@@ -249,4 +249,5 @@ All generators output HTML fragments (not full documents). The wrapper `<div cla
 | 5 | zaglavlje_sastavljaca consistency, signature blocks, kamate calculator |
 | 6 | Tooltips, landing page, deployment guide, 112+ tests |
 | 7 | DOCX watermark, DOCX header, docx_opcije, 116 tests |
-| 8 | **Button sidebar nav, vodič wizard, napuni_primjerom, deadline checks, tabs, CSS fixes, 129 tests** |
+| 8 | Button sidebar nav, vodič wizard, napuni_primjerom, deadline checks, tabs, CSS fixes, 129 tests |
+| 9 | **Sidebar CSS fix (Cloud), ikone u sidebaru, vodič redizajn (kartice+težina), quick start, success banner, help tekst, napuni_primjerom na opomene/upravno** |
