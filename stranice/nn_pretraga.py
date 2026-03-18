@@ -7,12 +7,16 @@ from api_nn import KLJUCNI_ZAKONI, pretrazi_nn, generiraj_nn_link
 
 def render_nn_pretraga():
     """Stranica za pretragu Narodnih novina i bazu kljucnih zakona."""
-    st.header("\U0001f4da Propisi i zakoni")
+    # Primijeni pending upit iz popularnih gumba PRIJE renderiranja widgeta
+    if "_nn_pending" in st.session_state:
+        st.session_state["nn_upit"] = st.session_state.pop("_nn_pending")
+
+    st.header("Propisi i zakoni")
     st.caption("Pretrazite Narodne novine i pristupite kljucnim hrvatskim zakonima.")
 
     tab_baza, tab_pretraga = st.tabs([
-        "\U0001f4d6 Baza kljucnih zakona",
-        "\U0001f50d Pretraga Narodnih novina",
+        "Baza kljucnih zakona",
+        "Pretraga Narodnih novina",
     ])
 
     with tab_baza:
@@ -21,7 +25,6 @@ def render_nn_pretraga():
             "Kliknite na link za otvaranje teksta na Narodnim novinama."
         )
 
-        # Grupiraj zakone po podrucju
         _KATEGORIJE = {
             "Gradansko i obvezno pravo": ["ZOO", "ZPP"],
             "Trgovacko pravo": ["ZTD"],
@@ -40,12 +43,12 @@ def render_nn_pretraga():
                 zakon = KLJUCNI_ZAKONI.get(kratica, {})
                 if zakon:
                     st.markdown(
-                        f"<div style='background:#F8FAFC;padding:0.8rem 1rem;border-radius:8px;"
-                        f"border-left:3px solid #1E3A5F;margin-bottom:0.5rem;'>"
-                        f"<b>{kratica}</b> \u2014 {zakon['naziv']}<br>"
+                        f"<div style='background:#F8FAFC;padding:0.7rem 1rem;border-radius:8px;"
+                        f"border-left:3px solid #1E3A5F;margin-bottom:0.4rem;'>"
+                        f"<b>{kratica}</b> &mdash; {zakon['naziv']}<br>"
                         f"<span style='color:#94A3B8;font-size:0.8rem;'>{zakon['nn']}</span><br>"
                         f"<a href='{zakon['url']}' target='_blank' style='font-size:0.85rem;'>"
-                        f"\U0001f517 Otvori na Narodnim novinama</a>"
+                        f"Otvori na Narodnim novinama &rarr;</a>"
                         f"</div>",
                         unsafe_allow_html=True,
                     )
@@ -59,7 +62,7 @@ def render_nn_pretraga():
             key="nn_upit",
         )
 
-        if st.button("\U0001f50d Pretrazi", type="primary", use_container_width=True, key="nn_search"):
+        if st.button("Pretrazi", type="primary", use_container_width=True, key="nn_search"):
             if not upit:
                 st.error("Unesite pojam za pretragu.")
             else:
@@ -79,8 +82,8 @@ def render_nn_pretraga():
                         st.markdown(f"**Pronadeno:** {len(rezultati)} rezultata")
                         for r in rezultati:
                             st.markdown(
-                                f"<div style='background:#F8FAFC;padding:0.8rem 1rem;border-radius:8px;"
-                                f"margin-bottom:0.5rem;'>"
+                                f"<div style='background:#F8FAFC;padding:0.7rem 1rem;border-radius:8px;"
+                                f"margin-bottom:0.4rem;'>"
                                 f"<a href='{r['url']}' target='_blank'><b>{r['naslov']}</b></a><br>"
                                 f"<span style='color:#94A3B8;font-size:0.8rem;'>{r.get('nn_broj', '')}</span>"
                                 f"</div>",
@@ -89,7 +92,7 @@ def render_nn_pretraga():
 
         # Popularni upiti
         st.markdown("---")
-        st.markdown("##### \u26a1 Popularni upiti")
+        st.markdown("##### Popularni upiti")
         _popularni = [
             "zastara potrazivanja", "naknada stete", "otkaz ugovora o radu",
             "ugovor o kupoprodaji nekretnine", "ovrha na placi",
@@ -99,5 +102,5 @@ def render_nn_pretraga():
         for i, p in enumerate(_popularni):
             with cols[i % 3]:
                 if st.button(p, key=f"nn_pop_{i}", use_container_width=True):
-                    st.session_state.nn_upit = p
+                    st.session_state["_nn_pending"] = p
                     st.rerun()

@@ -8,14 +8,20 @@ from api_eoglasna import pretrazi_objave, TIPOVI_OBJAVA, formatiraj_objavu
 
 def render_eoglasna():
     """Stranica za pretragu e-Oglasne ploce sudova."""
-    st.header("\U0001f4cb Sudske objave (e-Oglasna ploca)")
+    # Primijeni pending vrijednosti iz brzih pretraga PRIJE renderiranja widgeta
+    for _pk in ("_eo_pending_tip", "_eo_pending_tekst"):
+        _target = _pk.replace("_eo_pending_", "eo_")
+        if _pk in st.session_state:
+            st.session_state[_target] = st.session_state.pop(_pk)
+
+    st.header("Sudske objave (e-Oglasna ploca)")
     st.caption(
         "Pretrazite elektronicke oglasne ploce svih sudova u Hrvatskoj. "
         "Dostave pismena, drazbe, stecajni postupci, ovrhe."
     )
 
     # Filteri
-    with st.expander("\U0001f50d Filteri pretrage", expanded=True):
+    with st.expander("Filteri pretrage", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
             tip = st.selectbox(
@@ -48,7 +54,7 @@ def render_eoglasna():
             help="Unesite naziv suda ili ostavite prazno za sve sudove",
         )
 
-    if st.button("\U0001f50d Pretrazi", type="primary", use_container_width=True, key="eo_search"):
+    if st.button("Pretrazi", type="primary", use_container_width=True, key="eo_search"):
         with st.spinner("Pretrazujem e-Oglasnu plocu..."):
             rezultat = pretrazi_objave(
                 sud=sud,
@@ -92,7 +98,7 @@ def render_eoglasna():
                 f"border-radius:4px;font-size:0.7rem;'>{TIPOVI_OBJAVA.get(fmt['tip'], fmt['tip'])}</span>"
                 f"</div>"
                 f"<div style='color:#475569;font-size:0.85rem;margin-top:0.3rem;'>"
-                f"\U0001f3db\ufe0f {fmt['sud']} &middot; \U0001f4c5 {fmt['datum']}"
+                f"{fmt['sud']} &middot; {fmt['datum']}"
                 f"</div>"
                 f"{'<div style=\"color:#0F172A;font-size:0.85rem;margin-top:0.5rem;\">' + fmt['sadrzaj'] + '</div>' if fmt['sadrzaj'] else ''}"
                 f"</div>",
@@ -102,7 +108,7 @@ def render_eoglasna():
             # Gumb za dodavanje u kalendar (za drazbe i rocista)
             if fmt["tip"] in ("drazba", "rociste"):
                 if st.button(
-                    f"\U0001f4c5 Dodaj u kalendar",
+                    f"Dodaj u kalendar",
                     key=f"eo_cal_{hash(fmt['naslov'] + fmt['datum'])}",
                 ):
                     st.session_state.setdefault("_kalendar_eventi", []).append({
@@ -115,20 +121,20 @@ def render_eoglasna():
 
     # Brze pretrage
     st.markdown("---")
-    st.markdown("##### \u26a1 Brze pretrage")
+    st.markdown("##### Brze pretrage")
     col_a, col_b, col_c = st.columns(3)
     with col_a:
-        if st.button("\U0001f3e0 Drazbe nekretnina", key="eo_brza_drazbe", use_container_width=True):
-            st.session_state.eo_tip = "drazba"
-            st.session_state.eo_tekst = "nekretnina"
+        if st.button("Drazbe nekretnina", key="eo_brza_drazbe", use_container_width=True):
+            st.session_state["_eo_pending_tip"] = "drazba"
+            st.session_state["_eo_pending_tekst"] = "nekretnina"
             st.rerun()
     with col_b:
-        if st.button("\U0001f4c9 Stecajevi", key="eo_brza_stecaj", use_container_width=True):
-            st.session_state.eo_tip = "stecaj"
-            st.session_state.eo_tekst = ""
+        if st.button("Stecajevi", key="eo_brza_stecaj", use_container_width=True):
+            st.session_state["_eo_pending_tip"] = "stecaj"
+            st.session_state["_eo_pending_tekst"] = ""
             st.rerun()
     with col_c:
-        if st.button("\U0001f4b0 Ovrhe", key="eo_brza_ovrhe", use_container_width=True):
-            st.session_state.eo_tip = "ovrha"
-            st.session_state.eo_tekst = ""
+        if st.button("Ovrhe", key="eo_brza_ovrhe", use_container_width=True):
+            st.session_state["_eo_pending_tip"] = "ovrha"
+            st.session_state["_eo_pending_tekst"] = ""
             st.rerun()

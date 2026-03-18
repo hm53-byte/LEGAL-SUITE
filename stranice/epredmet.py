@@ -7,14 +7,14 @@ from api_epredmet import dohvati_sudove, pretrazi_predmet, OZNAKE_POSTUPAKA
 
 def render_epredmet():
     """Stranica za pracenje sudskih predmeta putem e-Predmet API-ja."""
-    st.header("\U0001f50d Pracenje sudskih predmeta")
+    st.header(" Pracenje sudskih predmeta")
     st.caption(
         "Pretrazite status sudskog predmeta putem sustava e-Predmet "
         "(Ministarstvo pravosuđa i uprave)."
     )
 
     st.info(
-        "\U0001f4a1 **Kako pronaci broj predmeta?** "
+        " **Kako pronaci broj predmeta?** "
         "Broj predmeta je na svakom sudskom pismenu u zaglavlju, "
         "npr. **P-123/2024** (parnicni), **Ovr-456/2023** (ovrsni), "
         "**K-78/2024** (kazneni)."
@@ -67,7 +67,7 @@ def render_epredmet():
     with col4:
         godina = st.text_input("Godina", placeholder="2024", key="ep_godina", max_chars=4)
 
-    if st.button("\U0001f50d Pretrazi predmet", type="primary", use_container_width=True, key="ep_search"):
+    if st.button(" Pretrazi predmet", type="primary", use_container_width=True, key="ep_search"):
         if not broj or not godina:
             st.error("Unesite broj predmeta i godinu.")
             return
@@ -88,7 +88,7 @@ def render_epredmet():
 
         # Prikazi rezultate
         st.markdown("---")
-        st.markdown(f"### \U0001f4cb Predmet: {rezultat.get('caseNumber', broj_predmeta)}")
+        st.markdown(f"###  Predmet: {rezultat.get('caseNumber', broj_predmeta)}")
 
         # Osnovni podaci
         col_a, col_b = st.columns(2)
@@ -137,13 +137,13 @@ def render_epredmet():
                 except (ValueError, AttributeError):
                     je_buduci = False
 
-                ikona = "\U0001f534" if je_buduci else "\u2705"
+                ikona = "*" if je_buduci else "-"
                 st.markdown(f"{ikona} **{datum_fmt}** — {opis} ({tip})")
 
                 # Gumb za dodavanje u kalendar (samo buduci dogadaji)
                 if je_buduci:
                     if st.button(
-                        f"\U0001f4c5 Dodaj u kalendar",
+                        f" Dodaj u kalendar",
                         key=f"ep_cal_{datum_str}_{opis[:20]}",
                     ):
                         st.session_state.setdefault("_kalendar_eventi", []).append({
@@ -157,17 +157,17 @@ def render_epredmet():
 
         # Ponudi relevantne dokumente
         st.markdown("---")
-        st.markdown("#### \U0001f4dd Trebate dokument za ovaj predmet?")
+        st.markdown("####  Trebate dokument za ovaj predmet?")
         col_x, col_y, col_z = st.columns(3)
         with col_x:
-            if st.button("\U0001f4e3 Zalba", key="ep_doc_zalba"):
-                st.session_state._active_module = "Zalbe"
+            if st.button(" Zalba", key="ep_doc_zalba"):
+                st.session_state._active_module = "Zalbe"  # matches _MODULI key
                 st.rerun()
         with col_y:
-            if st.button("\U0001f4b0 Ovrha", key="ep_doc_ovrha"):
-                st.session_state._active_module = "Ovrsno pravo"
+            if st.button(" Ovrha", key="ep_doc_ovrha"):
+                st.session_state._active_module = "Ovrsno pravo"  # matches _MODULI key
                 st.rerun()
         with col_z:
-            if st.button("\u2696\ufe0f Tuzba", key="ep_doc_tuzba"):
+            if st.button(" Tuzba", key="ep_doc_tuzba"):
                 st.session_state._active_module = "Tuzbe"
                 st.rerun()

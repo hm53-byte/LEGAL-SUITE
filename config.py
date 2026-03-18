@@ -4,7 +4,6 @@
 # Paleta: Navy autoritet + zlatni naglasci + neutralne sive
 # Tipografija: Inter, modular scale Major Third (1.250)
 # Pristupacnost: WCAG 2.1 AA (min 4.5:1 kontrast za tekst)
-# Referenca: agent_docs/ui_strategy.md
 # -----------------------------------------------------------------------------
 
 PAGE_TITLE = "LegalTech Suite Pro"
@@ -32,32 +31,21 @@ _SIDEBAR_TEXT = "#CBD5E1"
 CSS_STILOVI = f"""
 <style>
     /* ================================================================
-       TIPOGRAFIJA - Inter, Major Third skala (1.250)
-       Napomena: @import Google Fonts uklonjen jer blokira renderiranje
-       na Streamlit Cloud. Koristimo system font stack kao fallback.
-       ================================================================ */
-
-    /* ================================================================
-       LAYOUT - Ogranicen sirinom za citljivost
+       LAYOUT
        ================================================================ */
     .main .block-container {{
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
         max-width: 1100px;
     }}
 
     /* ================================================================
-       SIDEBAR - Tamna navy pozadina, visok kontrast teksta
-       Kontrast: #CBD5E1 na #0F1B2D = 11.1:1 (AAA)
+       SIDEBAR
        ================================================================ */
     [data-testid="stSidebar"] {{
         background: linear-gradient(180deg, {_SIDEBAR_BG} 0%, #081220 100%);
         border-right: 1px solid rgba(30, 58, 95, 0.3);
     }}
-
-    /* Sidebar tekst - svijetlo sivi na tamnoj pozadini
-       VAZNO: NE koristimo wildcard * jer nadjacava button text na Cloudu.
-       Ciljamo specificne elemente umjesto toga. */
     [data-testid="stSidebar"] p,
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] label,
@@ -65,39 +53,35 @@ CSS_STILOVI = f"""
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
         color: {_SIDEBAR_TEXT} !important;
     }}
-
-    /* Sidebar naslov - zlato na tamnoj */
     [data-testid="stSidebar"] h1 {{
         color: {_ACCENT_LIGHT} !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 1.3rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.3px;
-        padding-bottom: 0.2rem;
     }}
 
-    /* Sidebar gumbi - navigacija
-       Visestruki selektori za kompatibilnost sa svim Streamlit verzijama */
+    /* Sidebar gumbi - navigacija */
     [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"],
     [data-testid="stSidebar"] .stButton button[kind="secondary"],
     [data-testid="stSidebar"] .stButton > button:not([kind="primary"]) {{
         background-color: transparent !important;
         background: transparent !important;
-        border: 1px solid rgba(203, 213, 225, 0.15) !important;
+        border: 1px solid rgba(203, 213, 225, 0.1) !important;
         color: {_SIDEBAR_TEXT} !important;
         font-family: 'Inter', sans-serif !important;
-        font-size: 0.85rem !important;
+        font-size: 0.82rem !important;
         font-weight: 400 !important;
-        padding: 0.45rem 0.75rem !important;
+        padding: 0.4rem 0.7rem !important;
         border-radius: 6px !important;
         transition: all 0.15s ease !important;
+        text-align: left !important;
     }}
     [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover,
     [data-testid="stSidebar"] .stButton button[kind="secondary"]:hover,
     [data-testid="stSidebar"] .stButton > button:not([kind="primary"]):hover {{
         background-color: rgba(255, 255, 255, 0.08) !important;
         background: rgba(255, 255, 255, 0.08) !important;
-        border-color: rgba(203, 213, 225, 0.3) !important;
+        border-color: rgba(203, 213, 225, 0.25) !important;
         color: #FFFFFF !important;
     }}
     [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"],
@@ -106,12 +90,12 @@ CSS_STILOVI = f"""
         color: #FFFFFF !important;
         border: none !important;
         font-family: 'Inter', sans-serif !important;
-        font-size: 0.85rem !important;
+        font-size: 0.82rem !important;
         font-weight: 600 !important;
-        padding: 0.45rem 0.75rem !important;
+        padding: 0.4rem 0.7rem !important;
         border-radius: 6px !important;
+        text-align: left !important;
     }}
-    /* Fallback: SVE sidebar buttons moraju imati vidljiv tekst */
     [data-testid="stSidebar"] button {{
         color: {_SIDEBAR_TEXT} !important;
     }}
@@ -119,73 +103,82 @@ CSS_STILOVI = f"""
     [data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] span {{
         color: #FFFFFF !important;
     }}
-
-    /* Sidebar markdown */
     [data-testid="stSidebar"] .stMarkdown p {{
         font-family: 'Inter', sans-serif !important;
     }}
     [data-testid="stSidebar"] hr {{
-        border-color: rgba(203, 213, 225, 0.12) !important;
-        margin: 0.5rem 0 !important;
+        border-color: rgba(203, 213, 225, 0.1) !important;
+        margin: 0.4rem 0 !important;
     }}
 
-    /* Sidebar section headers - zlatne oznake */
+    /* Sidebar search input */
+    [data-testid="stSidebar"] .stTextInput input {{
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(203,213,225,0.15) !important;
+        color: #FFFFFF !important;
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.6rem !important;
+        border-radius: 6px !important;
+    }}
+    [data-testid="stSidebar"] .stTextInput input::placeholder {{
+        color: rgba(203,213,225,0.5) !important;
+    }}
+    [data-testid="stSidebar"] .stTextInput input:focus {{
+        border-color: {_ACCENT_LIGHT} !important;
+        box-shadow: 0 0 0 2px rgba(212,168,67,0.15) !important;
+    }}
+
+    /* Sidebar section headers */
     .sidebar-section {{
         font-family: 'Inter', sans-serif !important;
-        font-size: 0.65rem !important;
+        font-size: 0.6rem !important;
         text-transform: uppercase !important;
-        letter-spacing: 1.8px !important;
+        letter-spacing: 1.5px !important;
         color: {_ACCENT_LIGHT} !important;
         font-weight: 600 !important;
-        margin-top: 1.2rem !important;
-        margin-bottom: 0.3rem !important;
-        padding-left: 0.75rem !important;
-        opacity: 0.9;
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.2rem !important;
+        padding-left: 0.7rem !important;
+        opacity: 0.85;
     }}
 
     /* ================================================================
-       GLAVNI SADRZAJ - Zaglavlja, forme, gumbi
+       TIPOGRAFIJA
        ================================================================ */
-
-    /* H1 - Naslov modula */
     h1 {{
         font-family: 'Inter', sans-serif !important;
         color: {_TEXT} !important;
         font-weight: 700 !important;
-        font-size: 1.95rem !important;
+        font-size: 1.7rem !important;
         line-height: 1.2 !important;
         border-bottom: 2px solid {_BORDER} !important;
-        padding-bottom: 0.6rem !important;
-        margin-bottom: 1.5rem !important;
+        padding-bottom: 0.5rem !important;
+        margin-bottom: 1.2rem !important;
     }}
-
-    /* H2, H3 - Podnaslovi */
     h2 {{
         font-family: 'Inter', sans-serif !important;
         color: {_TEXT} !important;
         font-weight: 600 !important;
-        font-size: 1.56rem !important;
-        line-height: 1.3 !important;
+        font-size: 1.4rem !important;
     }}
     h3 {{
         font-family: 'Inter', sans-serif !important;
         color: {_TEXT} !important;
         font-weight: 600 !important;
-        font-size: 1.25rem !important;
-        line-height: 1.4 !important;
+        font-size: 1.15rem !important;
     }}
 
-    /* Labels - Svi form widgeti */
+    /* ================================================================
+       FORME
+       ================================================================ */
     .stSelectbox label, .stRadio > label, .stTextInput label,
     .stTextArea label, .stNumberInput label, .stDateInput label,
     .stCheckbox label {{
         font-family: 'Inter', sans-serif !important;
         font-weight: 500 !important;
         color: {_TEXT} !important;
-        font-size: 0.875rem !important;
+        font-size: 0.85rem !important;
     }}
-
-    /* Input polja - ciste granice, suptilan fokus */
     .stTextInput input, .stNumberInput input, .stTextArea textarea {{
         font-family: 'Inter', sans-serif !important;
         border: 1px solid {_BORDER} !important;
@@ -199,7 +192,9 @@ CSS_STILOVI = f"""
         box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1) !important;
     }}
 
-    /* Primary gumbi - Navy gradient, profesionalan */
+    /* ================================================================
+       GUMBI
+       ================================================================ */
     button[data-testid="stBaseButton-primary"] {{
         background: linear-gradient(135deg, {_BRAND} 0%, {_BRAND_LIGHT} 100%) !important;
         color: #FFFFFF !important;
@@ -207,19 +202,16 @@ CSS_STILOVI = f"""
         border-radius: 8px !important;
         font-family: 'Inter', sans-serif !important;
         font-weight: 600 !important;
-        font-size: 0.9rem !important;
-        padding: 0.6rem 1.8rem !important;
+        font-size: 0.88rem !important;
+        padding: 0.55rem 1.5rem !important;
         letter-spacing: 0.2px !important;
         transition: all 0.2s ease !important;
-        box-shadow: 0 1px 3px rgba(15, 27, 45, 0.2) !important;
+        box-shadow: 0 1px 3px rgba(15, 27, 45, 0.15) !important;
     }}
     button[data-testid="stBaseButton-primary"]:hover {{
-        background: linear-gradient(135deg, {_BRAND_LIGHT} 0%, {_BRAND} 100%) !important;
-        box-shadow: 0 3px 8px rgba(15, 27, 45, 0.25) !important;
+        box-shadow: 0 3px 8px rgba(15, 27, 45, 0.2) !important;
         transform: translateY(-1px) !important;
     }}
-
-    /* Secondary gumbi */
     button[data-testid="stBaseButton-secondary"] {{
         border: 1px solid {_BORDER} !important;
         border-radius: 8px !important;
@@ -234,7 +226,7 @@ CSS_STILOVI = f"""
         background-color: {_BRAND_SURFACE} !important;
     }}
 
-    /* Download gumb - Smaragdna zelena za "sigurnu akciju" */
+    /* Download gumb */
     .stDownloadButton > button {{
         background: linear-gradient(135deg, {_SUCCESS} 0%, {_SUCCESS_DARK} 100%) !important;
         color: #FFFFFF !important;
@@ -242,32 +234,32 @@ CSS_STILOVI = f"""
         border-radius: 8px !important;
         font-family: 'Inter', sans-serif !important;
         font-weight: 600 !important;
-        padding: 0.6rem 1.8rem !important;
-        box-shadow: 0 1px 3px rgba(5, 150, 105, 0.2) !important;
+        padding: 0.55rem 1.5rem !important;
+        box-shadow: 0 1px 3px rgba(5, 150, 105, 0.15) !important;
         transition: all 0.2s ease !important;
     }}
     .stDownloadButton > button:hover {{
-        box-shadow: 0 3px 8px rgba(5, 150, 105, 0.3) !important;
+        box-shadow: 0 3px 8px rgba(5, 150, 105, 0.25) !important;
         transform: translateY(-1px) !important;
     }}
 
-    /* Expander - suptilan, ne natjece se za paznju */
+    /* Expander */
     .streamlit-expanderHeader {{
         font-family: 'Inter', sans-serif !important;
         font-weight: 600 !important;
         color: {_TEXT} !important;
-        font-size: 0.9rem !important;
+        font-size: 0.88rem !important;
         background-color: {_BRAND_SURFACE} !important;
         border-radius: 8px !important;
     }}
 
-    /* Info / Warning / Alert kutije */
+    /* Alerts */
     .stAlert {{
         border-radius: 8px !important;
         font-family: 'Inter', sans-serif !important;
     }}
 
-    /* Metric - brojcane vrijednosti */
+    /* Metric */
     [data-testid="stMetricValue"] {{
         font-family: 'Inter', sans-serif !important;
         color: {_BRAND} !important;
@@ -278,20 +270,22 @@ CSS_STILOVI = f"""
         color: {_TEXT_SEC} !important;
     }}
 
-    /* Tabs - Dokument odabir */
+    /* ================================================================
+       TABS
+       ================================================================ */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 2px;
         background-color: {_BRAND_SURFACE};
-        padding: 4px;
-        border-radius: 10px;
+        padding: 3px;
+        border-radius: 8px;
         border: 1px solid {_BORDER};
     }}
     .stTabs [data-baseweb="tab"] {{
         font-family: 'Inter', sans-serif !important;
         font-weight: 500 !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1rem !important;
-        font-size: 0.85rem !important;
+        border-radius: 6px !important;
+        padding: 0.45rem 0.9rem !important;
+        font-size: 0.82rem !important;
         color: {_TEXT_SEC} !important;
         background-color: transparent !important;
         border: none !important;
@@ -305,7 +299,7 @@ CSS_STILOVI = f"""
         background-color: {_CARD} !important;
         color: {_BRAND} !important;
         font-weight: 600 !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     .stTabs [data-baseweb="tab-highlight"] {{
         display: none !important;
@@ -314,64 +308,51 @@ CSS_STILOVI = f"""
         display: none !important;
     }}
 
-    /* Pocetna stranica - kartice modula */
+    /* ================================================================
+       POCETNA STRANICA
+       ================================================================ */
     .module-card {{
         background: {_CARD};
         border: 1px solid {_BORDER};
-        border-radius: 10px;
-        padding: 1.2rem 1.4rem;
-        margin-bottom: 0.8rem;
+        border-radius: 8px;
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 0.5rem;
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }}
     .module-card:hover {{
         border-color: {_BRAND};
-        box-shadow: 0 2px 8px rgba(30, 58, 95, 0.08);
-    }}
-    .module-card h4 {{
-        color: {_BRAND} !important;
-        font-size: 1rem !important;
-        margin-bottom: 0.4rem !important;
-        font-weight: 600 !important;
-    }}
-    .module-card p {{
-        color: {_TEXT_SEC} !important;
-        font-size: 0.85rem !important;
-        margin: 0 !important;
-        line-height: 1.4 !important;
+        box-shadow: 0 2px 6px rgba(30, 58, 95, 0.06);
     }}
 
-    /* Hero sekcija na pocetnoj */
+    /* Hero */
     .hero-section {{
         background: linear-gradient(135deg, {_BRAND} 0%, {_BRAND_LIGHT} 100%);
         color: white;
-        padding: 2rem 2.5rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
+        padding: 1.5rem 2rem;
+        border-radius: 10px;
+        margin-bottom: 1.2rem;
     }}
     .hero-section h2 {{
         color: white !important;
-        font-size: 1.6rem !important;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0.3rem !important;
     }}
     .hero-section p {{
         color: rgba(255,255,255,0.85) !important;
-        font-size: 0.95rem !important;
+        font-size: 0.9rem !important;
         margin: 0 !important;
     }}
 
     /* ================================================================
-       GENERIRANI DOKUMENT - Print-friendly pravni stil
-       Times New Roman je obavezan za pravne dokumente u RH.
-       Ove klase NE mijenjamo - one su standard.
+       GENERIRANI DOKUMENT - Pravni stil (Times New Roman)
        ================================================================ */
     .legal-doc {{
         background-color: white;
-        padding: 60px 65px;
+        padding: 50px 55px;
         color: black;
         border: 1px solid {_BORDER};
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         border-radius: 2px;
-        margin: 20px auto;
+        margin: 15px auto;
         max-width: 800px;
     }}
     .header-doc {{
@@ -438,7 +419,7 @@ CSS_STILOVI = f"""
     }}
 
     /* ================================================================
-       PRINT STILOVI
+       PRINT
        ================================================================ */
     @media print {{
         .legal-doc {{

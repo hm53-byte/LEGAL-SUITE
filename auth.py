@@ -1,6 +1,6 @@
 # =============================================================================
 # AUTH.PY - Autentikacija korisnika
-# Podržava: email/lozinka, Google OAuth, Apple OAuth, gost pristup
+# Podrzava: email/lozinka, Google OAuth, Apple OAuth, gost pristup
 # =============================================================================
 import streamlit as st
 import hashlib
@@ -56,7 +56,7 @@ def _save_users(users):
         with open(_USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
     except IOError:
-        pass  # Na Streamlit Cloud mozda nema write pristupa
+        pass
 
 
 def _get_secrets_value(key, default=""):
@@ -178,7 +178,7 @@ def _authenticate(email, name, role="user", provider="email"):
 
 
 # =============================================================================
-# LOGIN STRANICA
+# LOGIN STRANICA — Redizajnirana za bolji UX
 # =============================================================================
 
 def login_stranica():
@@ -196,45 +196,38 @@ def login_stranica():
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
+        # Branding
         st.markdown(
-            "<div style='text-align:center;margin:2rem 0 1.5rem;'>"
-            "<h1 style='color:#1E3A5F;font-size:2.2rem;margin-bottom:0.3rem;"
-            "border:none !important;padding:0 !important;'>"
-            "\u2696\ufe0f LegalTech Suite Pro</h1>"
-            "<p style='color:#475569;font-size:0.95rem;margin:0;'>Generator pravnih dokumenata</p>"
+            "<div style='text-align:center;margin:3rem 0 1rem;'>"
+            "<div style='font-size:3rem;margin-bottom:0.5rem;'>&#9878;&#65039;</div>"
+            "<h1 style='color:#1E3A5F;font-size:1.8rem;margin-bottom:0.2rem;"
+            "border:none !important;padding:0 !important;font-weight:700;'>"
+            "LegalTech Suite Pro</h1>"
+            "<p style='color:#64748B;font-size:0.9rem;margin:0 0 0.3rem;'>"
+            "Generator pravnih dokumenata za Hrvatsku</p>"
+            "<p style='color:#94A3B8;font-size:0.75rem;margin:0;'>"
+            "60+ dokumenata &middot; 15 pravnih podrucja &middot; DOCX format</p>"
             "</div>",
             unsafe_allow_html=True,
         )
 
-        # OAuth gumbi
-        st.markdown("##### Prijavite se putem")
-        c_google, c_apple = st.columns(2)
+        # --- GOST PRISTUP (najprominentniji) ---
+        st.markdown("")
+        if st.button(
+            "Isprobaj besplatno",
+            type="primary",
+            use_container_width=True,
+            key="guest_hero_btn",
+        ):
+            _authenticate("gost@legalsuite.hr", "Gost", role="guest", provider="guest")
+            st.rerun()
 
-        google_url = _google_auth_url()
-        with c_google:
-            if google_url:
-                st.link_button("\U0001f534 Google", google_url, use_container_width=True)
-            else:
-                st.button(
-                    "\U0001f534 Google", disabled=True, use_container_width=True,
-                    help="Konfigurirajte google_client_id u Streamlit Secrets",
-                )
-
-        apple_url = _apple_auth_url()
-        with c_apple:
-            if apple_url:
-                st.link_button("\u26ab Apple", apple_url, use_container_width=True)
-            else:
-                st.button(
-                    "\u26ab Apple", disabled=True, use_container_width=True,
-                    help="Konfigurirajte apple_client_id u Streamlit Secrets",
-                )
+        st.caption("Bez registracije. Sve funkcije dostupne odmah.")
 
         st.markdown("---")
 
-        tab_login, tab_register, tab_guest = st.tabs([
-            "\U0001f511 Prijava", "\U0001f4dd Registracija", "\U0001f464 Gost",
-        ])
+        # --- PRIJAVA / REGISTRACIJA (za korisnike koji zele account) ---
+        tab_login, tab_register = st.tabs(["Prijava", "Registracija"])
 
         with tab_login:
             with st.form("login_form"):
@@ -245,7 +238,6 @@ def login_stranica():
                     if not email or not password:
                         st.error("Unesite email i lozinku.")
                     else:
-                        # Admin provjera
                         admin_email = _get_secrets_value("admin_email", "admin@legalsuite.hr")
                         admin_pw_hash = _get_secrets_value("admin_password_hash", "")
                         if email == admin_email:
@@ -257,14 +249,31 @@ def login_stranica():
                                 _authenticate(email, "Administrator", role="admin", provider="email")
                                 st.rerun()
                             else:
-                                st.error("Pogrešna lozinka.")
+                                st.error("Pogresna lozinka.")
                         else:
                             users = _load_users()
                             if email in users and _verify_password(password, users[email].get("password", "")):
                                 _authenticate(email, users[email].get("name", email), provider="email")
                                 st.rerun()
                             else:
-                                st.error("Pogrešan email ili lozinka.")
+                                st.error("Pogresan email ili lozinka.")
+
+            # OAuth gumbi ispod login forme
+            google_url = _google_auth_url()
+            apple_url = _apple_auth_url()
+            if google_url or apple_url:
+                st.markdown(
+                    "<p style='text-align:center;color:#94A3B8;font-size:0.8rem;"
+                    "margin:0.5rem 0;'>ili</p>",
+                    unsafe_allow_html=True,
+                )
+                c_google, c_apple = st.columns(2)
+                with c_google:
+                    if google_url:
+                        st.link_button("Google prijava", google_url, use_container_width=True)
+                with c_apple:
+                    if apple_url:
+                        st.link_button("Apple prijava", apple_url, use_container_width=True)
 
         with tab_register:
             with st.form("register_form"):
@@ -297,22 +306,9 @@ def login_stranica():
                             _authenticate(reg_email, reg_name, provider="email")
                             st.rerun()
 
-        with tab_guest:
-            st.info(
-                "Pristupite aplikaciji bez registracije. "
-                "Kao gost mozete koristiti sve generatore dokumenata, "
-                "ali necete moci koristiti kalendar ni spremati dokumente."
-            )
-            if st.button(
-                "\U0001f464 Nastavi kao gost", type="primary",
-                use_container_width=True, key="guest_btn",
-            ):
-                _authenticate("gost@legalsuite.hr", "Gost", role="guest", provider="guest")
-                st.rerun()
-
         st.markdown(
-            "<div style='text-align:center;margin-top:2rem;color:#94A3B8;font-size:0.75rem;'>"
-            "LegalTech Suite Pro &copy; 2026 &middot; v4.0"
+            "<div style='text-align:center;margin-top:1.5rem;color:#94A3B8;font-size:0.7rem;'>"
+            "LegalTech Suite Pro &copy; 2026 &middot; v4.1"
             "</div>",
             unsafe_allow_html=True,
         )
@@ -326,29 +322,25 @@ def prikazi_korisnika_sidebar():
     if not user:
         return
 
-    role_badges = {
-        "admin": ("\U0001f6e1\ufe0f", "Admin", "#DC2626"),
-        "user": ("\U0001f464", "Korisnik", "#1E3A5F"),
-        "guest": ("\U0001f47b", "Gost", "#94A3B8"),
+    role_labels = {
+        "admin": ("Admin", "#DC2626"),
+        "user": ("Korisnik", "#1E3A5F"),
+        "guest": ("Gost", "#64748B"),
     }
     role = user.get("role", "user")
-    _emoji, label, color = role_badges.get(role, ("\U0001f464", "Korisnik", "#1E3A5F"))
-
+    label, color = role_labels.get(role, ("Korisnik", "#1E3A5F"))
     name = user.get("name", "Korisnik")
-    provider_icon = {"google": "\U0001f534", "apple": "\u26ab", "email": "\U0001f4e7", "guest": "\U0001f47b"}.get(
-        user.get("provider", "email"), ""
-    )
 
     st.sidebar.markdown(
-        f"<div style='background:rgba(255,255,255,0.05);padding:0.6rem 0.8rem;"
-        f"border-radius:8px;margin-bottom:0.5rem;'>"
-        f"<span style='font-size:0.8rem;color:#CBD5E1;'>{provider_icon} {name}</span><br>"
-        f"<span style='background:{color};color:white;padding:1px 6px;border-radius:3px;"
-        f"font-size:0.6rem;font-weight:600;'>{label}</span>"
+        f"<div style='background:rgba(255,255,255,0.06);padding:0.5rem 0.7rem;"
+        f"border-radius:6px;margin-bottom:0.3rem;'>"
+        f"<span style='font-size:0.8rem;color:#CBD5E1;'>{name}</span>"
+        f"&nbsp;<span style='background:{color};color:white;padding:1px 5px;border-radius:3px;"
+        f"font-size:0.55rem;font-weight:600;'>{label}</span>"
         f"</div>",
         unsafe_allow_html=True,
     )
 
-    if st.sidebar.button("\U0001f6aa Odjava", key="_auth_logout", use_container_width=True):
+    if st.sidebar.button("Odjava", key="_auth_logout", use_container_width=True):
         odjava()
         st.rerun()

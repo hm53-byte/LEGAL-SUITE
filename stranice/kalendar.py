@@ -22,10 +22,13 @@ def _spremi_eventi(eventi):
 def _posalji_podsjetnik(email, event):
     """Posalji email podsjetnik za event."""
     try:
-        smtp_host = st.secrets.get("smtp_host", "")
-        smtp_port = int(st.secrets.get("smtp_port", "587"))
-        smtp_user = st.secrets.get("smtp_user", "")
-        smtp_pass = st.secrets.get("smtp_pass", "")
+        try:
+            smtp_host = st.secrets.get("smtp_host", "")
+            smtp_port = int(st.secrets.get("smtp_port", "587"))
+            smtp_user = st.secrets.get("smtp_user", "")
+            smtp_pass = st.secrets.get("smtp_pass", "")
+        except Exception:
+            return False, "SMTP nije konfiguriran."
 
         if not smtp_host or not smtp_user:
             return False, "SMTP nije konfiguriran u Streamlit Secrets."
@@ -91,7 +94,7 @@ def _provjeri_podsjetnike():
 
 def render_kalendar():
     """Stranica za kalendar s dogadajima i podsjetnicima."""
-    st.header("\U0001f4c5 Kalendar")
+    st.header("Kalendar")
     st.caption("Pratite rocista, rokove i dogadaje. Postavite podsjetnik putem emaila.")
 
     # Provjeri podsjetnike pri svakom ucitavanju
@@ -100,7 +103,7 @@ def render_kalendar():
     eventi = _dohvati_eventi()
 
     # Tab: pregled i dodavanje
-    tab_pregled, tab_dodaj = st.tabs(["\U0001f4cb Moji dogadaji", "\u2795 Dodaj dogadaj"])
+    tab_pregled, tab_dodaj = st.tabs(["Moji dogadaji", "Dodaj dogadaj"])
 
     with tab_pregled:
         if not eventi:
@@ -178,7 +181,7 @@ def render_kalendar():
                             key=f"kal_sati_{i}",
                             label_visibility="collapsed",
                         )
-                        if st.button("\U0001f514 Postavi podsjetnik", key=f"kal_pod_{i}"):
+                        if st.button("Postavi podsjetnik", key=f"kal_pod_{i}"):
                             if pod_email and "@" in pod_email:
                                 event["podsjetnik_email"] = pod_email
                                 event["podsjetnik_sati"] = pod_sati
@@ -189,12 +192,12 @@ def render_kalendar():
                                 st.error("Unesite valjanu email adresu.")
                     elif event.get("podsjetnik_email"):
                         st.markdown(
-                            f"\U0001f514 Podsjetnik: **{event['podsjetnik_email']}** "
+                            f"Podsjetnik: **{event['podsjetnik_email']}** "
                             f"({event.get('podsjetnik_sati', 24)}h prije)"
                         )
 
                 with col_brisi:
-                    if st.button("\U0001f5d1\ufe0f Ukloni", key=f"kal_del_{i}"):
+                    if st.button("Ukloni", key=f"kal_del_{i}"):
                         eventi.pop(i)
                         _spremi_eventi(eventi)
                         st.rerun()
@@ -205,7 +208,8 @@ def render_kalendar():
         with st.form("novi_event_form"):
             naslov = st.text_input("Naslov", placeholder="npr. Rociste - P-123/2024")
             datum = st.date_input("Datum", value=datetime.now() + timedelta(days=7))
-            vrijeme = st.time_input("Vrijeme (opcionalno)", value=None)
+            from datetime import time as _time
+            vrijeme = st.time_input("Vrijeme (09:00 ako nema)", value=_time(9, 0), key="kal_vrijeme")
             opis = st.text_area("Opis (opcionalno)", placeholder="Dodatne biljeske...")
             tip = st.selectbox("Tip", options=["rociste", "rok", "drazba", "ostalo"],
                                format_func=lambda x: {"rociste": "Rociste", "rok": "Rok", "drazba": "Drazba", "ostalo": "Ostalo"}[x])
@@ -217,10 +221,7 @@ def render_kalendar():
                     st.error("Unesite naslov dogadaja.")
                 else:
                     datum_str = datum.strftime("%d.%m.%Y.")
-                    if vrijeme:
-                        datum_iso = datetime.combine(datum, vrijeme).isoformat()
-                    else:
-                        datum_iso = datum.isoformat()
+                    datum_iso = datetime.combine(datum, vrijeme).isoformat()
 
                     novi_event = {
                         "naslov": naslov,
@@ -236,8 +237,11 @@ def render_kalendar():
                     st.rerun()
 
     # SMTP konfiguracija info
-    with st.expander("\u2699\ufe0f Konfiguracija email podsjetnika"):
-        smtp_ok = bool(st.secrets.get("smtp_host", "") if hasattr(st, "secrets") else "")
+    with st.expander("Konfiguracija email podsjetnika"):
+        try:
+            smtp_ok = bool(st.secrets.get("smtp_host", ""))
+        except Exception:
+            smtp_ok = False
         if smtp_ok:
             st.success("SMTP je konfiguriran. Email podsjetnici ce se slati automatski.")
         else:
