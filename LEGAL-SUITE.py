@@ -1,10 +1,12 @@
 # =============================================================================
 # LegalTech Suite Pro - Glavni ulaz (entry point)
+# v4.0 - Auth, API integracije, kalendar, propisi
 # =============================================================================
 import streamlit as st
 import streamlit.components.v1 as components
 from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
 from pomocne import docx_opcije
+from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth
 from stranice import (
     render_ugovori,
     render_tuzbe,
@@ -22,6 +24,10 @@ from stranice import (
     render_stecajno,
     render_potrosaci,
     render_pristojbe,
+    render_epredmet,
+    render_eoglasna,
+    render_kalendar,
+    render_nn_pretraga,
 )
 
 # Konfiguracija stranice
@@ -33,6 +39,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(CSS_STILOVI, unsafe_allow_html=True)
+
+# =============================================================================
+# AUTENTIKACIJA - Login ekran prije svega
+# =============================================================================
+
+if not login_stranica():
+    st.stop()
 
 # =============================================================================
 # SIDEBAR NAVIGACIJA
@@ -53,6 +66,10 @@ _NAV_ICONS = {
     "Upravno pravo": "\U0001f3db\ufe0f",
     "Kazneno pravo": "\U0001f6a8",
     "Stečajno pravo": "\U0001f4c9",
+    "e-Predmet": "\U0001f50d",
+    "Sudske objave": "\U0001f4cb",
+    "Propisi i zakoni": "\U0001f4da",
+    "Kalendar": "\U0001f4c5",
     "Kalkulator kamata": "\U0001f4ca",
     "Kalkulator pristojbi": "\U0001f9ee",
     "Zaštita potrošača": "\U0001f6e1\ufe0f",
@@ -77,7 +94,13 @@ _NAV_SECTIONS = {
         "Kazneno pravo",
         "Stečajno pravo",
     ],
-    "Alati i ostalo": [
+    "Praćenje i baze": [
+        "e-Predmet",
+        "Sudske objave",
+        "Propisi i zakoni",
+        "Kalendar",
+    ],
+    "Alati": [
         "Kalkulator kamata",
         "Kalkulator pristojbi",
         "Zaštita potrošača",
@@ -87,8 +110,9 @@ _NAV_SECTIONS = {
 if "_active_module" not in st.session_state:
     st.session_state._active_module = "Početna"
 
+# Sidebar header + korisnik
 st.sidebar.title("LegalTech Suite Pro")
-st.sidebar.caption("Generator pravnih dokumenata")
+prikazi_korisnika_sidebar()
 st.sidebar.markdown("---")
 
 for section_name, modules in _NAV_SECTIONS.items():
@@ -111,7 +135,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align: center; font-size: 0.7rem; color: #94A3B8 !important; "
     "font-family: Inter, sans-serif; padding: 0.5rem 0;'>"
-    "v3.2 &middot; 60+ dokumenata &middot; 15 područja<br>"
+    "v4.0 &middot; 60+ dokumenata &middot; 4 API-ja<br>"
     "LegalTech Suite Pro &copy; 2026"
     "</div>",
     unsafe_allow_html=True,
@@ -150,7 +174,6 @@ def _navigate_to(module_name):
 # POCETNA STRANICA (s integriranim vodicem)
 # =============================================================================
 
-# Vodic kategorije - definicija podataka
 _VODIC_KATEGORIJE = [
     {
         "ikona": "\U0001f4b8", "naslov": "Netko mi duguje novac",
@@ -213,14 +236,11 @@ _TEZINA_BOJA = {
 
 def _render_vodic_detalji(odabir):
     """Prikazuje detaljne korake za odabranu vodic kategoriju."""
-
-    # Anchor za auto-scroll
     st.markdown("<div id='vodic-detalji'></div>", unsafe_allow_html=True)
     st.markdown("---")
 
     if odabir == "Netko mi duguje novac":
         st.markdown("### \U0001f4b8 Koraci za naplatu dugovanja")
-
         st.markdown(
             "<div style='background:#EFF3F8;padding:1rem 1.2rem;border-radius:8px;"
             "border-left:4px solid #1E3A5F;margin-bottom:1rem;'>"
@@ -424,21 +444,33 @@ def _render_pocetna():
     odabir = st.session_state.get("_vodic_odabir", "")
     if odabir:
         _render_vodic_detalji(odabir)
-        # Auto-scroll do detalja
         _scroll_to_anchor("vodic-detalji")
 
     # ----- ALATI (kompaktno) -----
     st.markdown("---")
-    st.markdown("##### Alati")
-    col1, col2, col3 = st.columns(3)
+    st.markdown("##### Alati i baze podataka")
+    col1, col2, col3, col4 = st.columns(4)
     _alati = [
+        ("\U0001f50d e-Predmet", "e-Predmet"),
+        ("\U0001f4cb Sudske objave", "Sudske objave"),
+        ("\U0001f4da Propisi", "Propisi i zakoni"),
+        ("\U0001f4c5 Kalendar", "Kalendar"),
+    ]
+    for col, (label, modul) in zip([col1, col2, col3, col4], _alati):
+        with col:
+            if st.button(label, key=f"_alat_{modul}", use_container_width=True):
+                _navigate_to(modul)
+                st.rerun()
+
+    col5, col6, col7 = st.columns(3)
+    _alati2 = [
         ("\U0001f4ca Kalkulator kamata", "Kalkulator kamata"),
         ("\U0001f9ee Kalkulator pristojbi", "Kalkulator pristojbi"),
         ("\U0001f6e1\ufe0f Zaštita potrošača", "Zaštita potrošača"),
     ]
-    for col, (label, modul) in zip([col1, col2, col3], _alati):
+    for col, (label, modul) in zip([col5, col6, col7], _alati2):
         with col:
-            if st.button(label, key=f"_alat_{modul}", use_container_width=True):
+            if st.button(label, key=f"_alat2_{modul}", use_container_width=True):
                 _navigate_to(modul)
                 st.rerun()
 
@@ -458,8 +490,11 @@ active = st.session_state._active_module
 if active != "Početna":
     _scroll_to_top()
 
-# DOCX opcije
-_NO_DOCX_OPTS = {"Početna", "Kalkulator kamata", "Kalkulator pristojbi"}
+# DOCX opcije - samo za generatore dokumenata
+_NO_DOCX_OPTS = {
+    "Početna", "Kalkulator kamata", "Kalkulator pristojbi",
+    "e-Predmet", "Sudske objave", "Propisi i zakoni", "Kalendar",
+}
 if active not in _NO_DOCX_OPTS:
     docx_opcije()
 
@@ -492,6 +527,14 @@ elif active == "Kazneno pravo":
     render_kazneno()
 elif active == "Stečajno pravo":
     render_stecajno()
+elif active == "e-Predmet":
+    render_epredmet()
+elif active == "Sudske objave":
+    render_eoglasna()
+elif active == "Propisi i zakoni":
+    render_nn_pretraga()
+elif active == "Kalendar":
+    render_kalendar()
 elif active == "Kalkulator kamata":
     render_kamate()
 elif active == "Kalkulator pristojbi":
