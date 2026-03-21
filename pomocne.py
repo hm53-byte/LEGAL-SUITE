@@ -462,13 +462,16 @@ PRIMJERI = {
     'opomena': {
         'opis': 'Opomena pred tužbu za nepodmireni račun',
         'stranke': {
-            'op_ime': 'Ivan Horvat',
-            'op_oib': '12345678903',
-            'op_adresa': 'Savska 25, 10000 Zagreb',
+            'op_v_ime': 'ABC d.o.o.',
+            'op_v_oib': '11223344556',
+            'op_v_sjediste': 'Heinzelova 33, 10000 Zagreb',
+            'op_v_zastupnik': 'Direktor Ivan Horvat',
+            'op_d_ime': 'Marko Novak',
+            'op_d_oib': '98765432101',
+            'op_d_adresa': 'Vukovarska 15, 21000 Split',
         },
         'podaci': {
             'glavnica': 3500.0,
-            'opis': 'Pozivamo Vas da u roku od 8 dana od primitka ove opomene podmiriite dugovanje u iznosu od 3.500,00 EUR po osnovi računa br. R-123/2024 od 01.02.2024., u protivnom ćemo bez daljnjeg upozorenja pokrenuti ovršni postupak.',
         },
     },
     'kaznena_prijava': {
@@ -479,32 +482,148 @@ PRIMJERI = {
             'kp_adresa': 'Gundulićeva 8, 10000 Zagreb',
         },
         'podaci': {
-            'clanak_kz': 'čl. 236. st. 1. KZ (Prijevara)',
-            'osumnjicenik': 'Petar Babić, Draškovićeva 12, Zagreb, OIB: 99887766554',
+            'kp_clanak': 'čl. 236. st. 1. KZ (Prijevara)',
+            'kp_osumnjicenik': 'Petar Babić, Draškovićeva 12, Zagreb, OIB: 99887766554',
+            'kp_mjesto': 'Zagreb',
         },
-        'opis_djela': [
-            {'tekst': 'Dana 10.01.2025. osumnjičenik je prijaviteljici lažno predstavio da prodaje rabljeni automobil marke VW Golf, reg. oznake ZG-1234-AB, te da je vozilo u ispravnom tehničkom stanju.',
-             'dokaz': 'Oglas na njuskalo.hr (screenshot), WhatsApp prepiska'},
-            {'tekst': 'Prijaviteljica je na temelju lažnih navoda osumnjičeniku uplatila kupoprodajnu cijenu od 8.500,00 EUR na IBAN HR1234567890123456789.',
-             'dokaz': 'Potvrda o uplati od 11.01.2025.'},
-            {'tekst': 'Nakon uplate, osumnjičenik je prestao odgovarati na pozive i poruke, a vozilo nikada nije predano prijaviteljici.',
-             'dokaz': 'Evidencija poziva, WhatsApp poruke (screenshot)'},
-        ],
     },
     'zalba_zup': {
         'opis': 'Žalba na rješenje o odbijanju zahtjeva (ZUP)',
-        'podaci': {
-            'prvostupanjsko_tijelo': 'Upravni odjel za komunalno gospodarstvo Grada Zagreba',
-            'drugostupanjsko_tijelo': 'Ministarstvo prostornoga uređenja, graditeljstva i državne imovine',
-            'klasa': 'UP/I-361-01/24-01/123',
-            'urbroj': '251-13-11/2-24-5',
+        'stranke': {
+            'zup_z_ime': 'Ivan Horvat',
+            'zup_z_oib': '12345678903',
+            'zup_z_adresa': 'Savska 25, 10000 Zagreb',
         },
-        'razlozi': [
-            {'tekst': 'Prvostupanjsko tijelo nije pravilno primijenilo čl. 136. Zakona o gradnji jer je odbilo zahtjev za izdavanje građevinske dozvole bez navođenja konkretnih nedostataka projektne dokumentacije.',
-             'dokaz': 'Rješenje KLASA: UP/I-361-01/24-01/123 od 15.01.2025.'},
-            {'tekst': 'Stranka nije saslušana u postupku čime je povrijeđeno pravo na saslušanje stranke iz čl. 30. ZUP-a.',
-             'dokaz': 'Spis predmeta - nedostaje zapisnik o saslušanju'},
-        ],
+        'podaci': {
+            'zup_prvostupanjsko': 'Upravni odjel za komunalno gospodarstvo Grada Zagreba',
+            'zup_drugostupanjsko': 'Ministarstvo prostornoga uređenja, graditeljstva i državne imovine',
+            'zup_klasa': 'UP/I-361-01/24-01/123',
+            'zup_urbroj': '251-13-11/2-24-5',
+            'zup_mjesto': 'Zagreb',
+        },
+    },
+    'zalba_presuda': {
+        'opis': 'Žalba na presudu radi isplate - pogrešno utvrđeno činjenično stanje',
+        'stranke': {
+            'tuzitelj': 'Ante Kovačević',
+            'tuzenik': 'Marko Novak',
+        },
+        'podaci': {
+            'broj_presude': 'P-456/2024',
+            'mjesto': 'Zagreb',
+        },
+    },
+    'ugovor_kupoprodaja': {
+        'opis': 'Ugovor o kupoprodaji rabljenog vozila',
+        'stranke': {
+            'u1_ime': 'Ivan Horvat',
+            'u1_oib': '12345678903',
+            'u1_adresa': 'Ilica 42, 10000 Zagreb',
+            'u2_ime': 'Ana Marić',
+            'u2_oib': '98765432101',
+            'u2_adresa': 'Vukovarska 15, 21000 Split',
+        },
+    },
+    'ugovor_o_radu': {
+        'opis': 'Ugovor o radu na neodređeno vrijeme',
+        'stranke': {
+            'p_tvrtka': 'ABC d.o.o.',
+            'p_oib_pravna': '11223344556',
+            'p_sjediste': 'Heinzelova 33, 10000 Zagreb',
+            'p_zastupnik': 'Direktor Petar Babić',
+            'r_ime': 'Ana Marić',
+            'r_oib': '98765432101',
+            'r_adresa': 'Savska 25, 10000 Zagreb',
+        },
+        'podaci': {
+            'naziv_radnog_mjesta': 'Pravni savjetnik',
+            'opis_posla': 'Pravno savjetovanje, izrada ugovora i pravnih mišljenja',
+            'mjesto_rada': 'sjedište Poslodavca',
+            'bruto_placa': 2000.0,
+        },
+    },
+    'punomoc': {
+        'opis': 'Posebna punomoć za zastupanje u parničnom postupku',
+        'stranke': {
+            'pn_ime': 'Ivan Horvat',
+            'pn_oib': '12345678903',
+            'pn_adresa': 'Ilica 42, 10000 Zagreb',
+        },
+        'podaci': {
+            'opis_ovlastenja': 'Zastupanje u parničnom postupku pred Općinskim građanskim sudom u Zagrebu, '
+                               'poslovni broj P-123/2024, uključujući podnošenje tužbe, prisustvovanje ročištima, '
+                               'sklapanje nagodbe, podnošenje pravnih lijekova i poduzimanje svih pravnih radnji '
+                               'u postupku.',
+        },
+    },
+    'trgovacko_drustveni': {
+        'opis': 'Društveni ugovor d.o.o. - jednostavno osnivanje',
+        'podaci': {
+            'naziv_drustva': 'Tech Solutions d.o.o.',
+            'sjediste': 'Zagreb, Ilica 100',
+            'temeljni_kapital': 2500.0,
+            'predmet_poslovanja': '62.01 Računalno programiranje',
+        },
+    },
+    'obvezno_darovanje': {
+        'opis': 'Ugovor o darovanju nekretnine',
+        'stranke': {
+            'od_ime': 'Marija Horvat',
+            'od_oib': '12345678903',
+            'od_adresa': 'Savska 10, 10000 Zagreb',
+            'op_ime': 'Ivan Horvat',
+            'op_oib': '98765432101',
+            'op_adresa': 'Savska 10, 10000 Zagreb',
+        },
+    },
+    'obiteljsko_razvod': {
+        'opis': 'Sporazumni prijedlog za razvod braka',
+        'stranke': {
+            'ob1_ime': 'Ivan Horvat',
+            'ob1_oib': '12345678903',
+            'ob1_adresa': 'Ilica 42, 10000 Zagreb',
+            'ob2_ime': 'Ana Horvat',
+            'ob2_oib': '98765432101',
+            'ob2_adresa': 'Ilica 42, 10000 Zagreb',
+        },
+    },
+    'stecaj_potrosac': {
+        'opis': 'Prijedlog za stečaj potrošača (osobni bankrot)',
+        'stranke': {
+            'sp_ime': 'Petar Babić',
+            'sp_oib': '12345678903',
+            'sp_adresa': 'Draškovićeva 12, 10000 Zagreb',
+        },
+        'podaci': {
+            'ukupni_dug': 15000.0,
+            'trajanje_blokade_dana': 120,
+        },
+    },
+    'potrosac_reklamacija': {
+        'opis': 'Reklamacija trgovcu za neispravan proizvod',
+        'stranke': {
+            'pr_ime': 'Ana Marić',
+            'pr_oib': '98765432101',
+            'pr_adresa': 'Vukovarska 15, 21000 Split',
+        },
+        'podaci': {
+            'trgovac': 'ElektroShop d.o.o., Heinzelova 33, Zagreb, OIB: 11223344556',
+            'proizvod': 'Prijenosno računalo HP Pavilion 15',
+            'datum_kupnje': '15.01.2026.',
+            'opis_nedostatka': 'Ekran prijenosnog računala prestao je raditi nakon 3 tjedna korištenja. '
+                               'Pojavljuje se crni ekran pri pokretanju unatoč ispravnom napajanju.',
+        },
+    },
+    'zemljisne_tabularna': {
+        'opis': 'Tabularna isprava za uknjižbu prava vlasništva',
+        'stranke': {
+            'tp_ime': 'Marko Novak',
+            'tp_oib': '12345678903',
+            'tp_adresa': 'Vukovarska 15, 21000 Split',
+            'tk_ime': 'Ivan Horvat',
+            'tk_oib': '98765432101',
+            'tk_adresa': 'Ilica 42, 10000 Zagreb',
+        },
     },
 }
 

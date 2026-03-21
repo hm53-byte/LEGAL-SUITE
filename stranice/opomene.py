@@ -11,7 +11,7 @@ def render_opomene():
 
     zastupanje = zaglavlje_sastavljaca()
 
-    napuni_primjerom('opomena', 'op')
+    napuni_primjerom('opomena', '')
 
     vrsta = st.radio(
         "Vrsta opomene:",
@@ -27,8 +27,8 @@ def render_opomene():
 
     st.subheader("Podaci o tražbini")
     c1, c2 = st.columns(2)
-    glavnica = c1.number_input("Iznos duga (EUR)", min_value=0.0)
-    rok = c2.number_input("Rok za ispunjenje (dana)", min_value=1, value=8)
+    glavnica = c1.number_input("Iznos duga (EUR)", min_value=0.0, key="glavnica")
+    rok = c2.number_input("Rok za ispunjenje (dana)", min_value=1, value=8, key="rok")
     datum_dospijeca = st.date_input("Datum dospijeća obveze")
 
     opis_osnove = st.text_area(

@@ -13,7 +13,7 @@ from generatori.upravno import (
 
 def _render_zalba_zup():
     """Žalba u upravnom postupku (ZUP)."""
-    napuni_primjerom('zalba_zup', 'zup')
+    napuni_primjerom('zalba_zup', '')
 
     st.info(
         "Rok za žalbu u upravnom postupku je **15 dana** od dana dostave "

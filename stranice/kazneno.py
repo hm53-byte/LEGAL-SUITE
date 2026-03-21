@@ -12,9 +12,9 @@ from generatori.kazneno import (
 
 def _render_kaznena_prijava():
     """Kaznena prijava."""
-    napuni_primjerom('kaznena_prijava', 'kp')
+    napuni_primjerom('kaznena_prijava', '')
 
-    prijavitelj, _, _ = unos_stranke("PRIJAVITELJ", "kp_prij")
+    prijavitelj, _, _ = unos_stranke("PRIJAVITELJ", "kp")
 
     st.subheader("Podaci o prijavi")
     nadlezno_tijelo = st.text_input(

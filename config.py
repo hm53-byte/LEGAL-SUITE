@@ -111,21 +111,41 @@ CSS_STILOVI = f"""
         margin: 0.4rem 0 !important;
     }}
 
-    /* Sidebar search input */
-    [data-testid="stSidebar"] .stTextInput input {{
-        background: rgba(255,255,255,0.06) !important;
-        border: 1px solid rgba(203,213,225,0.15) !important;
+    /* Sidebar search input — multiple selectors for Cloud compat */
+    [data-testid="stSidebar"] .stTextInput input,
+    [data-testid="stSidebar"] input[type="text"],
+    [data-testid="stSidebar"] [data-testid="stTextInput"] input,
+    [data-testid="stSidebar"] .stTextInput > div > input,
+    [data-testid="stSidebar"] .stTextInput > div > div > input,
+    section[data-testid="stSidebar"] input {{
+        background: rgba(255,255,255,0.08) !important;
+        background-color: rgba(255,255,255,0.08) !important;
+        border: 1px solid rgba(203,213,225,0.2) !important;
         color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
         font-size: 0.8rem !important;
         padding: 0.4rem 0.6rem !important;
         border-radius: 6px !important;
+        caret-color: #FFFFFF !important;
     }}
-    [data-testid="stSidebar"] .stTextInput input::placeholder {{
+    [data-testid="stSidebar"] .stTextInput input::placeholder,
+    [data-testid="stSidebar"] input[type="text"]::placeholder,
+    [data-testid="stSidebar"] [data-testid="stTextInput"] input::placeholder,
+    section[data-testid="stSidebar"] input::placeholder {{
         color: rgba(203,213,225,0.5) !important;
+        -webkit-text-fill-color: rgba(203,213,225,0.5) !important;
+        opacity: 1 !important;
     }}
-    [data-testid="stSidebar"] .stTextInput input:focus {{
+    [data-testid="stSidebar"] .stTextInput input:focus,
+    [data-testid="stSidebar"] input[type="text"]:focus,
+    [data-testid="stSidebar"] [data-testid="stTextInput"] input:focus,
+    section[data-testid="stSidebar"] input:focus {{
         border-color: {_ACCENT_LIGHT} !important;
         box-shadow: 0 0 0 2px rgba(212,168,67,0.15) !important;
+        background: rgba(255,255,255,0.1) !important;
+        background-color: rgba(255,255,255,0.1) !important;
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
     }}
 
     /* Sidebar section headers */

@@ -23,7 +23,7 @@ def render_tuzbe():
 
     zastupanje = zaglavlje_sastavljaca()
 
-    napuni_primjerom('tuzba', 't')
+    napuni_primjerom('tuzba', '')
 
     # Vise tuzitelja/tuzenika
     vise_stranaka = st.checkbox("Više tužitelja / tuženika", key="tuzbe_vise")
@@ -55,12 +55,12 @@ def render_tuzbe():
     st.subheader("Predmet spora")
     vrsta_suda = "trgovacki" if (tip1 == "Pravna" and tip2 == "Pravna") else "opcinski"
     sud = odabir_suda("Naslovni sud", vrsta=vrsta_suda, key="tuzbe_sud")
-    vps = st.number_input("Vrijednost predmeta spora - VPS (EUR)", min_value=0.0,
+    vps = st.number_input("Vrijednost predmeta spora - VPS (EUR)", min_value=0.0, key="vps",
                           help="Iznos u EUR koji tražite od tuženika. Na temelju VPS-a izračunava se sudska pristojba i određuje nadležnost suda.")
-    datum_dospijeca = st.date_input("Datum dospijeća (Od kada teku kamate?)",
+    datum_dospijeca = st.date_input("Datum dospijeća (Od kada teku kamate?)", key="datum_dospijeca",
                                     help="Datum od kojeg se obračunavaju zakonske zatezne kamate (čl. 29. ZOO).")
     provjeri_zastaru(datum_dospijeca, rok_godina=5, opis_roka="opći zastarni rok (čl. 225. ZOO)")
-    vrsta = st.text_input("Radi (kratki opis)", "Isplate (Dugovanja)",
+    vrsta = st.text_input("Radi (kratki opis)", "Isplate (Dugovanja)", key="vrsta",
                           help="Kratki opis predmeta spora, npr. 'Isplate', 'Naknade štete', 'Ispunjenja ugovora'.")
 
     st.subheader("I. Činjenični navodi i dokazi")
