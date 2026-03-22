@@ -163,7 +163,7 @@ def unos_stranke(oznaka, key_prefix):
     else:
         tvrtka = col1.text_input(f"Tvrtka", key=f"{key_prefix}_tvrtka")
         oib = col2.text_input(f"OIB", max_chars=11, key=f"{key_prefix}_oib_pravna")
-        mbs = col1.text_input(f"MBS", key=f"{key_prefix}_mbs")
+        mbs = col1.text_input(f"MBS", max_chars=8, key=f"{key_prefix}_mbs")
         zastupnik = col2.text_input(f"Zastupan po", key=f"{key_prefix}_zastupnik")
         sjediste = st.text_input(f"Sjedište", key=f"{key_prefix}_sjediste")
         if oib:
@@ -422,7 +422,111 @@ def odredi_nadlezni_sud(tip_stranke1, tip_stranke2, zadani_sud="OPĆINSKI GRAĐA
 # PRIMJERI / PREDLOŠCI - "Napuni primjerom" za brži unos
 # =============================================================================
 
+# Pool nasumicnih podataka za primjere
+_POOL_IMENA = [
+    "Ivan Horvat", "Ana Marić", "Marko Novak", "Petra Jurić",
+    "Ante Babić", "Maja Knežević", "Luka Tomić", "Sara Pavlović",
+    "Josip Kovačević", "Ivana Matić", "Tomislav Perić", "Marina Vuković",
+    "Davor Šimunović", "Katarina Blažević", "Filip Radić", "Nikolina Grgić",
+]
+_POOL_ADRESA = [
+    "Ilica 42, 10000 Zagreb", "Vukovarska 15, 21000 Split",
+    "Gundulićeva 8, 31000 Osijek", "Korzo 20, 51000 Rijeka",
+    "Obala 3, 23000 Zadar", "Savska 25, 10000 Zagreb",
+    "Draškovićeva 12, 10000 Zagreb", "Frankopanska 7, 10000 Zagreb",
+    "Maksimirska 88, 10000 Zagreb", "Zvonimirova 19, 10000 Zagreb",
+    "Stjepana Radića 5, 40000 Čakovec", "Trg bana Jelačića 1, 10000 Zagreb",
+]
+_POOL_OIBA = [
+    "12345678903", "98765432101", "55443322110",
+    "33221100998", "99887766554", "44556677889",
+    "77665544332", "11998877665", "22334455667",
+]
+_POOL_TVRTKI = [
+    "ABC d.o.o.", "DEF d.o.o.", "XYZ d.o.o.",
+    "Tech Solutions d.o.o.", "Mega Trade d.o.o.", "Nova Gradnja d.o.o.",
+    "Adriatic IT d.o.o.", "Plavi val d.o.o.", "Zeleni vrh d.o.o.",
+]
+_POOL_ZASTUPNIKA = [
+    "Direktor Ivan Horvat", "Direktor Ana Marić", "Direktor Marko Novak",
+    "Prokuristica Petra Jurić", "Član uprave Ante Babić",
+    "Direktor Tomislav Perić", "Direktorica Marina Vuković",
+]
+_POOL_SJEDISTA = [
+    "Heinzelova 33, 10000 Zagreb", "Radnička 47, 10000 Zagreb",
+    "Savska 100, 10000 Zagreb", "Grada Vukovara 269, 10000 Zagreb",
+    "Slavonska avenija 6, 10000 Zagreb", "Avenija Dubrovnik 15, 10000 Zagreb",
+    "Ulica grada Vukovara 37, 10000 Zagreb",
+]
+
+
+def _randomiziraj_primjer(primjer):
+    """Nasumicno zamjenjuje osobne podatke u primjeru.
+    Svaki poziv daje drugacije podatke (eksplicitni re-seed).
+    """
+    import random
+    import copy
+    import time
+
+    # Eksplicitni re-seed za svaki poziv — osigurava razlicite rezultate
+    random.seed(time.time_ns())
+
+    p = copy.deepcopy(primjer)
+
+    imena = random.sample(_POOL_IMENA, min(len(_POOL_IMENA), 8))
+    adrese = random.sample(_POOL_ADRESA, min(len(_POOL_ADRESA), 8))
+    oibi = random.sample(_POOL_OIBA, min(len(_POOL_OIBA), 6))
+    tvrtke = random.sample(_POOL_TVRTKI, min(len(_POOL_TVRTKI), 6))
+    zastupnici = random.sample(_POOL_ZASTUPNIKA, min(len(_POOL_ZASTUPNIKA), 5))
+    sjedista = random.sample(_POOL_SJEDISTA, min(len(_POOL_SJEDISTA), 5))
+
+    idx = {'ime': 0, 'adr': 0, 'oib': 0, 'tvr': 0, 'zas': 0, 'sjd': 0}
+
+    # Randomiziraj stranke
+    for key in list(p.get('stranke', {}).keys()):
+        if key.endswith('_tip'):
+            continue
+        if key.endswith('_ime') or key in ('tuzitelj', 'tuzenik'):
+            p['stranke'][key] = imena[idx['ime'] % len(imena)]
+            idx['ime'] += 1
+        elif key.endswith('_adresa'):
+            p['stranke'][key] = adrese[idx['adr'] % len(adrese)]
+            idx['adr'] += 1
+        elif key.endswith('_oib') or key.endswith('_oib_pravna'):
+            p['stranke'][key] = oibi[idx['oib'] % len(oibi)]
+            idx['oib'] += 1
+        elif key.endswith('_tvrtka'):
+            p['stranke'][key] = tvrtke[idx['tvr'] % len(tvrtke)]
+            idx['tvr'] += 1
+        elif key.endswith('_zastupnik'):
+            p['stranke'][key] = zastupnici[idx['zas'] % len(zastupnici)]
+            idx['zas'] += 1
+        elif key.endswith('_sjediste'):
+            p['stranke'][key] = sjedista[idx['sjd'] % len(sjedista)]
+            idx['sjd'] += 1
+
+    # Randomiziraj osobne podatke u podaci dict (ako sadrze imena/adrese)
+    for key in list(p.get('podaci', {}).keys()):
+        val = p['podaci'][key]
+        if not isinstance(val, str):
+            continue
+        # Zamijeni poznata imena iz originalnog primjera s random imenima
+        for orig_ime in _POOL_IMENA[:10]:
+            if orig_ime in val:
+                novo_ime = imena[idx['ime'] % len(imena)]
+                val = val.replace(orig_ime, novo_ime)
+                idx['ime'] += 1
+                break
+        p['podaci'][key] = val
+
+    return p
+
+
 # Rjecnik primjera za razne tipove dokumenata
+# VAZNO: kljucevi stranaka moraju tocno odgovarati widget key-evima!
+# Fizicka: {prefix}_ime, {prefix}_oib, {prefix}_adresa
+# Pravna:  {prefix}_tip='Pravna osoba', {prefix}_tvrtka, {prefix}_oib_pravna,
+#          {prefix}_sjediste, {prefix}_zastupnik, {prefix}_mbs
 PRIMJERI = {
     'tuzba': {
         'opis': 'Tužba radi isplate - naplata dugovanja po računu',
@@ -451,19 +555,22 @@ PRIMJERI = {
     'ovrha': {
         'opis': 'Ovrha na temelju vjerodostojne isprave (nenaplaćeni račun)',
         'stranke': {
-            'o1_ime': 'ABC d.o.o.',
-            'o1_oib': '11223344556',
+            'o1_tip': 'Pravna osoba',
+            'o1_tvrtka': 'ABC d.o.o.',
+            'o1_oib_pravna': '11223344556',
             'o1_sjediste': 'Heinzelova 33, 10000 Zagreb',
-            'o2_ime': 'DEF d.o.o.',
-            'o2_oib': '66554433221',
+            'o2_tip': 'Pravna osoba',
+            'o2_tvrtka': 'DEF d.o.o.',
+            'o2_oib_pravna': '66554433221',
             'o2_sjediste': 'Radnička 47, 10000 Zagreb',
         },
     },
     'opomena': {
         'opis': 'Opomena pred tužbu za nepodmireni račun',
         'stranke': {
-            'op_v_ime': 'ABC d.o.o.',
-            'op_v_oib': '11223344556',
+            'op_v_tip': 'Pravna osoba',
+            'op_v_tvrtka': 'ABC d.o.o.',
+            'op_v_oib_pravna': '11223344556',
             'op_v_sjediste': 'Heinzelova 33, 10000 Zagreb',
             'op_v_zastupnik': 'Direktor Ivan Horvat',
             'op_d_ime': 'Marko Novak',
@@ -527,6 +634,7 @@ PRIMJERI = {
     'ugovor_o_radu': {
         'opis': 'Ugovor o radu na neodređeno vrijeme',
         'stranke': {
+            'p_tip': 'Pravna osoba',
             'p_tvrtka': 'ABC d.o.o.',
             'p_oib_pravna': '11223344556',
             'p_sjediste': 'Heinzelova 33, 10000 Zagreb',
@@ -629,7 +737,10 @@ PRIMJERI = {
 
 
 def napuni_primjerom(tip_dokumenta, key_prefix=""):
-    """Prikazuje gumb 'Napuni primjerom' i vraca dict s primjerom ili None."""
+    """Prikazuje gumb 'Napuni primjerom' i vraca dict s primjerom ili None.
+    Svaki klik nasumicno zamjenjuje osobne podatke (imena, adrese, OIB-ove).
+    Cisti suprotne kljuceve (fizicka vs pravna) da se izbjegnu "krive prozore".
+    """
     if tip_dokumenta not in PRIMJERI:
         return None
 
@@ -639,13 +750,44 @@ def napuni_primjerom(tip_dokumenta, key_prefix=""):
     with st.expander(f"Primjer: {primjer['opis']}", expanded=False):
         st.caption(
             "Kliknite gumb za automatsko popunjavanje forme primjerom. "
-            "Zatim prilagodite podatke svojem slučaju."
+            "Svaki klik daje drugačije podatke. Zatim prilagodite svojem slučaju."
         )
         if st.button("Napuni primjerom", key=btn_key, type="secondary"):
-            for k, v in primjer.get('stranke', {}).items():
+            randomized = _randomiziraj_primjer(primjer)
+
+            # Prikupi prefikse stranaka iz primjera za ciscenje starih kljuceva
+            stranke_keys = set(randomized.get('stranke', {}).keys())
+            stranke_prefiksi = set()
+            for k in stranke_keys:
+                # Izvuci prefiks stranke (npr. 'o1' iz 'o1_ime', 'op_v' iz 'op_v_tvrtka')
+                for suffix in ('_ime', '_oib', '_adresa', '_tvrtka', '_oib_pravna',
+                               '_sjediste', '_zastupnik', '_mbs', '_tip'):
+                    if k.endswith(suffix):
+                        stranke_prefiksi.add(k[:-len(suffix)])
+                        break
+
+            # Cisti suprotne kljuceve za svaki prefiks stranke
+            _fizicka_sufiksi = ('_ime', '_oib', '_adresa')
+            _pravna_sufiksi = ('_tvrtka', '_oib_pravna', '_sjediste', '_zastupnik', '_mbs')
+            for sp in stranke_prefiksi:
+                tip_key = f"{key_prefix}_{sp}_tip" if key_prefix else f"{sp}_tip"
+                tip_val = randomized.get('stranke', {}).get(f"{sp}_tip", "")
+                if tip_val == "Pravna osoba":
+                    # Ocisti fizicka polja
+                    for suf in _fizicka_sufiksi:
+                        fk = f"{key_prefix}_{sp}{suf}" if key_prefix else f"{sp}{suf}"
+                        st.session_state.pop(fk, None)
+                elif tip_val == "Fizička osoba":
+                    # Ocisti pravna polja
+                    for suf in _pravna_sufiksi:
+                        fk = f"{key_prefix}_{sp}{suf}" if key_prefix else f"{sp}{suf}"
+                        st.session_state.pop(fk, None)
+
+            # Postavi nove vrijednosti
+            for k, v in randomized.get('stranke', {}).items():
                 full_key = f"{key_prefix}_{k}" if key_prefix else k
                 st.session_state[full_key] = v
-            for k, v in primjer.get('podaci', {}).items():
+            for k, v in randomized.get('podaci', {}).items():
                 full_key = f"{key_prefix}_{k}" if key_prefix else k
                 st.session_state[full_key] = v
             st.rerun()

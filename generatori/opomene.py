@@ -26,7 +26,7 @@ def generiraj_opomenu(
         )
 
         pravni_temelj = (
-            "Na temelju članka 1012. Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22)"
+            "Na temelju odredbi Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22)"
             if vrsta == "tuzba"
             else "Na temelju odredbi Ovršnog zakona (NN 112/12, 25/13, 93/14, 55/16, 73/17, 131/20)"
         )

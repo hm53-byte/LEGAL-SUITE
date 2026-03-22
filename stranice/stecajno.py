@@ -129,7 +129,7 @@ def _render_prijava_trazbine():
             key="pt_stec_razlucno_opis",
         )
 
-    iban = st.text_input("IBAN za isplatu", key="pt_stec_iban")
+    iban = st.text_input("IBAN za isplatu", key="pt_stec_iban", max_chars=21)
     mjesto = st.text_input("Mjesto", "Zagreb", key="pt_stec_mjesto")
 
     podaci = {

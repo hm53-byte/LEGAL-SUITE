@@ -7,6 +7,7 @@ import hashlib
 import secrets
 import json
 import os
+import html as _html_module
 import urllib.parse
 from datetime import datetime
 
@@ -329,7 +330,7 @@ def prikazi_korisnika_sidebar():
     }
     role = user.get("role", "user")
     label, color = role_labels.get(role, ("Korisnik", "#1E3A5F"))
-    name = user.get("name", "Korisnik")
+    name = _html_module.escape(user.get("name", "Korisnik"))
 
     st.sidebar.markdown(
         f"<div style='background:rgba(255,255,255,0.06);padding:0.5rem 0.7rem;"

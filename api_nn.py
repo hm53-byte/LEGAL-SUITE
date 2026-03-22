@@ -153,6 +153,39 @@ KLJUCNI_ZAKONI = {
 }
 
 
+# =============================================================================
+# DEMO / FALLBACK PODACI - prikazuju se kad API ne odgovara
+# =============================================================================
+
+_DEMO_REZULTATI = {
+    "rezultati": [
+        {
+            "naslov": "Zakon o obveznim odnosima (procisceni tekst)",
+            "url": f"{_NN_BASE}/clanci/sluzbeni/2005_03_35_707.html",
+            "nn_broj": "NN 35/2005",
+            "godina": "2005",
+            "broj": "35",
+        },
+        {
+            "naslov": "Zakon o parnicnom postupku (procisceni tekst)",
+            "url": f"{_NN_BASE}/clanci/sluzbeni/1991_10_53_1383.html",
+            "nn_broj": "NN 53/1991",
+            "godina": "1991",
+            "broj": "53",
+        },
+        {
+            "naslov": "Ovrsni zakon (procisceni tekst)",
+            "url": f"{_NN_BASE}/clanci/sluzbeni/2012_10_112_2421.html",
+            "nn_broj": "NN 112/2012",
+            "godina": "2012",
+            "broj": "112",
+        },
+    ],
+    "ukupno": 3,
+    "_demo": True,
+}
+
+
 def generiraj_nn_link(kratica, clanak=None):
     """Generiraj link na NN za dani zakon i opcionalno clanak."""
     zakon = KLJUCNI_ZAKONI.get(kratica)

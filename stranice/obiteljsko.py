@@ -376,7 +376,7 @@ def _render_roditeljska_skrb():
     alimentacija_datum = c2.text_input(
         "Datum dospijeća (npr. 15. u mjesecu)", key="rs_alim_datum"
     )
-    alimentacija_iban = st.text_input("IBAN za uplate", key="rs_alim_iban")
+    alimentacija_iban = st.text_input("IBAN za uplate", key="rs_alim_iban", max_chars=21)
 
     posebne_odredbe = st.text_area(
         "Posebne odredbe (neobavezno)",
@@ -444,7 +444,7 @@ def _render_ugovor_uzdrzavanje():
     datum_dospijeca = c2.text_input(
         "Datum dospijeća (npr. 15. u mjesecu)", key="uu_datum_dosp"
     )
-    iban = st.text_input("IBAN za uplate", key="uu_iban")
+    iban = st.text_input("IBAN za uplate", key="uu_iban", max_chars=21)
 
     clausula = st.checkbox(
         "Clausula exequendi (ovršna klauzula)",

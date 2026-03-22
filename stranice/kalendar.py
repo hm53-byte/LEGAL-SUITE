@@ -1,22 +1,58 @@
 # =============================================================================
 # STRANICE/KALENDAR.PY - Kalendar s podsjetnicima za rocista
+# Persistencija: JSON datoteka (_data/kalendar.json)
 # =============================================================================
 import streamlit as st
 from datetime import datetime, timedelta
 import json
+import os
+import html as _html_module
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
+def _esc(text):
+    """Escape HTML entiteta u korisnickom unosu."""
+    return _html_module.escape(str(text)) if text else ""
+
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "_data")
+_KALENDAR_PATH = os.path.join(_DATA_DIR, "kalendar.json")
+
+
+def _ucitaj_iz_datoteke():
+    """Ucitaj eventi iz JSON datoteke."""
+    try:
+        if os.path.exists(_KALENDAR_PATH):
+            with open(_KALENDAR_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except (json.JSONDecodeError, IOError, OSError):
+        pass
+    return []
+
+
+def _spremi_u_datoteku(eventi):
+    """Spremi eventi u JSON datoteku."""
+    try:
+        os.makedirs(_DATA_DIR, exist_ok=True)
+        with open(_KALENDAR_PATH, "w", encoding="utf-8") as f:
+            json.dump(eventi, f, ensure_ascii=False, indent=2)
+    except (IOError, OSError):
+        pass  # Tiho zanemari ako ne moze pisati (npr. read-only filesystem)
+
+
 def _dohvati_eventi():
-    """Dohvati listu eventi iz session_state."""
+    """Dohvati listu eventi - sinkroniziraj session_state i datoteku."""
+    if "_kalendar_eventi" not in st.session_state:
+        # Prvo ucitavanje - pokusaj iz datoteke
+        st.session_state._kalendar_eventi = _ucitaj_iz_datoteke()
     return st.session_state.get("_kalendar_eventi", [])
 
 
 def _spremi_eventi(eventi):
-    """Spremi listu eventi."""
+    """Spremi listu eventi u session_state i datoteku."""
     st.session_state._kalendar_eventi = eventi
+    _spremi_u_datoteku(eventi)
 
 
 def _posalji_podsjetnik(email, event):
@@ -63,6 +99,7 @@ def _provjeri_podsjetnike():
     """Provjeri je li vrijeme za poslati podsjetnik za neki event."""
     eventi = _dohvati_eventi()
     sada = datetime.now()
+    promjena = False
 
     for event in eventi:
         if event.get("_podsjetnik_poslan"):
@@ -79,7 +116,6 @@ def _provjeri_podsjetnike():
             if "T" in datum_str:
                 datum_obj = datetime.fromisoformat(datum_str.replace("Z", "+00:00")).replace(tzinfo=None)
             else:
-                # Pokusaj dd.mm.yyyy. format
                 datum_obj = datetime.strptime(datum_str.rstrip("."), "%d.%m.%Y")
 
             razlika = datum_obj - sada
@@ -87,9 +123,12 @@ def _provjeri_podsjetnike():
                 ok, msg = _posalji_podsjetnik(podsjetnik_email, event)
                 if ok:
                     event["_podsjetnik_poslan"] = True
-                    _spremi_eventi(eventi)
+                    promjena = True
         except (ValueError, TypeError):
             pass
+
+    if promjena:
+        _spremi_eventi(eventi)
 
 
 def render_kalendar():
@@ -101,6 +140,11 @@ def render_kalendar():
     _provjeri_podsjetnike()
 
     eventi = _dohvati_eventi()
+
+    # Success poruka koja prezivi rerun
+    if st.session_state.get("_kalendar_success"):
+        st.success(st.session_state._kalendar_success)
+        del st.session_state._kalendar_success
 
     # Tab: pregled i dodavanje
     tab_pregled, tab_dodaj = st.tabs(["Moji dogadaji", "Dodaj dogadaj"])
@@ -152,14 +196,14 @@ def render_kalendar():
                     f"<div style='background:#F8FAFC;padding:1rem;border-radius:8px;"
                     f"border-left:4px solid {boja};margin-bottom:0.6rem;opacity:{opacity};'>"
                     f"<div style='display:flex;justify-content:space-between;'>"
-                    f"<b>{naslov}</b>"
+                    f"<b>{_esc(naslov)}</b>"
                     f"<span style='font-size:0.85rem;color:{boja};font-weight:600;'>"
-                    f"{datum_fmt}"
+                    f"{_esc(datum_fmt)}"
                     f"{'  (' + str(dana_do) + ' dana)' if dana_do is not None and dana_do > 0 else ''}"
                     f"{'  (PROSLO)' if je_prosao else ''}"
                     f"</span></div>"
-                    f"{'<div style=\"color:#475569;font-size:0.85rem;margin-top:0.3rem;\">' + opis + '</div>' if opis else ''}"
-                    f"{'<div style=\"color:#94A3B8;font-size:0.8rem;margin-top:0.2rem;\">Predmet: ' + predmet + '</div>' if predmet else ''}"
+                    f"{'<div style=\"color:#475569;font-size:0.85rem;margin-top:0.3rem;\">' + _esc(opis) + '</div>' if opis else ''}"
+                    f"{'<div style=\"color:#94A3B8;font-size:0.8rem;margin-top:0.2rem;\">Predmet: ' + _esc(predmet) + '</div>' if predmet else ''}"
                     f"</div>",
                     unsafe_allow_html=True,
                 )
@@ -173,6 +217,7 @@ def render_kalendar():
                             placeholder="vas@email.com",
                             key=f"kal_email_{i}",
                             label_visibility="collapsed",
+                            max_chars=100,
                         )
                         pod_sati = st.selectbox(
                             "Koliko sati prije",
@@ -206,14 +251,14 @@ def render_kalendar():
         st.markdown("#### Rucno dodavanje dogadaja")
 
         with st.form("novi_event_form"):
-            naslov = st.text_input("Naslov", placeholder="npr. Rociste - P-123/2024")
+            naslov = st.text_input("Naslov", placeholder="npr. Rociste - P-123/2024", max_chars=200)
             datum = st.date_input("Datum", value=datetime.now() + timedelta(days=7))
             from datetime import time as _time
             vrijeme = st.time_input("Vrijeme (09:00 ako nema)", value=_time(9, 0), key="kal_vrijeme")
-            opis = st.text_area("Opis (opcionalno)", placeholder="Dodatne biljeske...")
+            opis = st.text_area("Opis (opcionalno)", placeholder="Dodatne biljeske...", max_chars=500)
             tip = st.selectbox("Tip", options=["rociste", "rok", "drazba", "ostalo"],
                                format_func=lambda x: {"rociste": "Rociste", "rok": "Rok", "drazba": "Drazba", "ostalo": "Ostalo"}[x])
-            predmet = st.text_input("Broj predmeta (opcionalno)", placeholder="P-123/2024")
+            predmet = st.text_input("Broj predmeta (opcionalno)", placeholder="P-123/2024", max_chars=50)
             submitted = st.form_submit_button("Dodaj u kalendar", type="primary", use_container_width=True)
 
             if submitted:
@@ -223,18 +268,26 @@ def render_kalendar():
                     datum_str = datum.strftime("%d.%m.%Y.")
                     datum_iso = datetime.combine(datum, vrijeme).isoformat()
 
-                    novi_event = {
-                        "naslov": naslov,
-                        "datum": datum_iso,
-                        "datum_fmt": datum_str,
-                        "opis": opis,
-                        "tip": tip,
-                        "predmet": predmet,
-                    }
-                    eventi.append(novi_event)
-                    _spremi_eventi(eventi)
-                    st.success(f"Dogadaj '{naslov}' dodan za {datum_str}!")
-                    st.rerun()
+                    # Duplikat detekcija - sprijecava uzastopno dodavanje istog dogadaja
+                    duplikat = any(
+                        e.get("naslov") == naslov and e.get("datum") == datum_iso
+                        for e in eventi
+                    )
+                    if duplikat:
+                        st.warning(f"Dogadaj '{naslov}' za {datum_str} vec postoji u kalendaru.")
+                    else:
+                        novi_event = {
+                            "naslov": naslov,
+                            "datum": datum_iso,
+                            "datum_fmt": datum_str,
+                            "opis": opis,
+                            "tip": tip,
+                            "predmet": predmet,
+                        }
+                        eventi.append(novi_event)
+                        _spremi_eventi(eventi)
+                        st.session_state._kalendar_success = f"Dogadaj '{naslov}' dodan za {datum_str}!"
+                        st.rerun()
 
     # SMTP konfiguracija info
     with st.expander("Konfiguracija email podsjetnika"):

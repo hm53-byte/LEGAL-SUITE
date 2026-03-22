@@ -2,39 +2,43 @@
 # STRANICE/EPREDMET.PY - Pracenje sudskih predmeta (e-Predmet)
 # =============================================================================
 import streamlit as st
-from api_epredmet import dohvati_sudove, pretrazi_predmet, OZNAKE_POSTUPAKA
+from api_epredmet import dohvati_sudove, pretrazi_predmet, OZNAKE_POSTUPAKA, _DEMO_SUDOVI
+from stranice.kalendar import _spremi_eventi, _dohvati_eventi
 
 
 def render_epredmet():
     """Stranica za pracenje sudskih predmeta putem e-Predmet API-ja."""
-    st.header(" Pracenje sudskih predmeta")
+    st.header("Pracenje sudskih predmeta")
     st.caption(
         "Pretrazite status sudskog predmeta putem sustava e-Predmet "
-        "(Ministarstvo pravosuđa i uprave)."
+        "(Ministarstvo pravosudja i uprave)."
     )
 
     st.info(
-        " **Kako pronaci broj predmeta?** "
+        "**Kako pronaci broj predmeta?** "
         "Broj predmeta je na svakom sudskom pismenu u zaglavlju, "
         "npr. **P-123/2024** (parnicni), **Ovr-456/2023** (ovrsni), "
         "**K-78/2024** (kazneni)."
     )
 
-    # Dohvati sudove
+    # Dohvati sudove s fallback
+    api_dostupan = True
     with st.spinner("Ucitavam listu sudova..."):
         sudovi = dohvati_sudove()
 
     if isinstance(sudovi, dict) and "error" in sudovi:
-        st.error(f"Greska pri dohvatu sudova: {sudovi['error']}")
+        api_dostupan = False
+        sudovi = _DEMO_SUDOVI
         st.warning(
-            "e-Predmet API mozda trenutno nije dostupan. "
-            "Sustav se osvjezava jednom dnevno (01:00-05:00). Pokusajte kasnije."
+            "e-Predmet API trenutno nije dostupan. "
+            "Koristimo lokalnu bazu sudova. Rezultati pretrage nece biti dostupni dok se API ne vrati."
         )
-        return
-
-    if not sudovi:
-        st.warning("Nije moguce dohvatiti listu sudova. Pokusajte kasnije.")
-        return
+    elif not sudovi:
+        api_dostupan = False
+        sudovi = _DEMO_SUDOVI
+        st.warning(
+            "Nije moguce dohvatiti listu sudova. Koristimo lokalnu bazu sudova."
+        )
 
     # Forma za pretragu
     col1, col2 = st.columns([2, 1])
@@ -43,7 +47,6 @@ def render_epredmet():
         # Selectbox za sud
         sud_opcije = {s.get("name", s.get("id", "")): s.get("id", "") for s in sudovi if isinstance(s, dict)}
         if not sud_opcije:
-            # Fallback ako je format drugaciji
             sud_opcije = {str(s): i for i, s in enumerate(sudovi)}
 
         odabrani_sud = st.selectbox(
@@ -63,13 +66,22 @@ def render_epredmet():
 
     col3, col4 = st.columns(2)
     with col3:
-        broj = st.text_input("Broj predmeta", placeholder="123", key="ep_broj", help="Redni broj predmeta")
+        broj = st.text_input("Broj predmeta", placeholder="123", key="ep_broj",
+                             help="Redni broj predmeta", max_chars=20)
     with col4:
         godina = st.text_input("Godina", placeholder="2024", key="ep_godina", max_chars=4)
 
-    if st.button(" Pretrazi predmet", type="primary", use_container_width=True, key="ep_search"):
+    if st.button("Pretrazi predmet", type="primary", use_container_width=True, key="ep_search"):
         if not broj or not godina:
             st.error("Unesite broj predmeta i godinu.")
+            return
+
+        if not api_dostupan:
+            st.error(
+                "Pretraga nije moguca jer e-Predmet API trenutno ne odgovara. "
+                "Pokusajte kasnije ili provjerite status na "
+                "[e-predmet.pravosudje.hr](https://e-predmet.pravosudje.hr/)."
+            )
             return
 
         broj_predmeta = f"{oznaka}-{broj}/{godina}"
@@ -79,7 +91,10 @@ def render_epredmet():
             rezultat = pretrazi_predmet(broj_predmeta, sud_id)
 
         if isinstance(rezultat, dict) and "error" in rezultat:
-            st.error(rezultat["error"])
+            st.error(
+                f"Greska pri pretrazi: {rezultat['error']}\n\n"
+                "API mozda trenutno nije dostupan. Pokusajte kasnije."
+            )
             return
 
         if not rezultat:
@@ -88,7 +103,7 @@ def render_epredmet():
 
         # Prikazi rezultate
         st.markdown("---")
-        st.markdown(f"###  Predmet: {rezultat.get('caseNumber', broj_predmeta)}")
+        st.markdown(f"### Predmet: {rezultat.get('caseNumber', broj_predmeta)}")
 
         # Osnovni podaci
         col_a, col_b = st.columns(2)
@@ -121,14 +136,12 @@ def render_epredmet():
         if dogadaji:
             st.markdown("#### Tijek postupka")
 
-            # Ponudi dodavanje u kalendar za buduce dogadaje
             from datetime import datetime as dt
             for d in dogadaji:
                 datum_str = d.get("date", "")
                 opis = d.get("description", "")
                 tip = d.get("type", "")
 
-                # Formatiraj datum
                 datum_fmt = datum_str
                 try:
                     datum_obj = dt.fromisoformat(datum_str.replace("Z", "+00:00"))
@@ -140,10 +153,9 @@ def render_epredmet():
                 ikona = "*" if je_buduci else "-"
                 st.markdown(f"{ikona} **{datum_fmt}** — {opis} ({tip})")
 
-                # Gumb za dodavanje u kalendar (samo buduci dogadaji)
                 if je_buduci:
                     if st.button(
-                        f" Dodaj u kalendar",
+                        f"Dodaj u kalendar",
                         key=f"ep_cal_{datum_str}_{opis[:20]}",
                     ):
                         st.session_state.setdefault("_kalendar_eventi", []).append({
@@ -157,17 +169,17 @@ def render_epredmet():
 
         # Ponudi relevantne dokumente
         st.markdown("---")
-        st.markdown("####  Trebate dokument za ovaj predmet?")
+        st.markdown("#### Trebate dokument za ovaj predmet?")
         col_x, col_y, col_z = st.columns(3)
         with col_x:
-            if st.button(" Zalba", key="ep_doc_zalba"):
-                st.session_state._active_module = "Zalbe"  # matches _MODULI key
+            if st.button("Žalba", key="ep_doc_zalba"):
+                st.session_state._active_module = "Žalbe"
                 st.rerun()
         with col_y:
-            if st.button(" Ovrha", key="ep_doc_ovrha"):
-                st.session_state._active_module = "Ovrsno pravo"  # matches _MODULI key
+            if st.button("Ovrha", key="ep_doc_ovrha"):
+                st.session_state._active_module = "Ovršno pravo"
                 st.rerun()
         with col_z:
-            if st.button(" Tuzba", key="ep_doc_tuzba"):
-                st.session_state._active_module = "Tuzbe"
+            if st.button("Tužba", key="ep_doc_tuzba"):
+                st.session_state._active_module = "Tužbe"
                 st.rerun()

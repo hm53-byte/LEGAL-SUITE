@@ -69,6 +69,44 @@ def dohvati_sudove_eoglasna():
         return []
 
 
+# =============================================================================
+# DEMO / FALLBACK PODACI - prikazuju se kad API ne odgovara
+# =============================================================================
+
+_DEMO_OBJAVE = {
+    "objave": [
+        {
+            "title": "Dostava pismena - P-456/2024",
+            "court": "Opcinski gradanski sud u Zagrebu",
+            "date": "2026-03-15T10:00:00Z",
+            "type": "dostava",
+            "content": "Poziv na rociste zakazano za 25.03.2026. u predmetu P-456/2024. "
+                       "Ovo je demonstracijski podatak - e-Oglasna ploca trenutno nije dostupna.",
+        },
+        {
+            "title": "Drazba nekretnine - Ovr-789/2023",
+            "court": "Opcinski sud u Splitu",
+            "date": "2026-03-20T09:00:00Z",
+            "type": "drazba",
+            "content": "Javna drazba nekretnine u k.o. Split, ul. 1234, kc.br. 567. "
+                       "Ovo je demonstracijski podatak.",
+        },
+        {
+            "title": "Otvaranje stecajnog postupka - St-12/2025",
+            "court": "Trgovacki sud u Zagrebu",
+            "date": "2026-03-10T08:00:00Z",
+            "type": "stecaj",
+            "content": "Rjesenje o otvaranju stecajnog postupka nad drustvom XYZ d.o.o. "
+                       "Ovo je demonstracijski podatak.",
+        },
+    ],
+    "ukupno": 3,
+    "stranica": 1,
+    "ukupno_stranica": 1,
+    "_demo": True,
+}
+
+
 # Tipovi objava na e-Oglasnoj ploci
 TIPOVI_OBJAVA = {
     "dostava": "Dostava pismena",
@@ -82,11 +120,12 @@ TIPOVI_OBJAVA = {
 
 def formatiraj_objavu(objava):
     """Formatiraj jednu objavu za prikaz."""
-    naslov = objava.get("title", objava.get("naslov", "Bez naslova"))
-    sud = objava.get("court", objava.get("sud", ""))
+    import html as _html
+    naslov = _html.escape(str(objava.get("title", objava.get("naslov", "Bez naslova"))))
+    sud = _html.escape(str(objava.get("court", objava.get("sud", ""))))
     datum = objava.get("date", objava.get("datum", ""))
     tip = objava.get("type", objava.get("tip", ""))
-    sadrzaj = objava.get("content", objava.get("sadrzaj", ""))
+    sadrzaj = _html.escape(str(objava.get("content", objava.get("sadrzaj", ""))))
 
     # Formatiraj datum
     if datum:

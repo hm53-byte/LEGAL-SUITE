@@ -3,7 +3,7 @@
 # =============================================================================
 import streamlit as st
 from datetime import datetime, timedelta
-from api_eoglasna import pretrazi_objave, TIPOVI_OBJAVA, formatiraj_objavu
+from api_eoglasna import pretrazi_objave, TIPOVI_OBJAVA, formatiraj_objavu, _DEMO_OBJAVE
 
 
 def render_eoglasna():
@@ -34,6 +34,7 @@ def render_eoglasna():
                 "Pretraga po tekstu",
                 placeholder="Unesite pojam za pretragu...",
                 key="eo_tekst",
+                max_chars=200,
             )
         with col2:
             datum_od = st.date_input(
@@ -52,6 +53,7 @@ def render_eoglasna():
             placeholder="npr. Opcinski sud u Zagrebu",
             key="eo_sud",
             help="Unesite naziv suda ili ostavite prazno za sve sudove",
+            max_chars=100,
         )
 
     if st.button("Pretrazi", type="primary", use_container_width=True, key="eo_search"):
@@ -64,11 +66,15 @@ def render_eoglasna():
                 tekst=tekst,
             )
 
+        je_demo = False
         if "error" in rezultat:
-            st.error(f"Greska: {rezultat['error']}")
+            # Fallback na demo podatke
+            je_demo = True
+            rezultat = _DEMO_OBJAVE
             st.warning(
-                "e-Oglasna ploca API mozda trenutno nije dostupan. "
-                "Pokusajte kasnije ili posjetite izravno: "
+                "e-Oglasna ploca API trenutno nije dostupan. "
+                "Prikazujemo demonstracijske podatke. "
+                "Za stvarne podatke posjetite: "
                 "[e-oglasna.pravosudje.hr](https://e-oglasna.pravosudje.hr/)"
             )
 
@@ -79,7 +85,10 @@ def render_eoglasna():
             st.info("Nema rezultata za zadane kriterije.")
             return
 
-        st.markdown(f"**Pronadeno:** {ukupno} objava")
+        if je_demo:
+            st.markdown(f"**Demonstracijski podaci** ({ukupno} primjera)")
+        else:
+            st.markdown(f"**Pronadeno:** {ukupno} objava")
         st.markdown("---")
 
         for objava in objave:
@@ -106,7 +115,7 @@ def render_eoglasna():
             )
 
             # Gumb za dodavanje u kalendar (za drazbe i rocista)
-            if fmt["tip"] in ("drazba", "rociste"):
+            if fmt["tip"] in ("drazba", "rociste") and not je_demo:
                 if st.button(
                     f"Dodaj u kalendar",
                     key=f"eo_cal_{hash(fmt['naslov'] + fmt['datum'])}",

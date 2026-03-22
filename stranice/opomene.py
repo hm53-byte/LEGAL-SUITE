@@ -38,7 +38,7 @@ def render_opomene():
     )
 
     with st.expander("Podaci za uplatu", expanded=False):
-        iban = st.text_input("IBAN", placeholder="HR00 0000 0000 0000 0000 0")
+        iban = st.text_input("IBAN", placeholder="HR00 0000 0000 0000 0000 0", max_chars=21)
         poziv = st.text_input("Poziv na broj", placeholder="HR00 00000000-000000")
         opis_placanja = st.text_input("Opis plaćanja", "Podmirenje duga po opomeni")
 

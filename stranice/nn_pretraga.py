@@ -2,7 +2,7 @@
 # STRANICE/NN_PRETRAGA.PY - Pretraga Narodnih novina / baza zakona
 # =============================================================================
 import streamlit as st
-from api_nn import KLJUCNI_ZAKONI, pretrazi_nn, generiraj_nn_link
+from api_nn import KLJUCNI_ZAKONI, pretrazi_nn, generiraj_nn_link, _DEMO_REZULTATI
 
 
 def render_nn_pretraga():
@@ -26,15 +26,15 @@ def render_nn_pretraga():
         )
 
         _KATEGORIJE = {
-            "Gradansko i obvezno pravo": ["ZOO", "ZPP"],
-            "Trgovacko pravo": ["ZTD"],
+            "Građansko i obvezno pravo": ["ZOO", "ZPP"],
+            "Trgovačko pravo": ["ZTD"],
             "Radno pravo": ["ZR"],
             "Obiteljsko pravo": ["ObZ"],
             "Upravno pravo": ["ZUP", "ZUS", "ZPPI"],
             "Kazneno pravo": ["KZ"],
-            "Ovrsno i stecajno pravo": ["OZ", "SZ"],
-            "Zemljisno pravo": ["ZZK"],
-            "Zastita potrosaca": ["ZZP"],
+            "Ovršno i stečajno pravo": ["OZ", "SZ"],
+            "Zemljišno pravo": ["ZZK"],
+            "Zaštita potrošača": ["ZZP"],
         }
 
         for kategorija, kratice in _KATEGORIJE.items():
@@ -60,6 +60,7 @@ def render_nn_pretraga():
             "Pojam za pretragu",
             placeholder="npr. zastara, naknada stete, otkaz ugovora o radu...",
             key="nn_upit",
+            max_chars=200,
         )
 
         if st.button("Pretrazi", type="primary", use_container_width=True, key="nn_search"):
@@ -69,26 +70,36 @@ def render_nn_pretraga():
                 with st.spinner("Pretrazujem Narodne novine..."):
                     rezultat = pretrazi_nn(upit)
 
+                je_demo = False
                 if "error" in rezultat:
+                    # Fallback na demo podatke
+                    je_demo = True
+                    rezultat = _DEMO_REZULTATI
                     st.warning(
-                        f"Pretraga nije uspjela: {rezultat['error']}\n\n"
-                        f"Pokusajte izravno na: [narodne-novine.nn.hr](https://narodne-novine.nn.hr/pretraga)"
+                        f"Pretraga Narodnih novina trenutno nije dostupna. "
+                        f"Prikazujemo bazu kljucnih zakona kao zamjenu.\n\n"
+                        f"Za izravnu pretragu posjetite: "
+                        f"[narodne-novine.nn.hr](https://narodne-novine.nn.hr/pretraga)"
                     )
+
+                rezultati = rezultat.get("rezultati", [])
+                if not rezultati:
+                    st.info("Nema rezultata za zadani upit.")
                 else:
-                    rezultati = rezultat.get("rezultati", [])
-                    if not rezultati:
-                        st.info("Nema rezultata za zadani upit.")
+                    if je_demo:
+                        st.markdown(f"**Kljucni zakoni** (demonstracijski podaci)")
                     else:
                         st.markdown(f"**Pronadeno:** {len(rezultati)} rezultata")
-                        for r in rezultati:
-                            st.markdown(
-                                f"<div style='background:#F8FAFC;padding:0.7rem 1rem;border-radius:8px;"
-                                f"margin-bottom:0.4rem;'>"
-                                f"<a href='{r['url']}' target='_blank'><b>{r['naslov']}</b></a><br>"
-                                f"<span style='color:#94A3B8;font-size:0.8rem;'>{r.get('nn_broj', '')}</span>"
-                                f"</div>",
-                                unsafe_allow_html=True,
-                            )
+
+                    for r in rezultati:
+                        st.markdown(
+                            f"<div style='background:#F8FAFC;padding:0.7rem 1rem;border-radius:8px;"
+                            f"margin-bottom:0.4rem;'>"
+                            f"<a href='{r['url']}' target='_blank'><b>{r['naslov']}</b></a><br>"
+                            f"<span style='color:#94A3B8;font-size:0.8rem;'>{r.get('nn_broj', '')}</span>"
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
 
         # Popularni upiti
         st.markdown("---")

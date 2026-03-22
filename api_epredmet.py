@@ -90,6 +90,51 @@ def formatiraj_broj_predmeta(oznaka, broj, godina):
     return f"{oznaka}-{broj}/{godina}"
 
 
+# =============================================================================
+# DEMO / FALLBACK PODACI - prikazuju se kad API ne odgovara
+# =============================================================================
+
+_DEMO_SUDOVI = [
+    {"id": 1, "name": "Opcinski gradanski sud u Zagrebu", "type": "opcinski"},
+    {"id": 2, "name": "Opcinski sud u Splitu", "type": "opcinski"},
+    {"id": 3, "name": "Opcinski sud u Rijeci", "type": "opcinski"},
+    {"id": 4, "name": "Opcinski sud u Osijeku", "type": "opcinski"},
+    {"id": 5, "name": "Trgovacki sud u Zagrebu", "type": "trgovacki"},
+    {"id": 6, "name": "Trgovacki sud u Splitu", "type": "trgovacki"},
+    {"id": 7, "name": "Zupanijski sud u Zagrebu", "type": "zupanijski"},
+    {"id": 8, "name": "Zupanijski sud u Splitu", "type": "zupanijski"},
+    {"id": 9, "name": "Upravni sud u Zagrebu", "type": "upravni"},
+    {"id": 10, "name": "Upravni sud u Splitu", "type": "upravni"},
+    {"id": 11, "name": "Upravni sud u Rijeci", "type": "upravni"},
+    {"id": 12, "name": "Upravni sud u Osijeku", "type": "upravni"},
+    {"id": 13, "name": "Visoki upravni sud Republike Hrvatske", "type": "upravni"},
+    {"id": 14, "name": "Vrhovni sud Republike Hrvatske", "type": "vrhovni"},
+]
+
+_DEMO_PREDMET = {
+    "caseNumber": "P-123/2024",
+    "court": {"name": "Opcinski gradanski sud u Zagrebu", "type": "opcinski"},
+    "judge": "(Demo podatak)",
+    "status": "U tijeku",
+    "caseType": "Parnicni",
+    "parties": [
+        {"name": "Ivan Horvat (demo)", "role": "Tuzitelj"},
+        {"name": "Marko Novak (demo)", "role": "Tuzenik"},
+    ],
+    "events": [],
+    "_demo": True,
+}
+
+
+def je_demo_rezultat(rezultat):
+    """Provjeri je li rezultat demo podatak."""
+    if isinstance(rezultat, dict):
+        return rezultat.get("_demo", False)
+    if isinstance(rezultat, list) and rezultat:
+        return isinstance(rezultat[0], dict) and rezultat[0].get("_demo", False)
+    return False
+
+
 # Vrste postupaka - oznake
 OZNAKE_POSTUPAKA = {
     "P": "Parnični",

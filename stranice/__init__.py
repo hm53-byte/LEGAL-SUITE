@@ -18,3 +18,4 @@ from stranice.epredmet import render_epredmet
 from stranice.eoglasna import render_eoglasna
 from stranice.kalendar import render_kalendar
 from stranice.nn_pretraga import render_nn_pretraga
+from stranice.jednostavno import render_jednostavno

@@ -6,7 +6,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
 from pomocne import docx_opcije
-from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth
 from stranice import (
     render_ugovori,
     render_tuzbe,
@@ -28,49 +27,92 @@ from stranice import (
     render_eoglasna,
     render_kalendar,
     render_nn_pretraga,
+    render_jednostavno,
 )
+from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
 
 # Konfiguracija stranice
 st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout=PAGE_LAYOUT)
 
-# Primjena CSS stilova + Google Fonts
-st.markdown(
-    "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' rel='stylesheet'>",
-    unsafe_allow_html=True,
-)
+# Primjena CSS stilova (Inter Variable Font ucitava se iz config.py via @import)
 st.markdown(CSS_STILOVI, unsafe_allow_html=True)
 
 # =============================================================================
-# AUTENTIKACIJA
+# JS: OIB (11 znakova) i MBS (8 znakova) - samo brojevi (numeric input filter)
+# =============================================================================
+components.html("""
+<script>
+(function(){
+    function enforceNumeric(){
+        var inputs=parent.document.querySelectorAll('input[maxlength="11"],input[maxlength="8"]');
+        inputs.forEach(function(inp){
+            if(inp._numFilter) return;
+            inp._numFilter=true;
+            inp.setAttribute('inputmode','numeric');
+            inp.addEventListener('keydown',function(e){
+                if([8,9,13,27,46,35,36,37,38,39,40].indexOf(e.keyCode)!==-1||
+                   (e.ctrlKey&&[65,67,86,88].indexOf(e.keyCode)!==-1)||
+                   (e.metaKey&&[65,67,86,88].indexOf(e.keyCode)!==-1)) return;
+                if((e.shiftKey||(e.keyCode<48||e.keyCode>57))&&(e.keyCode<96||e.keyCode>105)){
+                    e.preventDefault();
+                }
+            });
+            inp.addEventListener('paste',function(e){
+                var d=(e.clipboardData||window.clipboardData).getData('text');
+                if(!/^\\d*$/.test(d)){
+                    e.preventDefault();
+                    var clean=d.replace(/\\D/g,'');
+                    if(clean) document.execCommand('insertText',false,clean);
+                }
+            });
+        });
+    }
+    enforceNumeric();
+    new MutationObserver(enforceNumeric).observe(parent.document.body,{childList:true,subtree:true});
+})();
+</script>
+""", height=0)
+
+# =============================================================================
+# MODE TOGGLE: Jednostavno / Napredno
 # =============================================================================
 
-if not login_stranica():
-    st.stop()
+if "_app_mode" not in st.session_state:
+    st.session_state._app_mode = "jednostavno"
+
+# Jednostavni mod — auto-authenticate kao gost, bez login stranice
+if st.session_state._app_mode == "jednostavno":
+    if not provjeri_auth():
+        _authenticate("gost@legalsuite.hr", "Gost", role="guest", provider="guest")
+else:
+    # Napredno — standardna autentikacija
+    if not login_stranica():
+        st.stop()
 
 # =============================================================================
 # NAVIGACIJSKA STRUKTURA
 # =============================================================================
 
 _MODULI = {
-    "Pocetna":           {"render": None,             "grupa": None,    "docx": False, "opis": "Pocetna stranica"},
+    "Početna":           {"render": None,             "grupa": None,    "docx": False, "opis": "Početna stranica"},
     "Ugovori":           {"render": render_ugovori,   "grupa": "Dokumenti", "docx": True,  "opis": "Kupoprodaja, najam, rad, NDA, raskid..."},
-    "Opomena":           {"render": render_opomene,    "grupa": "Dokumenti", "docx": True,  "opis": "Opomena pred tuzbu"},
-    "Punomoc":           {"render": render_punomoci,   "grupa": "Dokumenti", "docx": True,  "opis": "Punomoc za zastupanje"},
+    "Opomena":           {"render": render_opomene,    "grupa": "Dokumenti", "docx": True,  "opis": "Opomena pred tužbu"},
+    "Punomoć":           {"render": render_punomoci,   "grupa": "Dokumenti", "docx": True,  "opis": "Punomoć za zastupanje"},
     "Obvezno pravo":     {"render": render_obvezno,    "grupa": "Dokumenti", "docx": True,  "opis": "Darovanje, cesija, kompenzacija, jamstvo..."},
-    "Trgovacko pravo":   {"render": render_trgovacko,  "grupa": "Dokumenti", "docx": True,  "opis": "Drustveni ugovor, prijenos udjela, NDA..."},
-    "Obiteljsko pravo":  {"render": render_obiteljsko, "grupa": "Dokumenti", "docx": True,  "opis": "Razvod, bracni ugovor, skrb, uzdrzavanje"},
-    "Tuzbe":             {"render": render_tuzbe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Tuzba za isplatu, naknada stete"},
-    "Ovrsno pravo":      {"render": render_ovrhe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Ovrha putem JB, prigovor, obustava"},
-    "Zalbe":             {"render": render_zalbe,       "grupa": "Sudski postupci", "docx": True,  "opis": "Zalba na presudu"},
-    "Zemljisne knjige":  {"render": render_zemljisne,   "grupa": "Sudski postupci", "docx": True,  "opis": "Uknjizba, hipoteka, sluznost..."},
-    "Upravno pravo":     {"render": render_upravno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Zalba ZUP, tuzba ZUS, pristup info"},
-    "Kazneno pravo":     {"render": render_kazneno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Kaznena prijava, privatna tuzba, zalba"},
-    "Stecajno pravo":    {"render": render_stecajno,    "grupa": "Sudski postupci", "docx": True,  "opis": "Osobni stecaj, prijedlog, prijava trazbine"},
-    "Zastita potrosaca": {"render": render_potrosaci,   "grupa": "Sudski postupci", "docx": True,  "opis": "Reklamacija, raskid online kupnje"},
-    "e-Predmet":         {"render": render_epredmet,    "grupa": "Alati",  "docx": False, "opis": "Pracenje sudskih predmeta"},
-    "Sudske objave":     {"render": render_eoglasna,    "grupa": "Alati",  "docx": False, "opis": "e-Oglasna ploca sudova"},
+    "Trgovačko pravo":   {"render": render_trgovacko,  "grupa": "Dokumenti", "docx": True,  "opis": "Društveni ugovor, prijenos udjela, NDA..."},
+    "Obiteljsko pravo":  {"render": render_obiteljsko, "grupa": "Dokumenti", "docx": True,  "opis": "Razvod, bračni ugovor, skrb, uzdržavanje"},
+    "Tužbe":             {"render": render_tuzbe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Tužba za isplatu, naknada štete"},
+    "Ovršno pravo":      {"render": render_ovrhe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Ovrha putem JB, prigovor, obustava"},
+    "Žalbe":             {"render": render_zalbe,       "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba na presudu"},
+    "Zemljišne knjige":  {"render": render_zemljisne,   "grupa": "Sudski postupci", "docx": True,  "opis": "Uknjižba, hipoteka, služnost..."},
+    "Upravno pravo":     {"render": render_upravno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba ZUP, tužba ZUS, pristup info"},
+    "Kazneno pravo":     {"render": render_kazneno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Kaznena prijava, privatna tužba, žalba"},
+    "Stečajno pravo":    {"render": render_stecajno,    "grupa": "Sudski postupci", "docx": True,  "opis": "Osobni stečaj, prijedlog, prijava tražbine"},
+    "Zaštita potrošača": {"render": render_potrosaci,   "grupa": "Sudski postupci", "docx": True,  "opis": "Reklamacija, raskid online kupnje"},
+    "e-Predmet":         {"render": render_epredmet,    "grupa": "Alati",  "docx": False, "opis": "Praćenje sudskih predmeta"},
+    "Sudske objave":     {"render": render_eoglasna,    "grupa": "Alati",  "docx": False, "opis": "e-Oglasna ploča sudova"},
     "Propisi":           {"render": render_nn_pretraga, "grupa": "Alati",  "docx": False, "opis": "Narodne novine, baza zakona"},
-    "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Rocista, rokovi, podsjetnici"},
+    "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Ročišta, rokovi, podsjetnici"},
     "Kamate":            {"render": render_kamate,      "grupa": "Alati",  "docx": False, "opis": "Kalkulator zakonskih zateznih kamata"},
     "Pristojbe":         {"render": render_pristojbe,   "grupa": "Alati",  "docx": False, "opis": "Kalkulator sudskih pristojbi"},
 }
@@ -79,7 +121,7 @@ _MODULI = {
 _GRUPE = ["Dokumenti", "Sudski postupci", "Alati"]
 
 if "_active_module" not in st.session_state:
-    st.session_state._active_module = "Pocetna"
+    st.session_state._active_module = "Početna"
 
 # =============================================================================
 # SIDEBAR
@@ -95,65 +137,99 @@ st.sidebar.markdown(
 )
 prikazi_korisnika_sidebar()
 
+# Mode toggle
+_current_mode = st.session_state.get("_app_mode", "jednostavno")
+_mode_label = "Jednostavno" if _current_mode == "jednostavno" else "Napredno"
+_toggle_label = "Prebaci na Napredno" if _current_mode == "jednostavno" else "Prebaci na Jednostavno"
+
+st.sidebar.markdown(
+    f"<div style='background:rgba(255,255,255,0.06);padding:0.4rem 0.7rem;"
+    f"border-radius:6px;margin-bottom:0.5rem;text-align:center;'>"
+    f"<span style='font-size:0.7rem;color:#94A3B8;'>Nacin rada: </span>"
+    f"<span style='font-size:0.75rem;color:#D4A843;font-weight:600;'>{_mode_label}</span>"
+    f"</div>",
+    unsafe_allow_html=True,
+)
+if st.sidebar.button(_toggle_label, key="_mode_toggle", use_container_width=True):
+    if _current_mode == "jednostavno":
+        st.session_state._app_mode = "napredno"
+    else:
+        st.session_state._app_mode = "jednostavno"
+        st.session_state._jed_odabir = None
+    st.rerun()
+
+st.sidebar.markdown("")
+
+# Sidebar navigacija - skrivena u jednostavnom modu
+_is_simple_mode = st.session_state.get("_app_mode") == "jednostavno"
+if _is_simple_mode:
+    st.sidebar.markdown(
+        "<div style='color:#64748B;font-size:0.75rem;padding:0.5rem 0.7rem;"
+        "line-height:1.5;'>Koristite jednostavni nacin rada. "
+        "Prebacite na <b>Napredno</b> za puni pristup svim modulima.</div>",
+        unsafe_allow_html=True,
+    )
+
 # Pretraga u sidebaru
-_search_query = st.sidebar.text_input(
+_search_query = "" if _is_simple_mode else st.sidebar.text_input(
     "Pretrazi module",
     placeholder="npr. ugovor, ovrha, zalba...",
     key="_sidebar_search",
     label_visibility="collapsed",
 )
 
-# Filtrirani moduli
-if _search_query:
-    _q = _search_query.lower()
-    _filtered = {
-        k: v for k, v in _MODULI.items()
-        if k != "Pocetna" and (_q in k.lower() or _q in v["opis"].lower())
-    }
-    if _filtered:
-        for name in _filtered:
-            is_active = st.session_state._active_module == name
-            if st.sidebar.button(
-                f"{'> ' if is_active else ''}{name}",
-                key=f"_sb_{name}",
-                type="primary" if is_active else "secondary",
-                use_container_width=True,
-            ):
-                st.session_state._active_module = name
-                st.rerun()
+# Filtrirani moduli — skriveni u jednostavnom modu
+if not _is_simple_mode:
+    if _search_query:
+        _q = _search_query.lower()
+        _filtered = {
+            k: v for k, v in _MODULI.items()
+            if k != "Početna" and (_q in k.lower() or _q in v["opis"].lower())
+        }
+        if _filtered:
+            for name in _filtered:
+                is_active = st.session_state._active_module == name
+                if st.sidebar.button(
+                    f"{'> ' if is_active else ''}{name}",
+                    key=f"_sb_{name}",
+                    type="primary" if is_active else "secondary",
+                    use_container_width=True,
+                ):
+                    st.session_state._active_module = name
+                    st.rerun()
+        else:
+            st.sidebar.caption("Nema rezultata.")
     else:
-        st.sidebar.caption("Nema rezultata.")
-else:
-    # Pocetna gumb
-    is_home = st.session_state._active_module == "Pocetna"
-    if st.sidebar.button(
-        f"{'> ' if is_home else ''}Pocetna",
-        key="_sb_Pocetna",
-        type="primary" if is_home else "secondary",
-        use_container_width=True,
-    ):
-        st.session_state._active_module = "Pocetna"
-        st.rerun()
+        # Početna gumb
+        is_home = st.session_state._active_module == "Početna"
+        if st.sidebar.button(
+            f"{'> ' if is_home else ''}Početna",
+            key="_sb_Početna",
+            type="primary" if is_home else "secondary",
+            use_container_width=True,
+        ):
+            st.session_state._active_module = "Početna"
+            st.rerun()
 
-    st.sidebar.markdown("")
+        st.sidebar.markdown("")
 
-    for grupa in _GRUPE:
-        st.sidebar.markdown(
-            f"<p class='sidebar-section'>{grupa.upper()}</p>",
-            unsafe_allow_html=True,
-        )
-        for name, cfg in _MODULI.items():
-            if cfg["grupa"] != grupa:
-                continue
-            is_active = st.session_state._active_module == name
-            if st.sidebar.button(
-                f"{'> ' if is_active else ''}{name}",
-                key=f"_sb_{name}",
-                type="primary" if is_active else "secondary",
-                use_container_width=True,
-            ):
-                st.session_state._active_module = name
-                st.rerun()
+        for grupa in _GRUPE:
+            st.sidebar.markdown(
+                f"<p class='sidebar-section'>{grupa.upper()}</p>",
+                unsafe_allow_html=True,
+            )
+            for name, cfg in _MODULI.items():
+                if cfg["grupa"] != grupa:
+                    continue
+                is_active = st.session_state._active_module == name
+                if st.sidebar.button(
+                    f"{'> ' if is_active else ''}{name}",
+                    key=f"_sb_{name}",
+                    type="primary" if is_active else "secondary",
+                    use_container_width=True,
+                ):
+                    st.session_state._active_module = name
+                    st.rerun()
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
@@ -172,8 +248,23 @@ st.sidebar.markdown(
 
 def _scroll_to_top():
     """Injektira JS koji scrolla main container na vrh."""
+    import time
     components.html(
-        "<script>parent.document.querySelector('section.main').scrollTo(0,0);</script>",
+        f"<script>setTimeout(function(){{"
+        f"var el=parent.document.querySelector('section.main');"
+        f"if(el)el.scrollTo(0,0);"
+        f"}},50);</script><!-- {time.time()} -->",
+        height=0,
+    )
+
+def _scroll_to_element(css_selector):
+    """Injektira JS koji scrolla do specificnog elementa."""
+    import time
+    components.html(
+        f"<script>setTimeout(function(){{"
+        f"var el=parent.document.querySelector('{css_selector}');"
+        f"if(el)el.scrollIntoView({{behavior:'smooth',block:'start'}});"
+        f"}},150);</script><!-- {time.time()} -->",
         height=0,
     )
 
@@ -183,26 +274,26 @@ def _navigate_to(module_name):
 
 
 # =============================================================================
-# POCETNA STRANICA
+# POČETNA STRANICA
 # =============================================================================
 
 _VODIC_KATEGORIJE = [
     {
         "naslov": "Netko mi duguje novac",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Opomena, ovrha ili tuzba za naplatu duga",
-        "moduli": ["Opomena", "Ovrsno pravo", "Tuzbe"],
+        "opis": "Opomena, ovrha ili tužba za naplatu duga",
+        "moduli": ["Opomena", "Ovršno pravo", "Tužbe"],
     },
     {
-        "naslov": "Ne slazem se s presudom",
-        "tezina": "Slozeno", "vrijeme": "~20 min",
-        "opis": "Zalba na presudu \u2014 rok je 15 dana!",
-        "moduli": ["Zalbe"],
+        "naslov": "Ne slažem se s presudom",
+        "tezina": "Složeno", "vrijeme": "~20 min",
+        "opis": "Žalba na presudu \u2014 rok je 15 dana!",
+        "moduli": ["Žalbe"],
     },
     {
         "naslov": "Problem s upravnim tijelom",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Zalba na rjesenje, tuzba upravnom sudu",
+        "opis": "Žalba na rješenje, tužba upravnom sudu",
         "moduli": ["Upravno pravo"],
     },
     {
@@ -212,107 +303,107 @@ _VODIC_KATEGORIJE = [
         "moduli": ["Ugovori", "Obvezno pravo"],
     },
     {
-        "naslov": "Zrtva sam kaznenog djela",
+        "naslov": "Žrtva sam kaznenog djela",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Kaznena prijava ili privatna tuzba",
+        "opis": "Kaznena prijava ili privatna tužba",
         "moduli": ["Kazneno pravo"],
     },
     {
         "naslov": "Problem s nekretninom",
         "tezina": "Srednje", "vrijeme": "~10 min",
-        "opis": "Uknjizba, hipoteka, sluznost, brisovna tuzba",
-        "moduli": ["Zemljisne knjige"],
+        "opis": "Uknjižba, hipoteka, služnost, brisovna tužba",
+        "moduli": ["Zemljišne knjige"],
     },
     {
-        "naslov": "Problem kao potrosac",
+        "naslov": "Problem kao potrošač",
         "tezina": "Jednostavno", "vrijeme": "~5 min",
         "opis": "Reklamacija, raskid online kupnje",
-        "moduli": ["Zastita potrosaca"],
+        "moduli": ["Zaštita potrošača"],
     },
     {
         "naslov": "Tvrtka / poslovni spor",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Drustveni ugovor, prijenos udjela, NDA",
-        "moduli": ["Trgovacko pravo"],
+        "opis": "Društveni ugovor, prijenos udjela, NDA",
+        "moduli": ["Trgovačko pravo"],
     },
     {
         "naslov": "Obiteljski spor",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Razvod, bracni ugovor, skrb, uzdrzavanje",
+        "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
         "moduli": ["Obiteljsko pravo"],
     },
     {
-        "naslov": "Financijske poteskoce",
-        "tezina": "Slozeno", "vrijeme": "~20 min",
-        "opis": "Osobni stecaj, prijedlog, prijava trazbine",
-        "moduli": ["Stecajno pravo"],
+        "naslov": "Financijske poteškoće",
+        "tezina": "Složeno", "vrijeme": "~20 min",
+        "opis": "Osobni stečaj, prijedlog, prijava tražbine",
+        "moduli": ["Stečajno pravo"],
     },
 ]
 
 _TEZINA_BOJA = {
     "Jednostavno": "#059669",
     "Srednje": "#D97706",
-    "Slozeno": "#DC2626",
+    "Složeno": "#DC2626",
 }
 
 _VODIC_DETALJI = {
     "Netko mi duguje novac": {
         "upute": [
-            ("1. Opomena pred tuzbu", "Posaljite duznik pisanu opomenu s rokom od 8 dana. Ovo je obavezni preduvjet za ovrhu."),
-            ("2. Ovrha ili Tuzba", "Ovrha je brzi put ako imate racun/ugovor. Tuzba ako duznik osporava dug."),
-            ("3. Kalkulator kamata", "Izracunajte zakonske zatezne kamate na dugovanje."),
+            ("1. Opomena pred tužbu", "Pošaljite dužniku pisanu opomenu s rokom od 8 dana. Ovo je obavezni preduvjet za ovrhu."),
+            ("2. Ovrha ili Tužba", "Ovrha je brži put ako imate račun/ugovor. Tužba ako dužnik osporava dug."),
+            ("3. Kalkulator kamata", "Izračunajte zakonske zatezne kamate na dugovanje."),
         ],
-        "rokovi": "Opci rok zastare: 5 godina (cl. 225. ZOO). Roba/usluge: 3 godine.",
+        "rokovi": "Opći rok zastare: 5 godina (čl. 225. ZOO). Roba/usluge: 3 godine (čl. 228. ZOO — samo za trgovačke ugovore).",
     },
-    "Ne slazem se s presudom": {
+    "Ne slažem se s presudom": {
         "upute": [
-            ("Rok za zalbu: 15 dana!", "Od dana dostave presude (cl. 348. ZPP). Podnosi se prvostupanjskom sudu."),
-            ("Zalbeni razlozi", "Bitna povreda postupka, pogresno cinjenicno stanje, pogresna primjena prava."),
+            ("Rok za žalbu: 15 dana!", "Od dana dostave presude (čl. 348. ZPP). Podnosi se prvostupanjskom sudu."),
+            ("Žalbeni razlozi", "Bitna povreda postupka, pogrešno činjenično stanje, pogrešna primjena prava."),
         ],
-        "rokovi": "Rok za zalbu na presudu: 15 dana. Na rjesenje: 8 dana.",
+        "rokovi": "Rok za žalbu na presudu: 15 dana. Na rješenje: 8 dana.",
     },
     "Problem s upravnim tijelom": {
         "upute": [
-            ("Zalba na rjesenje (ZUP)", "Rok 15 dana od dostave rjesenja."),
-            ("Tuzba upravnom sudu (ZUS)", "Rok 30 dana od dostave drugostupanjskog rjesenja."),
+            ("Žalba na rješenje (ZUP)", "Rok 15 dana od dostave rješenja."),
+            ("Tužba upravnom sudu (ZUS)", "Rok 30 dana od dostave drugostupanjskog rješenja."),
             ("Pristup informacijama (ZPPI)", "Tijelo mora odgovoriti u 15 dana."),
         ],
-        "rokovi": "ZUP zalba: 15 dana. ZUS tuzba: 30 dana.",
+        "rokovi": "ZUP žalba: 15 dana. ZUS tužba: 30 dana.",
     },
     "Trebam ugovor": {
         "upute": [
-            ("Gradansko pravo", "Kupoprodaja, najam, djelo, zajam, NDA."),
+            ("Građansko pravo", "Kupoprodaja, najam, djelo, zajam, NDA."),
             ("Radno pravo", "Ugovor o radu, aneks, rad na daljinu."),
             ("Obvezno pravo", "Darovanje, cesija, kompenzacija, jamstvo."),
         ],
         "rokovi": None,
     },
-    "Zrtva sam kaznenog djela": {
+    "Žrtva sam kaznenog djela": {
         "upute": [
-            ("Kaznena prijava", "Drzavnom odvjetnistvu, nema strogog roka."),
-            ("Privatna tuzba", "Rok 3 mjeseca od saznanja (cl. 60. KZ). Npr. laka tjelesna ozljeda, kleveta."),
+            ("Kaznena prijava", "Državnom odvjetništvu, nema strogog roka."),
+            ("Privatna tužba", "Rok 3 mjeseca od saznanja (čl. 60. KZ). Npr. laka tjelesna ozljeda, kleveta."),
         ],
-        "rokovi": "Privatna tuzba: 3 mjeseca od saznanja.",
+        "rokovi": "Privatna tužba: 3 mjeseca od saznanja.",
     },
     "Problem s nekretninom": {
         "upute": [
-            ("Uknjizba vlasnistva", "Tabularna isprava za upis vlasnistva."),
+            ("Uknjižba vlasništva", "Tabularna isprava za upis vlasništva."),
             ("Hipoteka", "Upis ili brisanje hipoteke."),
-            ("Brisovna tuzba", "Pobijanje nevaljanog upisa u zemljisne knjige."),
+            ("Brisovna tužba", "Pobijanje nevaljanog upisa u zemljišne knjige."),
         ],
         "rokovi": None,
     },
-    "Problem kao potrosac": {
+    "Problem kao potrošač": {
         "upute": [
             ("Reklamacija", "Pisani prigovor trgovcu. Rok odgovora: 15 dana."),
             ("Jednostrani raskid", "Online kupnja \u2014 14 dana bez razloga."),
-            ("Prijava inspekciji", "Kad trgovac ne postuje prava potrosaca."),
+            ("Prijava inspekciji", "Kad trgovac ne poštuje prava potrošača."),
         ],
         "rokovi": "Reklamacija: rok 2 godine. Online raskid: 14 dana.",
     },
     "Tvrtka / poslovni spor": {
         "upute": [
-            ("Drustveni ugovor", "Osnivanje d.o.o."),
+            ("Društveni ugovor", "Osnivanje d.o.o."),
             ("Prijenos udjela", "Prodaja ili darovanje udjela."),
             ("NDA", "Ugovor o povjerljivosti."),
         ],
@@ -320,25 +411,25 @@ _VODIC_DETALJI = {
     },
     "Obiteljski spor": {
         "upute": [
-            ("Sporazumni razvod", "Kad se oba supruznika slazu."),
-            ("Tuzba za razvod", "Kad nema sporazuma."),
-            ("Bracni ugovor / Skrb / Uzdrzavanje", "Reguliranje imovine i brige o djeci."),
+            ("Sporazumni razvod", "Kad se oba supružnika slažu."),
+            ("Tužba za razvod", "Kad nema sporazuma."),
+            ("Bračni ugovor / Skrb / Uzdržavanje", "Reguliranje imovine i brige o djeci."),
         ],
         "rokovi": None,
     },
-    "Financijske poteskoce": {
+    "Financijske poteškoće": {
         "upute": [
-            ("Osobni stecaj", "Dug >= 3.981,68 EUR, blokada >= 90 dana."),
-            ("Prijedlog za stecaj", "Tvrtke u blokadi > 60 dana."),
-            ("Prijava trazbine", "Ako ste vjerovnik u stecaju."),
+            ("Osobni stečaj", "Dug >= 3.981,68 EUR, blokada >= 90 dana."),
+            ("Prijedlog za stečaj", "Tvrtke u blokadi > 60 dana."),
+            ("Prijava tražbine", "Ako ste vjerovnik u stečaju."),
         ],
-        "rokovi": "Rok za prijavu trazbine: 60 dana od objave.",
+        "rokovi": "Rok za prijavu tražbine: 60 dana od objave.",
     },
 }
 
 
 def _render_pocetna():
-    """Pocetna stranica s vodicem."""
+    """Početna stranica s vodičem."""
 
     # Hero
     st.markdown(
@@ -382,6 +473,7 @@ def _render_pocetna():
     odabir = st.session_state.get("_vodic_odabir", "")
     if odabir and odabir in _VODIC_DETALJI:
         st.markdown("---")
+        st.markdown("<div class='vodic-scroll-target'></div>", unsafe_allow_html=True)
         detalji = _VODIC_DETALJI[odabir]
         st.markdown(f"### {odabir}")
 
@@ -408,6 +500,9 @@ def _render_pocetna():
                         _navigate_to(modul)
                         st.rerun()
 
+        # Auto-scroll do detalja vodica
+        _scroll_to_element('.vodic-scroll-target')
+
     # --- Alati ---
     st.markdown("---")
     st.markdown("##### Alati")
@@ -429,7 +524,7 @@ def _render_pocetna():
     _alati2 = [
         ("Kamate", "Kalkulator kamata"),
         ("Pristojbe", "Kalkulator pristojbi"),
-        ("Zastita potrosaca", "Reklamacija, raskid"),
+        ("Zaštita potrošača", "Reklamacija, raskid"),
     ]
     for col, (modul, opis) in zip(cols2, _alati2):
         with col:
@@ -443,22 +538,29 @@ def _render_pocetna():
 # ROUTING
 # =============================================================================
 
-active = st.session_state._active_module
-
-if active != "Pocetna":
-    _scroll_to_top()
-
-# DOCX opcije - samo za generatore dokumenata
-modul_cfg = _MODULI.get(active, {})
-if modul_cfg.get("docx", False):
-    docx_opcije()
-
-# Routing
-if active == "Pocetna":
-    _render_pocetna()
-elif active in _MODULI and _MODULI[active]["render"]:
-    _MODULI[active]["render"]()
+# Jednostavni mod — prikaži render_jednostavno umjesto standardne navigacije
+if st.session_state.get("_app_mode") == "jednostavno":
+    render_jednostavno(navigate_fn=_navigate_to)
 else:
-    st.warning(f"Modul '{active}' nije pronaden.")
-    st.session_state._active_module = "Pocetna"
-    st.rerun()
+    active = st.session_state._active_module
+
+    # Scroll na vrh kad se modul promijeni (ili pri prvom ulasku u napredno)
+    _prev_module = st.session_state.get("_prev_module", None)
+    if _prev_module != active:
+        _scroll_to_top()
+    st.session_state._prev_module = active
+
+    # DOCX opcije - samo za generatore dokumenata
+    modul_cfg = _MODULI.get(active, {})
+    if modul_cfg.get("docx", False):
+        docx_opcije()
+
+    # Routing
+    if active == "Početna":
+        _render_pocetna()
+    elif active in _MODULI and _MODULI[active]["render"]:
+        _MODULI[active]["render"]()
+    else:
+        st.warning(f"Modul '{active}' nije pronaden.")
+        st.session_state._active_module = "Početna"
+        st.rerun()
