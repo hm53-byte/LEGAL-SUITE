@@ -77,3 +77,7 @@ from generatori.potrosaci import (
     generiraj_jednostrani_raskid,
     generiraj_prijavu_inspekciji,
 )
+from generatori.posrednik_najam import (
+    generiraj_ugovor_najam_ab,
+    generiraj_ugovor_upravljanje_bc,
+)

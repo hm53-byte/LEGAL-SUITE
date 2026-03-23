@@ -9,26 +9,14 @@
 
 ### 1. Stavi kod na GitHub
 
-Ako vec nemas git repo:
+Kod je vec na GitHubu: https://github.com/hm53-byte/LEGAL-SUITE
 
+Za buduce promjene:
 ```bash
 cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
-git init
 git add -A
-git commit -m "Initial commit - LegalTech Suite Pro"
-```
-
-Kreiraj novi repo na GitHub:
-- Idi na https://github.com/new
-- Naziv: `legaltech-suite-pro` (ili po zelji)
-- Visibility: **Public** (obavezno za besplatni Streamlit Cloud) ili **Private** (takoder radi)
-- Klikni "Create repository"
-
-Pushaj kod:
-```bash
-git remote add origin https://github.com/TVOJ_USERNAME/legaltech-suite-pro.git
-git branch -M main
-git push -u origin main
+git commit -m "Opis promjene"
+git push
 ```
 
 ### 2. Deploy na Streamlit Community Cloud
@@ -36,7 +24,7 @@ git push -u origin main
 1. Idi na https://share.streamlit.io
 2. Klikni **"New app"**
 3. Ispuni formu:
-   - **Repository**: odaberi `TVOJ_USERNAME/legaltech-suite-pro`
+   - **Repository**: odaberi `hm53-byte/LEGAL-SUITE`
    - **Branch**: `main`
    - **Main file path**: `LEGAL-SUITE.py`
 4. Klikni **"Deploy!"**

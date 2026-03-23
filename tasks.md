@@ -454,6 +454,29 @@ S AI-jem: 5–10 Pro korisnika.
 - [x] 129 tests still passing
 
 ## UI KRITIKA — Preostali zadaci (prioritizirano)
+Vizualni identitet vristi "besplatno"
+Frankenstein tema: Imas crni "dark mode" sidebar i zasljepljujuce bijeli glavni dio. To je klasicni, defaultni Streamlit izgled koji nisi ni pokusao prilagoditi. nece app zauvijek biti na streamlitu. Kontrast je preagresivan i umara oci.
+
+Dojam nepovjerenja: Prodajes "LegalTech Suite". Pravni softver mora izgledati sterilno, precizno, pouzdano i skupo. Ovo izgleda kao da je sklepano u pauzi izmedu dva predavanja.
+
+
+ Korisnicko iskustvo (UX) i dizajn formi
+Rasipanje prostora: Margine i prazan prostor su toliko ogromni da mozes parkirati sleper. Zasto polje za "Javni biljeznik" zauzima cijelu sirinu ekrana od metar i pol? To vizualno "razvodnjava" formu.
+
+Zbrka s poljima: Stupci za Ovrhovoditelja i Ovrsenika su okej zamisljeni, ali input polja su predugacka. Radio buttoni ("Fizicka osoba" / "Pravna osoba") lebde u zraku iznad text boxova bez ikakvog logicnog okvira koji bi ih grupirao.
+
+Sitnice koje zivciraju: Ikone za pomoc (mali upitnici pored "Ime i Prezime") su toliko sitne i blijede da ih korisnik s dioptrijom nece ni skuziti.
+
+ Sidebar navigacija je kaos
+Hijerarhija ne postoji: Gumbi u sidebaru su svi iste velicine i istog stila. "Odjava" izgleda isto kao "Pocetna", a polje za pretragu se gubi medu gumbima. Korisnikovo oko nema na sto sletjeti.
+
+Pravopisna nedosljednost: U sidebaru ti pise "Ovrsno pravo" i "Punomoc" (bez kvacica), a u glavnom naslovu na ekranu stoji "Ovršno pravo" (s kvacicama). Odlucite se: ili svugdje gramaticki tocno, ili svugdje "celavo". Ovako izgleda aljkavo.
+
+Odvjetnici su klijenti koji paze na svaki zarez i detalj. Ako ti je aplikacija vizualno aljkava, mislit ce da su ti takvi i pravni dokumenti.
+
+official google login i apple login ne rade - istraži kako funkcioniraju  ROCKET LAWYER, LEGALZOOM i slični konkurenti moje aplikacije i kako njihov ui funkcionira - nemoj njih kopirati
+
+u aplikaciji moras imati dobar Error Handling. Ako tvoj app poziva neki AI API, uvijek moras predvidjeti situaciju da server ne odgovori (kao sad tebi) i ispisati korisniku normalnu poruku, a ne ovakav sirovi kod.
 
 ### Prioritet 1: Funkcionalni problemi
 - [ ] API graceful degradation — e-Predmet, e-Oglasna, NN padaju ako API ne odgovara; trebaju fallback s demo podacima

@@ -28,6 +28,7 @@ from stranice import (
     render_kalendar,
     render_nn_pretraga,
     render_jednostavno,
+    render_posrednik_najam,
 )
 from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
 
@@ -101,6 +102,7 @@ _MODULI = {
     "Obvezno pravo":     {"render": render_obvezno,    "grupa": "Dokumenti", "docx": True,  "opis": "Darovanje, cesija, kompenzacija, jamstvo..."},
     "Trgovačko pravo":   {"render": render_trgovacko,  "grupa": "Dokumenti", "docx": True,  "opis": "Društveni ugovor, prijenos udjela, NDA..."},
     "Obiteljsko pravo":  {"render": render_obiteljsko, "grupa": "Dokumenti", "docx": True,  "opis": "Razvod, bračni ugovor, skrb, uzdržavanje"},
+    "Posrednik u najmu": {"render": render_posrednik_najam, "grupa": "Dokumenti", "docx": True, "opis": "Korporativni smještaj: A-B najam + B-C upravljanje"},
     "Tužbe":             {"render": render_tuzbe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Tužba za isplatu, naknada štete"},
     "Ovršno pravo":      {"render": render_ovrhe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Ovrha putem JB, prigovor, obustava"},
     "Žalbe":             {"render": render_zalbe,       "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba na presudu"},
@@ -434,9 +436,15 @@ def _render_pocetna():
     # Hero
     st.markdown(
         "<div class='hero-section'>"
-        "<h2 style='font-size:1.5rem !important;margin-bottom:0.3rem !important;'>"
-        "Generirajte pravne dokumente u par klikova</h2>"
-        "<p>Odaberite situaciju ispod ili odaberite modul iz izbornika.</p>"
+        "<p style='font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;"
+        "font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:0.6rem !important;"
+        "position:relative;z-index:1;'>LegalTech Suite Pro</p>"
+        "<h2 style='font-size:2rem !important;margin-bottom:0.6rem !important;"
+        "line-height:1.2 !important;'>Generirajte pravne dokumente<br>"
+        "u par klikova</h2>"
+        "<p style='font-size:1.05rem !important;line-height:1.6 !important;'>"
+        "60+ hrvatskih pravnih dokumenata. Odaberite situaciju ispod "
+        "ili modul iz izbornika.</p>"
         "</div>",
         unsafe_allow_html=True,
     )
@@ -448,16 +456,25 @@ def _render_pocetna():
     for i, kat in enumerate(_VODIC_KATEGORIJE):
         boja = _TEZINA_BOJA.get(kat["tezina"], "#475569")
         with cols[i % 2]:
-            # Kartica s gumbom u istom retku
             st.markdown(
                 f"<div class='module-card'>"
-                f"<div style='display:flex;justify-content:space-between;align-items:center;'>"
-                f"<b style='color:#1E3A5F;font-size:0.95rem;'>{kat['naslov']}</b>"
-                f"<span style='background:{boja};color:white;padding:1px 6px;border-radius:3px;"
-                f"font-size:0.65rem;font-weight:600;'>{kat['tezina']}</span>"
+                f"<div style='display:flex;justify-content:space-between;align-items:center;"
+                f"margin-bottom:0.4rem;'>"
+                f"<b style='color:#162D50;font-size:0.95rem;letter-spacing:-0.01em;'>"
+                f"{kat['naslov']}</b>"
+                f"<span style='background:{boja};color:white;padding:2px 8px;border-radius:4px;"
+                f"font-size:0.6rem;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;'>"
+                f"{kat['tezina']}</span>"
                 f"</div>"
-                f"<p style='color:#64748B;font-size:0.8rem;margin:0.3rem 0 0 !important;'>"
-                f"{kat['opis']}</p>"
+                f"<p style='color:#3D4A5C;font-size:0.82rem;margin:0 !important;"
+                f"line-height:1.5;'>{kat['opis']}</p>"
+                f"<div style='display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;'>"
+                + "".join(
+                    f"<span style='font-size:0.6rem;color:#8494A7;background:#F0F0EB;"
+                    f"padding:1px 6px;border-radius:3px;'>{m}</span>"
+                    for m in kat["moduli"]
+                )
+                + f"</div>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
@@ -479,10 +496,11 @@ def _render_pocetna():
 
         for naslov, opis in detalji["upute"]:
             st.markdown(
-                f"<div style='background:#EFF3F8;padding:0.8rem 1rem;border-radius:8px;"
-                f"border-left:3px solid #1E3A5F;margin-bottom:0.5rem;'>"
-                f"<b>{naslov}</b><br>"
-                f"<span style='color:#475569;font-size:0.85rem;'>{opis}</span>"
+                f"<div style='background:white;padding:1rem 1.2rem;border-radius:12px;"
+                f"border-left:3px solid #162D50;margin-bottom:0.6rem;"
+                f"box-shadow:0 2px 8px rgba(22,45,80,0.06);'>"
+                f"<b style='color:#162D50;font-size:0.9rem;'>{naslov}</b><br>"
+                f"<span style='color:#3D4A5C;font-size:0.85rem;line-height:1.6;'>{opis}</span>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
