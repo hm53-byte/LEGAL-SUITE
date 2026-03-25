@@ -202,10 +202,15 @@ class _HtmlToDocxParser(HTMLParser):
                 self.current_cell_text += "\n"
             elif self.current_paragraph:
                 self._flush_text()
-                # Tvrd prijelom retka (w:br) umjesto mekog ("\n")
-                # Meki prijelom s obostranim poravnanjem rasteže kratke retke
-                run = self.current_paragraph.add_run()
-                run._element.append(OxmlElement('w:br'))
+                # Novi paragraf (^p) umjesto manual line break-a (^l / w:br)
+                # w:br stvara ^l koji zahtijeva rucni replace u Wordu
+                old_p = self.current_paragraph
+                p = self.doc.add_paragraph()
+                p.alignment = old_p.alignment
+                p.paragraph_format.space_after = old_p.paragraph_format.space_after
+                p.paragraph_format.space_before = Pt(0)
+                p.paragraph_format.line_spacing = old_p.paragraph_format.line_spacing
+                self.current_paragraph = p
 
         elif tag == "hr":
             self._add_horizontal_line()
