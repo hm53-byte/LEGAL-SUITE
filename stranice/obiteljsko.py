@@ -4,7 +4,7 @@
 # Ugovor o uzdrzavanju
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument
+from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox
 from generatori.obiteljsko import (
     generiraj_sporazum_razvod,
     generiraj_tuzbu_razvod,
@@ -20,8 +20,8 @@ def render_obiteljsko():
 
     zaglavlje_sastavljaca()
 
-    kategorija = st.selectbox(
-        "Odaberite dokument:",
+    kategorija = doc_selectbox(
+        "Odaberite dokument",
         [
             "Prijedlog za sporazumni razvod braka",
             "Tužba za razvod braka",

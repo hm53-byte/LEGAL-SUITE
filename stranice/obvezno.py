@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 import streamlit as st
 from datetime import date
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox
 from generatori.obvezno import (
     generiraj_darovanje,
     generiraj_cesiju,
@@ -448,8 +448,8 @@ def render_obvezno():
 
     zaglavlje_sastavljaca()
 
-    tip_dokumenta = st.selectbox(
-        "Odaberite vrstu dokumenta:",
+    tip_dokumenta = doc_selectbox(
+        "Odaberite vrstu dokumenta",
         [
             "Ugovor o darovanju",
             "Ugovor o cesiji",

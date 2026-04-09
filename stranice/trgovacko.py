@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox
 from generatori.trgovacko import (
     generiraj_drustveni_ugovor,
     generiraj_odluku_skupstine,
@@ -21,8 +21,8 @@ def render_trgovacko():
 
     zaglavlje_sastavljaca()
 
-    kategorija = st.selectbox(
-        "Odaberite dokument:",
+    kategorija = doc_selectbox(
+        "Odaberite dokument",
         [
             "Društveni ugovor d.o.o.",
             "Odluka skupštine / jednog člana",
@@ -266,7 +266,7 @@ def _render_nda():
 def _render_prodaja_poduzeca():
     """Ugovor o prodaji poduzeća kao organizirane gospodarske cjeline - ZOO, ZTD, ZR."""
     st.info(
-        "Prodaja poduzeća kao organizirane gospodarske cjeline (ZTD čl. 275, ZOO, ZR čl. 137). "
+        "Prodaja poduzeća kao organizirane gospodarske cjeline (ZTD čl. 301.a, ZOO, ZR čl. 137). "
         "Za prijenos nekretnina obvezna je clausula intabulandi; preporučuje se javnobilježnička solemnizacija."
     )
 

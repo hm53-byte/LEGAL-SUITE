@@ -8,6 +8,7 @@ from pomocne import (
     prikazi_dokument,
     odabir_suda,
     unos_tocaka,
+    doc_selectbox,
 )
 from generatori.zemljisne import (
     generiraj_tabularnu_doc,
@@ -24,8 +25,8 @@ from pristojbe import pristojba_zk_prijedlog
 
 def render_zemljisne():
     st.header("Zemljišne knjige")
-    zk_usluga = st.selectbox(
-        "Odaberite ZK uslugu:",
+    zk_usluga = doc_selectbox(
+        "Odaberite ZK uslugu",
         ["Tabularna isprava", "ZK Prijedlog (Uknjižba)", "Brisovna tužba",
          "Zabilježba", "Predbilježba", "Upis hipoteke", "Brisanje hipoteke", "Upis služnosti"],
     )

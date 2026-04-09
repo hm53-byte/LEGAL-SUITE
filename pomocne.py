@@ -865,6 +865,18 @@ def provjeri_rok_zalbe(datum_dostave=None, rok_dana=15, opis="rok za žalbu"):
         )
 
 
+def doc_selectbox(label: str, options: list, key: str = None, index: int = 0):
+    """
+    Prominentni selectbox za odabir vrste dokumenta.
+    Prikazuje styled navy label iznad selectboxa.
+    """
+    st.markdown(
+        f'<div class="doc-selector-label">{label.upper()}</div>',
+        unsafe_allow_html=True,
+    )
+    return st.selectbox(label, options, key=key, index=index, label_visibility="collapsed")
+
+
 def clause_builder(kljuc_sesije: str, sekcije_default: list) -> list:
     """
     Prikazuje UI za odabir i redoslijed odjeljaka dokumenta.

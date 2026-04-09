@@ -8,6 +8,7 @@ from pomocne import (
     zaglavlje_sastavljaca,
     prikazi_dokument,
     _rimski_broj,
+    doc_selectbox,
 )
 from klauzule import KATEGORIJE, dohvati_klauzule, dohvati_klauzulu_po_nazivu
 from generatori.ugovori import (
@@ -127,9 +128,10 @@ def _render_slobodna_forma():
 def _render_gradjansko_pravo():
     """Gradjansko pravo - predlosci ugovora."""
     st.subheader("Građansko pravo")
-    tip = st.selectbox(
-        "Odaberite vrstu ugovora:",
+    tip = doc_selectbox(
+        "Odaberite vrstu ugovora",
         ["Kupoprodaja", "Najam/Zakup", "Ugovor o djelu (Usluga)", "Zajam"],
+        key="ug_gp_tip",
     )
 
     c1, c2 = st.columns(2)
@@ -180,10 +182,11 @@ def _render_gradjansko_pravo():
 def _render_radno_pravo():
     """Radno pravo - ugovor o radu, otkaz, aneks, upozorenje."""
     st.subheader("Radno pravo")
-    tip = st.selectbox(
-        "Odaberite dokument:",
+    tip = doc_selectbox(
+        "Odaberite dokument",
         ["Ugovor o radu", "Rad na daljinu", "Odluka o otkazu", "Aneks ugovora o radu",
          "Upozorenje radniku", "Sporazumni prestanak", "Zabrana natjecanja", "Potvrda o zaposlenju"],
+        key="ug_rp_tip",
     )
 
     if tip == "Ugovor o radu":
@@ -466,12 +469,23 @@ def render_ugovori():
 
     zaglavlje_sastavljaca()
 
-    kategorija = st.radio(
-        "Kategorija:",
-        ["Slobodna forma", "Građansko pravo", "Radno pravo"],
-        horizontal=True,
-    )
+    if "ug_kategorija" not in st.session_state:
+        st.session_state.ug_kategorija = "Slobodna forma"
 
+    st.markdown('<div class="doc-selector-label">KATEGORIJA</div>', unsafe_allow_html=True)
+    c1, c2, c3, _ = st.columns([1, 1, 1, 3])
+    for col, kat in zip([c1, c2, c3], ["Slobodna forma", "Građansko pravo", "Radno pravo"]):
+        if col.button(
+            kat,
+            key=f"ug_kat_{kat}",
+            type="primary" if st.session_state.ug_kategorija == kat else "secondary",
+            use_container_width=True,
+        ):
+            st.session_state.ug_kategorija = kat
+            st.rerun()
+
+    st.markdown("---")
+    kategorija = st.session_state.ug_kategorija
     if kategorija == "Slobodna forma":
         _render_slobodna_forma()
     elif kategorija == "Građansko pravo":

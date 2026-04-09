@@ -633,6 +633,31 @@ CSS_STILOVI = f"""
     }}
 
     /* ================================================================
+       DOCUMENT TYPE PICKER — Navy left-bar label
+       ================================================================ */
+    .doc-selector-label {{
+        display: block;
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        font-weight: 700;
+        color: {_BRAND};
+        background: linear-gradient(90deg, rgba(22,45,80,0.08) 0%, transparent 90%);
+        border-left: 3px solid {_BRAND};
+        padding: 0.4rem 0.8rem 0.4rem 0.7rem;
+        border-radius: 0 6px 6px 0;
+        margin-bottom: 0.3rem;
+        margin-top: 0.8rem;
+    }}
+
+    /* Category button-pill row */
+    .cat-btn-row {{
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }}
+
+    /* ================================================================
        PRINT
        ================================================================ */
     @media print {{
