@@ -419,6 +419,636 @@ def generiraj_nda(strana_a, strana_b, podaci):
         return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
 
 
+def generiraj_prodaju_poduzeca(prodavatelj, kupac, podaci):
+    """
+    Ugovor o prodaji poduzeća kao organizirane gospodarske cjeline - ZOO, ZTD čl. 275, ZR čl. 137
+    ZAHTIJEVANA FORMA: PISANA (javnobilježnička ovjera preporučena; clausula intabulandi obvezna za nekretnine)
+    """
+    try:
+        danas = date.today().strftime("%d.%m.%Y.")
+        mjesto = podaci.get("mjesto", "Zagreb")
+        djelatnost = podaci.get("djelatnost", "")
+        kupoprodajna_cijena = podaci.get("kupoprodajna_cijena", 0)
+        prijeboj_iznos = podaci.get("prijeboj_iznos", 0)
+        prijeboj_opis = podaci.get("prijeboj_opis", "")
+        rok_placanja = podaci.get("rok_placanja", 30)
+        ugovorna_kazna = podaci.get("ugovorna_kazna", 100000)
+        cap_odgovornosti_posto = podaci.get("cap_odgovornosti_posto", 20)
+        cap_eur = kupoprodajna_cijena * cap_odgovornosti_posto / 100
+        survival_period = podaci.get("survival_period_godina", 2)
+        broj_zaposlenika = podaci.get("broj_zaposlenika", 0)
+        sud_mjesto = podaci.get("sud_mjesto", "Zagrebu")
+        preuzete_obveze = podaci.get("preuzete_obveze", "")
+        tekuci_ugovori = podaci.get("tekuci_ugovori", "")
+
+        # Imovina
+        ima_nekretninu = podaci.get("ima_nekretninu", False)
+        nekretnina_opis = podaci.get("nekretnina_opis", "")
+        ima_hipoteku = podaci.get("ima_hipoteku", False)
+        hipoteka_iznos = podaci.get("hipoteka_iznos", 0)
+        hipoteka_banka = podaci.get("hipoteka_banka", "")
+        ima_trabinu = podaci.get("ima_trabinu", False)
+        trabina_opis = podaci.get("trabina_opis", "")
+        ima_mjenice = podaci.get("ima_mjenice", False)
+        mjenice_opis = podaci.get("mjenice_opis", "")
+        ima_poslovnih_udjela = podaci.get("ima_poslovnih_udjela", False)
+        poslovni_udjeli_opis = podaci.get("poslovni_udjeli_opis", "")
+        ima_pokretnine = podaci.get("ima_pokretnine", False)
+        pokretnine_opis = podaci.get("pokretnine_opis", "")
+        ima_vrijednosnih_papira = podaci.get("ima_vrijednosnih_papira", False)
+        vrijednosni_papiri_opis = podaci.get("vrijednosni_papiri_opis", "")
+        prenosi_novac = podaci.get("prenosi_novac", False)
+        novcana_sredstva = podaci.get("novcana_sredstva", 0)
+
+        # Zabrana natjecanja
+        zabrana_natjecanja = podaci.get("zabrana_natjecanja", False)
+        zabrana_trajanje = podaci.get("zabrana_trajanje", "3 (tri) godine")
+        zabrana_kazna = podaci.get("zabrana_kazna", 50000)
+
+        # Preživjela jamstva
+        ima_prezivjelih_jamstava = podaci.get("ima_prezivjelih_jamstava", False)
+
+        preostali_iznos = kupoprodajna_cijena - prijeboj_iznos
+
+        clanak = 1
+        parts = [
+            "<div style='text-align: center; font-size: 10pt; "
+            "border: 1px solid #999; padding: 8px; margin-bottom: 20px;'>"
+            "ZAHTIJEVANA FORMA: PISANA — za prijenos nekretnina obvezna clausula intabulandi; "
+            "preporučuje se javnobilježnička solemnizacija</div>",
+            "<div class='header-doc'>UGOVOR O PRODAJI PODUZEĆA</div>",
+            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='party-info'><b>1. PRODAVATELJ:</b><br>{prodavatelj}</div>",
+            f"<div class='party-info'><b>2. KUPAC:</b><br>{kupac}</div><br>",
+        ]
+
+        # --- I. PREDMET UGOVORA ---
+        parts.append(
+            "<div class='section-title' style='text-align: center;'>I. PREDMET UGOVORA</div>"
+        )
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+            f"<div class='justified'>(1) Prodavatelj je vlasnik poduzeća koje se bavi "
+            f"{format_text(djelatnost) if djelatnost else '(opis djelatnosti)'} "
+            f"(u daljnjem tekstu: <b>Poduzeće</b>).<br><br>"
+            f"(2) Ovim Ugovorom Prodavatelj prodaje, a Kupac kupuje Poduzeće kao organiziranu "
+            f"gospodarsku cjelinu, sa svim njegovim objektivnim, subjektivnim i ustrojbenim "
+            f"elementima, uključujući svu imovinu, prava, obveze, ugovorne odnose i radnopravne "
+            f"odnose koji su s tim Poduzećem povezani, a kako je to detaljno navedeno u "
+            f"člancima ovog Ugovora.<br><br>"
+            f"(3) Na ovaj Ugovor primjenjuju se odredbe Zakona o obveznim odnosima "
+            f"(NN 35/05 i izmjene; dalje: ZOO), Zakona o trgovačkim društvima "
+            f"(NN 111/93 i izmjene; dalje: ZTD), Zakona o radu "
+            f"(NN 93/14 i izmjene; dalje: ZR) te drugih relevantnih propisa.</div><br>"
+        )
+        clanak += 1
+
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+            f"<div class='justified'>(1) Prodavatelj izjavljuje i jamči da je pravni položaj "
+            f"Poduzeća, uključujući njegovu imovinu i obveze, na dan sklapanja ovog Ugovora u "
+            f"cijelosti onakav kakav je opisan u ovom Ugovoru, te da izvan ovog Ugovora ne "
+            f"postoje nikakve dodatne obveze, tereti ili ograničenja koja bi teretila Poduzeće, "
+            f"a koja nisu navedena u ovom Ugovoru.<br><br>"
+            f"(2) Prodavatelj izjavljuje da je prije sklapanja ovog Ugovora proveden postupak "
+            f"dubinskog snimanja (due diligence) Poduzeća, čiji je izvještaj prilog ovom Ugovoru "
+            f"(Prilog 1.) te čini njegov sastavni dio.</div><br>"
+        )
+        clanak += 1
+
+        # --- II. KUPOPRODAJNA CIJENA I NAČIN PLAĆANJA ---
+        parts.append(
+            "<div class='section-title' style='text-align: center;'>II. KUPOPRODAJNA CIJENA I NAČIN PLAĆANJA</div>"
+        )
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+            f"<div class='justified'>(1) Ugovorne strane su suglasne da ukupna kupoprodajna "
+            f"cijena za Poduzeće iznosi <b>{format_eur(kupoprodajna_cijena)}</b>.<br><br>"
+            f"(2) Kupoprodajna cijena utvrđena je na temelju provedenog dubinskog snimanja, "
+            f"financijskih izvješća Prodavatelja te sporazuma ugovornih strana.</div><br>"
+        )
+        clanak += 1
+
+        # Plaćanje
+        if prijeboj_iznos > 0 and prijeboj_opis:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Kupac se obvezuje platiti kupoprodajnu cijenu "
+                f"na sljedeći način:<br><br>"
+                f"a) Iznos od <b>{format_eur(prijeboj_iznos)}</b> namiruje se prijebojem "
+                f"(kompenzacijom) s dospjelom tražbinom sukladno čl. 195. ZOO-a: "
+                f"{format_text(prijeboj_opis)}. Ugovorne strane su suglasne da se navedenim "
+                f"prijebojem u cijelosti namiruje predmetna tražbina Kupca prema Prodavatelju.<br><br>"
+                f"b) Preostali iznos od <b>{format_eur(preostali_iznos)}</b> Kupac će uplatiti "
+                f"na žiro-račun Prodavatelja u roku od {rok_placanja} ({rok_placanja}) dana "
+                f"od dana sklapanja ovog Ugovora.<br><br>"
+                f"(2) U slučaju zakašnjenja s plaćanjem, Kupac se obvezuje platiti zakonske "
+                f"zatezne kamate sukladno čl. 29. ZOO-a.</div><br>"
+            )
+        else:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Kupac se obvezuje kupoprodajnu cijenu u iznosu "
+                f"od <b>{format_eur(kupoprodajna_cijena)}</b> uplatiti na žiro-račun "
+                f"Prodavatelja u roku od {rok_placanja} ({rok_placanja}) dana od dana "
+                f"sklapanja ovog Ugovora.<br><br>"
+                f"(2) U slučaju zakašnjenja s plaćanjem, Kupac se obvezuje platiti zakonske "
+                f"zatezne kamate sukladno čl. 29. ZOO-a.</div><br>"
+            )
+        clanak += 1
+
+        # Mehanizam usklađenja cijene (Price Adjustment / True-up)
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Mehanizam usklađenja cijene / True-up)</div>"
+            f"<div class='justified'>(1) Kupoprodajna cijena iz prethodnog članka utvrđena je "
+            f"na temelju referentnog stanja Poduzeća na dan sklapanja ovog Ugovora "
+            f"(<b>Referentni datum</b>). Stranke su suglasne da će se između Referentnog datuma "
+            f"i dana primopredaje stanje zaliha i obrtnih sredstava promijeniti, te se ugovara "
+            f"sljedeći mehanizam usklađenja:<br><br>"
+            f"(2) Na dan primopredaje, ovlašteni predstavnici obiju ugovornih strana zajedno će "
+            f"utvrditi stvarno stanje zaliha popisom (inventurom) te sačiniti Zapisnik o stanju "
+            f"zaliha na dan primopredaje (<b>Closing Inventory</b>), koji čini sastavni dio "
+            f"Zapisnika o primopredaji.<br><br>"
+            f"(3) Ako ukupna tržišna vrijednost stvarnih zaliha premašuje ili ne dostiže "
+            f"referentnu vrijednost za više od <b>EUR 5.000,00</b> (prag de minimis), razliku "
+            f"nadoplaćuje ili vraća odgovarajuća strana u roku od 15 dana od potpisivanja "
+            f"Zapisnika o primopredaji. Razlike ispod praga od EUR 5.000,00 ne podliježu "
+            f"usklađenju.<br><br>"
+            f"(4) Ako stranke ne postignu suglasnost o vrijednosti zaliha, imenuju neovisnog "
+            f"ovlaštenog procjenitelja (metodom naizmjeničnog isključivanja s liste HGK) čiji "
+            f"nalaz je konačan i obvezujući za obje stranke. Troškovi procjenitelja snose se "
+            f"na jednake dijelove.</div><br>"
+        )
+        clanak += 1
+
+        # --- III. IMOVINA KOJA SE PRENOSI ---
+        parts.append(
+            "<div class='section-title' style='text-align: center;'>III. IMOVINA KOJA SE PRENOSI</div>"
+        )
+
+        imovina_clanak_start = clanak
+
+        if ima_nekretninu:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>A) NEKRETNINE<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj prodaje i prenosi na Kupca sljedeću "
+                f"nekretninu:<br><br>{format_text(nekretnina_opis)}<br><br>"
+            )
+            if ima_hipoteku and hipoteka_banka and hipoteka_iznos > 0:
+                parts.append(
+                    f"(2) Nekretnina iz stavka 1. ovog članka opterećena je hipotekom za "
+                    f"osiguranje tražbine u iznosu od <b>{format_eur(hipoteka_iznos)}</b> "
+                    f"u korist {format_text(hipoteka_banka)}. Kupac izjavljuje da je upoznat "
+                    f"s postojanjem hipoteke te preuzima nekretninu s navedenim teretom.<br><br>"
+                    f"(3) Prodavatelj se obvezuje pribaviti suglasnost navedene banke za "
+                    f"prijenos nekretnine na Kupca. Kupac se obvezuje preuzeti obveze koje "
+                    f"proizlaze iz hipotekarnog odnosa ili s bankom sklopiti novi ugovor o "
+                    f"osiguranju tražbine.<br><br>"
+                )
+            parts.append(
+                f"<b>CLAUSULA INTABULANDI:</b><br>"
+                f"Prodavatelj daje izričitu, bezuvjetnu i neopozivo suglasnost da se u "
+                f"zemljišnoj knjizi, na nekretnini opisanoj u stavku 1. ovog članka, "
+                f"izvrši uknjižba prava vlasništva u korist Kupca, bez ikakvih daljnjih "
+                f"uvjeta ili odobrenja Prodavatelja.</div><br>"
+            )
+            clanak += 1
+
+        if ima_trabinu:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>B) TRAŽBINE<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj ovim Ugovorom ustupa (cedira) Kupcu, "
+                f"sukladno čl. 80.–89. ZOO-a, sljedeću tražbinu:<br><br>"
+                f"{format_text(trabina_opis)}<br><br>"
+                f"(2) Prodavatelj (cedent) izjavljuje da je navedena tražbina valjana, "
+                f"postojeća i utuživa, te da ne postoje okolnosti koje bi sprječavale "
+                f"njezinu naplatu.<br><br>"
+                f"(3) Prodavatelj se obvezuje bez odgode obavijestiti dužnika o izvršenoj "
+                f"cesiji sukladno čl. 82. ZOO-a te mu dostaviti primjerak obavijesti o "
+                f"cesiji (denuntiatio cessionis).</div><br>"
+            )
+            clanak += 1
+
+        if ima_mjenice:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>C) MJENICE<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj prenosi na Kupca sljedeće mjenice "
+                f"putem indosamenta, sukladno odredbama Zakona o mjenici (NN 74/94, 92/10):"
+                f"<br><br>{format_text(mjenice_opis)}<br><br>"
+                f"(2) Prijenos mjenica izvršit će se stavljanjem indosamenta na poleđinu "
+                f"svake mjenice u korist Kupca te fizičkom predajom mjenica Kupcu na dan "
+                f"potpisa ovog Ugovora.<br><br>"
+                f"(3) Prodavatelj jamči da su mjenice valjane, da na njima nema nikakvih "
+                f"nedostataka te da su sve dosadašnje prijenosne radnje (indosamenti) "
+                f"izvršene u skladu sa zakonom.</div><br>"
+            )
+            clanak += 1
+
+        if ima_poslovnih_udjela:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>D) POSLOVNI UDJELI<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj prenosi na Kupca sljedeće poslovne "
+                f"udjele:<br><br>{format_text(poslovni_udjeli_opis)}<br><br>"
+                f"(2) Prijenos poslovnih udjela izvršit će se u obliku javnobilježničkog akta "
+                f"ili privatne isprave koju potvrdi javni bilježnik, sukladno čl. 412. st. 3. "
+                f"ZTD-a, koji je prilog ovom Ugovoru (Prilog 2.).<br><br>"
+                f"(3) Prodavatelj se obvezuje bez odgode obavijestiti predmetna društva o "
+                f"prijenosu te zatražiti upis Kupca kao novog imatelja poslovnih udjela, "
+                f"sukladno čl. 411. ZTD-a.<br><br>"
+                f"(4) Prodavatelj izjavljuje da poslovni udjeli nisu opterećeni zalogom ni "
+                f"drugim pravima trećih osoba, da nisu predmet spora, te da ne postoje "
+                f"ograničenja raspolaganja tim udjelima koja bi sprječavala njihov "
+                f"prijenos.</div><br>"
+            )
+            clanak += 1
+
+        if ima_pokretnine:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>E) POKRETNINE<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj predaje Kupcu u posjed i vlasništvo "
+                f"sljedeće pokretnine:<br><br>{format_text(pokretnine_opis)}<br><br>"
+                f"(2) Prijenos vlasništva pokretnina izvršit će se predajom u posjed Kupca "
+                f"na dan potpisa ovog Ugovora, odnosno najkasnije u roku od 15 (petnaest) "
+                f"dana od dana potpisa ovog Ugovora, čime Kupac stječe pravo vlasništva "
+                f"sukladno čl. 116. Zakona o vlasništvu i drugim stvarnim pravima.<br><br>"
+                f"(3) O primopredaji pokretnina sastavit će se primopredajni zapisnik koji "
+                f"potpisuju obje ugovorne strane (Prilog 3.).</div><br>"
+            )
+            clanak += 1
+
+        if ima_vrijednosnih_papira:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>F) VRIJEDNOSNI PAPIRI<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj prenosi na Kupca sljedeći portfelj "
+                f"vrijednosnih papira:<br><br>{format_text(vrijednosni_papiri_opis)}<br><br>"
+                f"(2) Prijenos se vrši sukladno prirodi vrijednosnih papira (fizičkom predajom "
+                f"ili nalogom za prijenos kod SKDD-a).<br><br>"
+                f"(3) Prodavatelj se obvezuje dati nalog za prijenos vrijednosnih papira na "
+                f"račun Kupca kod SKDD-a, ako su papiri evidentirani u depozitoriju.</div><br>"
+            )
+            clanak += 1
+
+        if prenosi_novac and novcana_sredstva > 0:
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>G) NOVČANA SREDSTVA<br>"
+                f"Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj prenosi na Kupca novčana sredstva u "
+                f"iznosu od <b>{format_eur(novcana_sredstva)}</b> koja se na dan sklapanja "
+                f"ovog Ugovora nalaze na žiro-računu Prodavatelja.<br><br>"
+                f"(2) Prijenos novčanih sredstava izvršit će se nalogom za prijenos na "
+                f"žiro-račun Kupca u roku od 5 (pet) radnih dana od dana potpisa ovog "
+                f"Ugovora.</div><br>"
+            )
+            clanak += 1
+
+        # --- IV. OBVEZE KOJE SE PRENOSE ---
+        parts.append(
+            "<div class='section-title' style='text-align: center;'>IV. OBVEZE KOJE SE PRENOSE</div>"
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+        )
+        if preuzete_obveze:
+            parts.append(
+                f"<div class='justified'>(1) Kupac preuzima sljedeće obveze Prodavatelja "
+                f"vezane uz Poduzeće:<br><br>{format_text(preuzete_obveze)}<br><br>"
+                f"(2) Preuzimanje dugova vrši se uz suglasnost vjerovnika sukladno čl. "
+                f"446.–450. ZOO-a. Ukoliko vjerovnik uskrati suglasnost, Prodavatelj ostaje "
+                f"solidarno odgovoran s Kupcem za namirenje obveze.<br><br>"
+                f"(3) Prodavatelj izjavljuje i jamči da, osim obveza navedenih u ovom "
+                f"članku, ne postoje nikakve druge obveze vezane uz Poduzeće.</div><br>"
+            )
+        else:
+            parts.append(
+                f"<div class='justified'>(1) Kupac ne preuzima posebne obveze Prodavatelja, "
+                f"osim onih koje po sili zakona prelaze uz Poduzeće kao gospodarsku "
+                f"cjelinu.<br><br>"
+                f"(2) Prodavatelj izjavljuje i jamči da ne postoje skrivene obveze vezane "
+                f"uz Poduzeće koje nisu navedene u ovom Ugovoru.</div><br>"
+            )
+        clanak += 1
+
+        # --- V. PRIJENOS UGOVORA O RADU ---
+        if broj_zaposlenika > 0:
+            parts.append(
+                "<div class='section-title' style='text-align: center;'>V. PRIJENOS UGOVORA O RADU</div>"
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Sukladno čl. 137. Zakona o radu, prodajom "
+                f"Poduzeća kao organizirane gospodarske cjeline svi ugovori o radu "
+                f"<b>{broj_zaposlenika} ({broj_zaposlenika})</b> zaposlenika zaposlenih na "
+                f"neodređeno vrijeme u Poduzeću Prodavatelja prenose se na Kupca po sili "
+                f"zakona.<br><br>"
+                f"(2) Na radne odnose prenesenih zaposlenika nastavlja se primjenjivati "
+                f"mjerodavni kolektivni ugovor najmanje godinu dana od prijenosa, sukladno "
+                f"čl. 137. st. 3. ZR-a.<br><br>"
+                f"(3) Kupac preuzima sva prava i obveze iz prenesenih ugovora o radu u "
+                f"neizmijenjenom obliku i opsegu od dana prijenosa Poduzeća.<br><br>"
+                f"(4) Prodavatelj se obvezuje pravodobno obavijestiti zaposlenike i radničko "
+                f"vijeće (ako je ustrojeno) o namjeravanom prijenosu, razlozima prijenosa te "
+                f"planiranim mjerama, sukladno čl. 137. st. 5.–7. ZR-a.<br><br>"
+                f"(5) Prodavatelj i Kupac solidarno odgovaraju za obveze iz radnog odnosa "
+                f"nastale do dana prijenosa Poduzeća prema zaposlenicima. Za obveze nastale "
+                f"do i uključujući dan primopredaje (neiskorišteni odmori, neisplaćeni bonusi "
+                f"i stimulacije, prekovremeni rad) Prodavatelj se obvezuje obeštećenjem "
+                f"(indemnityjem) zaštititi Kupca od takvih zahtjeva, u roku od 15 (petnaest) "
+                f"dana od podnošenja pisanog zahtjeva s dokazima.</div><br>"
+            )
+            clanak += 1
+
+        # --- VI. PRIJENOS TEKUĆIH UGOVORA ---
+        if tekuci_ugovori:
+            parts.append(
+                "<div class='section-title' style='text-align: center;'>VI. PRIJENOS TEKUĆIH UGOVORA</div>"
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Kupac preuzima sljedeće tekuće ugovore "
+                f"Prodavatelja vezane uz poslovanje Poduzeća:<br><br>"
+                f"{format_text(tekuci_ugovori)}<br><br>"
+                f"(2) Prijenos ugovora vrši se sukladno čl. 127.–131. ZOO-a (ustupanje "
+                f"ugovora). Prodavatelj se obvezuje pribaviti suglasnost ugovornih strana "
+                f"za prijenos ugovora na Kupca.<br><br>"
+                f"(3) U slučaju da neka od navedenih ugovornih strana uskrati suglasnost, "
+                f"Prodavatelj se obvezuje surađivati s Kupcem radi sklapanja novih ugovora "
+                f"s istim ili sličnim uvjetima.</div><br>"
+            )
+            clanak += 1
+
+        # --- VII. ZABRANA NATJECANJA ---
+        if zabrana_natjecanja:
+            parts.append(
+                "<div class='section-title' style='text-align: center;'>VII. ZABRANA NATJECANJA (NON-COMPETE)</div>"
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+                f"<div class='justified'>(1) Prodavatelj se obvezuje da u razdoblju od "
+                f"<b>{format_text(zabrana_trajanje)}</b> od dana primopredaje Poduzeća neće, "
+                f"ni izravno ni neizravno:<br><br>"
+                f"a) osnivati, stjecati, voditi, financirati ili na drugi način sudjelovati u "
+                f"subjektu koji se bavi istim ili srodnim poslovanjem na teritoriju Republike "
+                f"Hrvatske;<br>"
+                f"b) preuzimati ili pokušavati preuzimati zaposlenike, dobavljače ili kupce "
+                f"Poduzeća koji su na dan primopredaje bili u ugovornom odnosu s Poduzećem;<br>"
+                f"c) koristiti poslovne tajne, know-how, baze podataka ili bilo koje "
+                f"povjerljive informacije stečene u okviru vođenja Poduzeća.<br><br>"
+                f"(2) Zabrana iz stavka 1. ovog članka ne odnosi se na pasivno vlasništvo "
+                f"do 5% javno uvrštenih dionica konkurentskog društva.<br><br>"
+                f"(3) Za svako utvrđeno kršenje zabrane, Prodavatelj je dužan Kupcu platiti "
+                f"ugovornu kaznu u iznosu od <b>{format_eur(zabrana_kazna)}</b> za svaki "
+                f"pojedini slučaj kršenja, neovisno o naknadi stvarne štete. Kupac zadržava "
+                f"pravo zahtijevati i sudsku zabranu nastavka štetne radnje.<br><br>"
+                f"(4) Prodavatelj izjavljuje da prihvaća ovu obvezu dobrovoljno te da je "
+                f"smatraju razmjernom i pravno valjanom (ZOO čl. 9).</div><br>"
+            )
+            clanak += 1
+
+        # --- PREŽIVJELA JAMSTVA (samo ako postoje) ---
+        if ima_prezivjelih_jamstava:
+            parts.append(
+                "<div class='section-title' style='text-align: center;'>"
+                "VIII. ZAŠTITA PRODAVATELJA OD PREŽIVJELIH JAMSTAVA I GARANCIJA</div>"
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+                f"(Katalog preživjelih jamstava)</div>"
+                f"<div class='justified'>(1) Prodavatelj se obvezuje, najkasnije do dana "
+                f"primopredaje Poduzeća, izraditi i predati Kupcu potpun i točan popis "
+                f"(katalog) svih jamstava, garancija, jemstava, osiguranja i sličnih obveza "
+                f"koje je Prodavatelj dao trećim osobama u vezi s poslovanjem Poduzeća, a "
+                f"koje na dan primopredaje nisu ugašene (<b>Preživjela jamstva</b>).<br><br>"
+                f"(2) Katalog preživjelih jamstava čini prilog ovom Ugovoru i sadrži za "
+                f"svako preživjelo jamstvo: naziv i sjedište vjerovnika, pravni temelj, "
+                f"vrstu jamstva, iznos, rok trajanja, uvjete aktivacije i podatak o "
+                f"prenosivosti.<br><br>"
+                f"(3) Prodavatelj izjavljuje i jamči da katalog obuhvaća sva jamstva i "
+                f"garancije dane trećim osobama u vezi s Poduzećem.</div><br>"
+            )
+            clanak += 1
+
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+                f"(Obveza supstitucije jamstava)</div>"
+                f"<div class='justified'>(1) Kupac se obvezuje uložiti sve razumno očekivane "
+                f"napore da, u roku od 90 (devedeset) dana od dana primopredaje, za svako "
+                f"preživjelo jamstvo iz kataloga ishodi: zamjenu jamstva Prodavatelja vlastitim "
+                f"jamstvom Kupca prema istom vjerovniku, oslobođenje Prodavatelja od obveze "
+                f"po jamstvu uz suglasnost vjerovnika, ili prestanak jamstva na drugi zakonit "
+                f"način.<br><br>"
+                f"(2) Za svako preživjelo jamstvo koje nije supstituirano u roku iz stavka 1., "
+                f"Kupac je dužan Prodavatelju plaćati naknadu za preostalu izloženost u iznosu "
+                f"od <b>0,015% dnevno</b> od nominalne vrijednosti svakog pojedinog preživjelog "
+                f"jamstva, počevši od prvog dana nakon isteka roka iz stavka 1. Ukupna "
+                f"kumulativna naknada ograničena je na 15% ukupne nominalne vrijednosti svih "
+                f"preživjelih jamstava.<br><br>"
+                f"(3) Ukoliko se bilo koje preživjelo jamstvo aktivira prije supstitucije, "
+                f"Kupac je dužan Prodavatelju naknaditi cjelokupni iznos koji je Prodavatelj "
+                f"platio po aktiviranom jamstvu, uvećan za sve troškove i zatezne kamate, "
+                f"u roku od 15 (petnaest) dana od pisanog poziva.</div><br>"
+            )
+            clanak += 1
+
+            parts.append(
+                f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+                f"(Jamstveni fiducijarni depozit)</div>"
+                f"<div class='justified'>(1) Na dan primopredaje Poduzeća, Kupac se obvezuje "
+                f"položiti na poseban fiducijarni (namjenski) račun iznos koji odgovara "
+                f"<b>25% (dvadesetpet posto)</b> ukupne nominalne vrijednosti svih preživjelih "
+                f"jamstava iz kataloga (<b>Jamstveni fiducijarni depozit</b>).<br><br>"
+                f"(2) Fiducijar je javni bilježnik ili odvjetnik s podračunom klijentskih "
+                f"sredstava, kojeg sporazumno imenuju ugovorne strane temeljem zasebnog "
+                f"Ugovora o fiduciji koji čini prilog ovom Ugovoru.<br><br>"
+                f"(3) Sredstva s fiducijarnog računa otpuštaju se: u korist Kupca — "
+                f"proporcionalno za svako supstituirano ili ugašeno jamstvo; u korist "
+                f"Prodavatelja — sukladno postupku negativne suglasnosti iz stavka 4. ovog "
+                f"članka, ako se preživjelo jamstvo aktivira.<br><br>"
+                f"(4) Prodavatelj koji je platio po aktiviranom jamstvu upućuje Kupcu pisanu "
+                f"obavijest s dokazima. Kupac ima <b>15 (petnaest) radnih dana</b> da dostavi "
+                f"Fiducijaru pisani prigovor. Ako Kupac u tom roku ne dostavi prigovor "
+                f"(negativna suglasnost sukladno čl. 265. st. 3. ZOO-a), Fiducijar otpušta "
+                f"sredstva Prodavatelju u roku od 5 radnih dana od isteka roka za prigovor. "
+                f"Ako Kupac pravodobno dostavi prigovor, spor se rješava u ubrzanom "
+                f"arbitražnom postupku pri Stalnom izbranom sudištu HGK.<br><br>"
+                f"(5) Fiducijarni račun ostaje aktivan do dana kad su sva preživjela jamstva "
+                f"supstituirana, ugašena ili na drugi način prestala, odnosno najdulje "
+                f"36 (tridesetšest) mjeseci od dana primopredaje.</div><br>"
+            )
+            clanak += 1
+
+        # --- IZJAVE I JAMSTVA ---
+        poglavlje_rw = "IX." if ima_prezivjelih_jamstava else "VIII."
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>"
+            f"{poglavlje_rw} IZJAVE I JAMSTVA PRODAVATELJA</div>"
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+            f"<div class='justified'>(1) Prodavatelj izjavljuje i jamči Kupcu:<br><br>"
+            f"a) Da je Prodavatelj valjano osnovan i registriran te da ima sve potrebne "
+            f"ovlasti za sklapanje i izvršenje ovog Ugovora, uključujući odluku glavne "
+            f"skupštine sukladno čl. 275. ZTD-a;<br>"
+            f"b) Da imovina navedena u ovom Ugovoru čini cjelokupnu imovinu Poduzeća;<br>"
+            f"c) Da, osim eventualne hipoteke navedene u ovom Ugovoru, ne postoje drugi "
+            f"tereti ili prava trećih osoba na imovini Poduzeća;<br>"
+            f"d) Da su financijska izvješća Prodavatelja istinita, potpuna i točna;<br>"
+            f"e) Da Prodavatelj uredno ispunjava sve porezne obveze;<br>"
+            f"f) Da, osim sporova navedenih u ovom Ugovoru, ne postoje drugi sudski, "
+            f"arbitražni ili upravni postupci vezani uz Poduzeće.<br><br>"
+            f"(2) Ukupna kumulativna odgovornost Prodavatelja po osnovi svih zahtjeva "
+            f"koji se temelje na povredi izjava i jamstava iz stavka 1. ovog članka "
+            f"ograničena je na iznos od <b>{format_eur(cap_eur)}</b> "
+            f"({cap_odgovornosti_posto}% kupoprodajne cijene; dalje: <b>Cap odgovornosti</b>).<br><br>"
+            f"(3) Kupac nema pravo podnijeti zahtjev Prodavatelju za povredu izjave ili "
+            f"jamstva ako iznos tog pojedinog zahtjeva ne prelazi <b>EUR 5.000,00</b> "
+            f"(<b>De minimis prag</b>). Ako zbroj više zahtjeva koji su svaki ispod De minimis "
+            f"praga prelazi EUR 20.000,00, Kupac ima pravo podnijeti zahtjev za cijeli zbroj.<br><br>"
+            f"(4) Svi zahtjevi temeljem izjava i jamstava moraju biti podneseni najkasnije u "
+            f"roku od <b>{survival_period} ({survival_period}) {('godinu' if survival_period == 1 else 'godine' if survival_period < 5 else 'godina')}</b> "
+            f"od dana primopredaje Poduzeća, uz iznimku poreznih i radnopravnih zahtjeva za "
+            f"koje rok iznosi 3 (tri) godine (<b>Survival Period</b>).</div><br>"
+        )
+        clanak += 1
+
+        poglavlje_kupac = "X." if ima_prezivjelih_jamstava else "IX."
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>"
+            f"{poglavlje_kupac} IZJAVE I JAMSTVA KUPCA</div>"
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
+            f"<div class='justified'>Kupac izjavljuje i jamči Prodavatelju:<br><br>"
+            f"a) Da je Kupac valjano osnovan i registriran te da ima sve potrebne ovlasti "
+            f"za sklapanje i izvršenje ovog Ugovora;<br>"
+            f"b) Da Kupac raspolaže financijskim sredstvima potrebnim za plaćanje "
+            f"kupoprodajne cijene;<br>"
+            f"c) Da je Kupac upoznat sa stanjem Poduzeća na temelju provedenog dubinskog "
+            f"snimanja te da Poduzeće kupuje u viđenom stanju.</div><br>"
+        )
+        clanak += 1
+
+        # --- POREZNE ODREDBE ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Porezne odredbe)</div>"
+            f"<div class='justified'>(1) Porez na promet nekretnina koji temeljem ovog "
+            f"Ugovora tereti prijenos nekretnine snosi Kupac, sukladno Zakonu o porezu na "
+            f"promet nekretnina.<br><br>"
+            f"(2) Ugovorne strane suglasno utvrđuju da se ovim Ugovorom prenosi Poduzeće "
+            f"kao gospodarska cjelina u smislu čl. 8. Zakona o porezu na dodanu vrijednost, "
+            f"zbog čega taj prijenos ne podliježe oporezivanju PDV-om, pod uvjetom da Kupac "
+            f"nastavlja obavljati istu gospodarsku djelatnost. Kupac izričito izjavljuje da "
+            f"namjerava nastaviti obavljati predmetnu djelatnost te se obvezuje bez odgode "
+            f"obavijestiti nadležnu ispostavu Porezne uprave o stjecanju gospodarske cjeline. "
+            f"Ako zbog Kupčeve radnje ili propusta Porezna uprava naknadno razreže PDV, "
+            f"isključivi teret tog razreza snosi Kupac te se obvezuje Prodavatelja "
+            f"obeštećenjem zaštititi od takvih tražbina.<br><br>"
+            f"(3) Sve ostale poreze i javna davanja snose ugovorne strane sukladno "
+            f"zakonskim odredbama.</div><br>"
+        )
+        clanak += 1
+
+        # --- PRIMOPREDAJA ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Primopredaja Poduzeća)</div>"
+            f"<div class='justified'>(1) Primopredaja Poduzeća izvršit će se u roku od "
+            f"30 (trideset) dana od dana potpisa ovog Ugovora, osim ako ovim Ugovorom za "
+            f"pojedine dijelove imovine nije predviđen drukčiji rok.<br><br>"
+            f"(2) O primopredaji će se sastaviti zapisnik koji potpisuju obje ugovorne strane, "
+            f"a koji će sadržavati detaljan popis sve prenesene imovine, obveza, ugovora i "
+            f"dokumentacije.<br><br>"
+            f"(3) Rizik slučajne propasti ili oštećenja imovine Poduzeća prelazi na Kupca "
+            f"danom primopredaje, sukladno čl. 378. ZOO-a.</div><br>"
+        )
+        clanak += 1
+
+        # --- ODGOVORNOST ZA NEDOSTATKE ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Odgovornost za materijalne i pravne nedostatke)</div>"
+            f"<div class='justified'>(1) Prodavatelj odgovara Kupcu za materijalne i pravne "
+            f"nedostatke prenesene imovine sukladno odredbama ZOO-a (čl. 400.–422. ZOO-a).<br><br>"
+            f"(2) Kupac je dužan pregledati Poduzeće pri preuzimanju te o eventualnim "
+            f"vidljivim nedostacima bez odgode obavijestiti Prodavatelja.<br><br>"
+            f"(3) Za skrivene nedostatke koji se pokažu u roku od 2 (dvije) godine od "
+            f"primopredaje, Kupac je dužan obavijestiti Prodavatelja u roku od 2 (dva) "
+            f"mjeseca od otkrivanja nedostatka.</div><br>"
+        )
+        clanak += 1
+
+        # --- UGOVORNA KAZNA ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Ugovorna kazna)</div>"
+            f"<div class='justified'>(1) U slučaju da bilo koja ugovorna strana ne ispuni "
+            f"ili neuredno ispuni svoje obveze iz ovog Ugovora, druga strana ima pravo "
+            f"zahtijevati ispunjenje obveze te naknadu štete sukladno općim pravilima ZOO-a.<br><br>"
+            f"(2) U slučaju da Prodavatelj odustane od izvršenja ovog Ugovora nakon njegova "
+            f"sklapanja, dužan je Kupcu platiti ugovornu kaznu u iznosu od "
+            f"<b>{format_eur(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.<br><br>"
+            f"(3) U slučaju da Kupac odustane od izvršenja ovog Ugovora nakon njegova "
+            f"sklapanja, dužan je Prodavatelju platiti ugovornu kaznu u istom iznosu od "
+            f"<b>{format_eur(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.</div><br>"
+        )
+        clanak += 1
+
+        # --- POVJERLJIVOST ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Povjerljivost)</div>"
+            f"<div class='justified'>(1) Ugovorne strane se obvezuju čuvati kao poslovnu "
+            f"tajnu sve informacije i podatke koje su saznale u vezi s ovim Ugovorom, "
+            f"uključujući podatke iz postupka dubinskog snimanja, a koje nisu javno dostupne.<br><br>"
+            f"(2) Obveza povjerljivosti traje 3 (tri) godine od dana sklapanja ovog "
+            f"Ugovora.</div><br>"
+        )
+        clanak += 1
+
+        # --- RJEŠAVANJE SPOROVA ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Rješavanje sporova)</div>"
+            f"<div class='justified'>(1) Ugovorne strane će nastojati sve sporove koji "
+            f"proizlaze iz ovog Ugovora riješiti sporazumno, mirnim putem.<br><br>"
+            f"(2) U slučaju da sporazumno rješavanje nije moguće u roku od 30 (trideset) "
+            f"dana od nastanka spora, za rješavanje spora nadležan je stvarno i mjesno "
+            f"nadležni sud u {format_text(sud_mjesto)}.</div><br>"
+        )
+        clanak += 1
+
+        # --- ZAVRŠNE ODREDBE ---
+        parts.append(
+            f"<div class='section-title' style='text-align: center;'>Članak {clanak}. "
+            f"(Završne odredbe)</div>"
+            f"<div class='justified'>(1) Ovaj Ugovor stupa na snagu danom potpisa obiju "
+            f"ugovornih strana.<br><br>"
+            f"(2) Izmjene i dopune ovog Ugovora valjane su samo ako su učinjene u pisanom "
+            f"obliku i potpisane od obiju ugovornih strana.<br><br>"
+            f"(3) Ako se bilo koja odredba ovog Ugovora pokaže ništetnom ili nevažećom, "
+            f"to neće utjecati na valjanost preostalih odredaba, a ništetna odredba "
+            f"zamijenit će se valjanom odredbom koja najbliže odgovara gospodarskoj svrsi "
+            f"i namjeri ugovornih strana.<br><br>"
+            f"(4) Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se odredbe "
+            f"ZOO-a, ZTD-a, ZR-a i drugih relevantnih propisa Republike Hrvatske.<br><br>"
+            f"(5) Ovaj Ugovor sastavljen je u 4 (četiri) istovjetna primjerka, od kojih "
+            f"svaka ugovorna strana zadržava po 2 (dva) primjerka.</div><br>"
+        )
+        clanak += 1
+
+        # Potpisi
+        parts.append(
+            f"<div class='justified'>{mjesto}, dana {danas} godine.</div><br><br>"
+            f'<table width="100%" border="0"><tr>'
+            f'<td width="50%" align="center">'
+            f"<b>ZA PRODAVATELJA</b><br><br><br>"
+            f"______________________<br>"
+            f"<small>(potpis i pečat)</small></td>"
+            f'<td width="50%" align="center">'
+            f"<b>ZA KUPCA</b><br><br><br>"
+            f"______________________<br>"
+            f"<small>(potpis i pečat)</small></td>"
+            f"</tr></table>"
+        )
+
+        return "".join(parts)
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
 def generiraj_zapisnik_uprave(drustvo, podaci):
     """
     Zapisnik sjednice uprave - ZTD, Poslovnik o radu uprave
