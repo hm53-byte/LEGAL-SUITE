@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder
 from generatori.trgovacko import (
     generiraj_drustveni_ugovor,
     generiraj_odluku_skupstine,
@@ -11,6 +11,7 @@ from generatori.trgovacko import (
     generiraj_nda,
     generiraj_zapisnik_uprave,
     generiraj_prodaju_poduzeca,
+    SEKCIJE_PRODAJA_PODUZECA,
 )
 
 
@@ -417,6 +418,10 @@ def _render_prodaja_poduzeca():
         "Ugovorna kazna za odustanak (EUR)", min_value=0.0, value=100000.0, key="pp_uk"
     )
 
+    st.subheader("Struktura dokumenta")
+    with st.expander("Odaberi i poredaj odjeljke", expanded=False):
+        odabrane_sekcije = clause_builder("pp_sekcije", SEKCIJE_PRODAJA_PODUZECA)
+
     st.markdown("---")
     if st.button("Generiraj ugovor o prodaji poduzeća", type="primary"):
         doc = generiraj_prodaju_poduzeca(
@@ -458,6 +463,7 @@ def _render_prodaja_poduzeca():
                 "survival_period_godina": survival_period,
                 "ugovorna_kazna": ugovorna_kazna,
             },
+            sekcije_redoslijed=odabrane_sekcije,
         )
         prikazi_dokument(doc, "Ugovor_o_prodaji_poduzeca.docx", "Preuzmi dokument")
 

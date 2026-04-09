@@ -863,3 +863,72 @@ def provjeri_rok_zalbe(datum_dostave=None, rok_dana=15, opis="rok za žalbu"):
         st.info(
             f"{opis.capitalize()}: preostalo {preostalo} dana (rok {rok_dana} dana od dostave)."
         )
+
+
+def clause_builder(kljuc_sesije: str, sekcije_default: list) -> list:
+    """
+    Prikazuje UI za odabir i redoslijed odjeljaka dokumenta.
+    Vraća listu ID-ova odabranih odjeljaka u redoslijedu koji je korisnik postavio.
+
+    kljuc_sesije: prefiks za session_state (npr. "pp_sekcije")
+    sekcije_default: lista dicts s id, naziv, obavezno, ukljuceno (i opcionalno fiksna_pozicija)
+    """
+    import copy
+
+    if kljuc_sesije not in st.session_state:
+        st.session_state[kljuc_sesije] = copy.deepcopy(sekcije_default)
+
+    sekcije = st.session_state[kljuc_sesije]
+
+    fiksne_zadnje = [s for s in sekcije if s.get("fiksna_pozicija") == "zadnja"]
+    slobodne = [s for s in sekcije if s.get("fiksna_pozicija") != "zadnja"]
+
+    st.caption("Odaberite odjeljke i podesite redoslijed:")
+
+    for i, sek in enumerate(slobodne):
+        col_check, col_naziv, col_gore, col_dole = st.columns([0.5, 5, 0.5, 0.5])
+
+        with col_check:
+            if sek["obavezno"]:
+                st.checkbox(
+                    "", value=True, disabled=True,
+                    key=f"{kljuc_sesije}_chk_{sek['id']}"
+                )
+            else:
+                novo = st.checkbox(
+                    "", value=sek["ukljuceno"],
+                    key=f"{kljuc_sesije}_chk_{sek['id']}"
+                )
+                if novo != sek["ukljuceno"]:
+                    st.session_state[kljuc_sesije][i]["ukljuceno"] = novo
+                    st.rerun()
+
+        with col_naziv:
+            if sek["ukljuceno"] or sek["obavezno"]:
+                st.markdown(f"**{sek['naziv']}**")
+            else:
+                st.markdown(f"<span style='color:#888'>{sek['naziv']}</span>", unsafe_allow_html=True)
+
+        with col_gore:
+            if i > 0 and st.button("↑", key=f"{kljuc_sesije}_gore_{i}"):
+                slobodne[i], slobodne[i - 1] = slobodne[i - 1], slobodne[i]
+                st.session_state[kljuc_sesije] = slobodne + fiksne_zadnje
+                st.rerun()
+
+        with col_dole:
+            if i < len(slobodne) - 1 and st.button("↓", key=f"{kljuc_sesije}_dole_{i}"):
+                slobodne[i], slobodne[i + 1] = slobodne[i + 1], slobodne[i]
+                st.session_state[kljuc_sesije] = slobodne + fiksne_zadnje
+                st.rerun()
+
+    for sek in fiksne_zadnje:
+        col_check, col_naziv, _, _ = st.columns([0.5, 5, 0.5, 0.5])
+        with col_check:
+            st.checkbox(
+                "", value=True, disabled=True,
+                key=f"{kljuc_sesije}_chk_{sek['id']}"
+            )
+        with col_naziv:
+            st.markdown(f"**{sek['naziv']}**")
+
+    return [s["id"] for s in (slobodne + fiksne_zadnje) if s.get("ukljuceno") or s.get("obavezno")]
