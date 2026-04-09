@@ -266,7 +266,7 @@ def _render_nda():
 def _render_prodaja_poduzeca():
     """Ugovor o prodaji poduzeća kao organizirane gospodarske cjeline - ZOO, ZTD, ZR."""
     st.info(
-        "Prodaja poduzeća kao organizirane gospodarske cjeline (ZTD čl. 301.a, ZOO, ZR čl. 137). "
+        "Prodaja poduzeća kao organizirane gospodarske cjeline (ZTD čl. 301.a, ZOO čl. 96.–100., ZR čl. 137). "
         "Za prijenos nekretnina obvezna je clausula intabulandi; preporučuje se javnobilježnička solemnizacija."
     )
 

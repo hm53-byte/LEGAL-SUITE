@@ -473,13 +473,11 @@ def render_ugovori():
         st.session_state.ug_kategorija = "Slobodna forma"
 
     st.markdown('<div class="doc-selector-label">KATEGORIJA</div>', unsafe_allow_html=True)
-    c1, c2, c3, _ = st.columns([1, 1, 1, 3])
-    for col, kat in zip([c1, c2, c3], ["Slobodna forma", "Građansko pravo", "Radno pravo"]):
-        if col.button(
+    for kat in ["Slobodna forma", "Građansko pravo", "Radno pravo"]:
+        if st.button(
             kat,
             key=f"ug_kat_{kat}",
             type="primary" if st.session_state.ug_kategorija == kat else "secondary",
-            use_container_width=True,
         ):
             st.session_state.ug_kategorija = kat
             st.rerun()
