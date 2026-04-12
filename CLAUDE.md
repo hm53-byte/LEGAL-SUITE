@@ -1,7 +1,7 @@
 # CLAUDE.md - LegalTech Suite Pro Handoff
 
-> **Last updated:** 2026-03-18T13:00 (Session 10)
-> **Status:** 60+ generators, 21 modules, 129 tests, UI overhaul, bug fixes, search, cleaner auth
+> **Last updated:** 2026-04-12 (Session 11)
+> **Status:** 60+ generators, 21 modules, 142 tests; iznosi slovima, padezi, ZZK uputa, CZSS→ZAVOD ZA SOCIJALNI RAD
 > **Deploy:** Streamlit Community Cloud from `hm53-byte/LEGAL-SUITE` main branch
 
 ---
