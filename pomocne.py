@@ -20,6 +20,30 @@ def _escape(text):
     return _html_module.escape(str(text))
 
 
+def _strip_nondigits(key, max_len=None):
+    """on_change callback — uklanja sve znakove koji nisu znamenke iz session_state[key]."""
+    val = st.session_state.get(key, "")
+    if val:
+        cleaned = "".join(c for c in str(val) if c.isdigit())
+        if max_len:
+            cleaned = cleaned[:max_len]
+        if cleaned != val:
+            st.session_state[key] = cleaned
+
+
+def _scroll_na_vrh():
+    """Injektira JS koji scrolla main container na vrh stranice."""
+    import streamlit.components.v1 as _comp
+    import time
+    _comp.html(
+        f"<script>setTimeout(function(){{"
+        f"var el=parent.document.querySelector('section.main');"
+        f"if(el)el.scrollTo({{top:0,behavior:'smooth'}});"
+        f"}},80);</script><!-- {time.time_ns()} -->",
+        height=0,
+    )
+
+
 def _validiraj_oib(oib_str):
     """Provjerava OIB prema ISO 7064 mod-11-10 algoritmu.
     Vraca: (bool, str) - (ispravnost, poruka greske ili prazan string)
@@ -413,7 +437,9 @@ def unos_stranke(oznaka, key_prefix):
             f"Ime i Prezime", key=f"{key_prefix}_ime",
             help="Upišite ime u nominativu (tko? što?). Npr. 'Ivan Horvat', ne 'Ivana Horvata'.",
         )
-        oib = col2.text_input(f"OIB", max_chars=11, key=f"{key_prefix}_oib")
+        _oib_key = f"{key_prefix}_oib"
+        oib = col2.text_input(f"OIB", max_chars=11, key=_oib_key,
+                              on_change=_strip_nondigits, args=(_oib_key, 11))
         adresa = st.text_input(f"Adresa (Ulica, Grad)", key=f"{key_prefix}_adresa")
         if oib:
             oib_ok, oib_msg = _validiraj_oib(oib)
@@ -429,7 +455,9 @@ def unos_stranke(oznaka, key_prefix):
         return "____________________ (ime), OIB: ____________________", "Fizička", has_valid_data
     else:
         tvrtka = col1.text_input(f"Tvrtka", key=f"{key_prefix}_tvrtka")
-        oib = col2.text_input(f"OIB", max_chars=11, key=f"{key_prefix}_oib_pravna")
+        _oib_pr_key = f"{key_prefix}_oib_pravna"
+        oib = col2.text_input(f"OIB", max_chars=11, key=_oib_pr_key,
+                              on_change=_strip_nondigits, args=(_oib_pr_key, 11))
         mbs = col1.text_input(f"MBS", max_chars=8, key=f"{key_prefix}_mbs")
         zastupnik = col2.text_input(f"Zastupan po", key=f"{key_prefix}_zastupnik")
         sjediste = st.text_input(f"Sjedište", key=f"{key_prefix}_sjediste")
@@ -1022,10 +1050,11 @@ def napuni_primjerom(tip_dokumenta, key_prefix=""):
     with st.expander(f"Primjer: {primjer['opis']}", expanded=False):
         st.caption(
             "Kliknite gumb za automatsko popunjavanje forme primjerom. "
-            "Svaki klik daje drugačije podatke. Zatim prilagodite svojem slučaju."
+            "Zatim prilagodite podatke svojem slučaju."
         )
         if st.button("Napuni primjerom", key=btn_key, type="secondary"):
-            randomized = _randomiziraj_primjer(primjer)
+            import copy
+            randomized = copy.deepcopy(primjer)
 
             # Prikupi prefikse stranaka iz primjera za ciscenje starih kljuceva
             stranke_keys = set(randomized.get('stranke', {}).keys())
@@ -1141,12 +1170,20 @@ def doc_selectbox(label: str, options: list, key: str = None, index: int = 0):
     """
     Prominentni selectbox za odabir vrste dokumenta.
     Prikazuje styled navy label iznad selectboxa.
+    Kad se vrijednost promijeni, scrolla stranicu na vrh.
     """
     st.markdown(
         f'<div class="doc-selector-label">{label.upper()}</div>',
         unsafe_allow_html=True,
     )
-    return st.selectbox(label, options, key=key, index=index, label_visibility="collapsed")
+    result = st.selectbox(label, options, key=key, index=index, label_visibility="collapsed")
+    if key:
+        _prev_key = f"_prev_docsel_{key}"
+        prev_val = st.session_state.get(_prev_key)
+        if prev_val is not None and prev_val != result:
+            _scroll_na_vrh()
+        st.session_state[_prev_key] = result
+    return result
 
 
 def clause_builder(kljuc_sesije: str, sekcije_default: list) -> list:

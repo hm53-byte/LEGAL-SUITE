@@ -260,13 +260,19 @@ def _scroll_to_top():
     )
 
 def _scroll_to_element(css_selector):
-    """Injektira JS koji scrolla do specificnog elementa."""
+    """Injektira JS koji scrolla main container do specificnog elementa."""
     import time
     components.html(
         f"<script>setTimeout(function(){{"
-        f"var el=parent.document.querySelector('{css_selector}');"
-        f"if(el)el.scrollIntoView({{behavior:'smooth',block:'start'}});"
-        f"}},150);</script><!-- {time.time()} -->",
+        f"var target=parent.document.querySelector('{css_selector}');"
+        f"var container=parent.document.querySelector('section.main');"
+        f"if(target&&container){{"
+        f"var rect=target.getBoundingClientRect();"
+        f"var cRect=container.getBoundingClientRect();"
+        f"container.scrollTo({{top:container.scrollTop+(rect.top-cRect.top)-20,"
+        f"behavior:'smooth'}});"
+        f"}}"
+        f"}},300);</script><!-- {time.time_ns()} -->",
         height=0,
     )
 
@@ -518,8 +524,11 @@ def _render_pocetna():
                         _navigate_to(modul)
                         st.rerun()
 
-        # Auto-scroll do detalja vodica
-        _scroll_to_element('.vodic-scroll-target')
+        # Auto-scroll: samo kad se odabir upravo promijenio
+        _prev_odabir = st.session_state.get("_vodic_odabir_prev", "")
+        if _prev_odabir != odabir:
+            _scroll_to_element('.vodic-scroll-target')
+        st.session_state["_vodic_odabir_prev"] = odabir
 
     # --- Alati ---
     st.markdown("---")
