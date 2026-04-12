@@ -558,6 +558,12 @@ def _render_pocetna():
 
 # Jednostavni mod — prikaži render_jednostavno umjesto standardne navigacije
 if st.session_state.get("_app_mode") == "jednostavno":
+    # Autoscroll na vrh pri promjeni odabira u jednostavnom modu
+    _prev_jed = st.session_state.get("_prev_jed_odabir", None)
+    _curr_jed = st.session_state.get("_jed_odabir", None)
+    if _prev_jed != _curr_jed:
+        _scroll_to_top()
+    st.session_state._prev_jed_odabir = _curr_jed
     render_jednostavno(navigate_fn=_navigate_to)
 else:
     active = st.session_state._active_module

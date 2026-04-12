@@ -74,6 +74,184 @@ def format_eur(iznos):
     return f"{formatted} EUR"
 
 
+# =============================================================================
+# PRETVORBA IZNOSA U RIJECI (SLOVIMA) — za pravne dokumente
+# =============================================================================
+
+def _broj_rijecima_hr(n):
+    """Pretvara nenegativan cijeli broj u hrvatske rijeci (nominativ)."""
+    if n < 0:
+        return f"minus {_broj_rijecima_hr(-n)}"
+    if n == 0:
+        return "nula"
+
+    JED = [
+        "", "jedan", "dva", "tri", "četiri", "pet", "šest", "sedam", "osam", "devet",
+        "deset", "jedanaest", "dvanaest", "trinaest", "četrnaest", "petnaest",
+        "šesnaest", "sedamnaest", "osamnaest", "devetnaest",
+    ]
+    DESECI = ["", "", "dvadeset", "trideset", "četrdeset", "pedeset",
+              "šezdeset", "sedamdeset", "osamdeset", "devedeset"]
+    STOTICE = ["", "sto", "dvjesto", "tristo", "četiristo", "petsto",
+               "šeststo", "sedamsto", "osamsto", "devetsto"]
+
+    def _ispod_tisucu(m):
+        if m == 0:
+            return ""
+        if m < 20:
+            return JED[m]
+        if m < 100:
+            d, j = divmod(m, 10)
+            return DESECI[d] + (" i " + JED[j] if j else "")
+        s, ostatak = divmod(m, 100)
+        return STOTICE[s] + (" " + _ispod_tisucu(ostatak) if ostatak else "")
+
+    parts = []
+
+    # Milijarde
+    if n >= 1_000_000_000:
+        mlrd, n = divmod(n, 1_000_000_000)
+        if mlrd == 1:
+            parts.append("jedna milijarda")
+        elif mlrd == 2:
+            parts.append("dvije milijarde")
+        elif 3 <= mlrd <= 4:
+            parts.append(f"{_broj_rijecima_hr(mlrd)} milijarde")
+        else:
+            parts.append(f"{_broj_rijecima_hr(mlrd)} milijardi")
+
+    # Milijuni
+    if n >= 1_000_000:
+        mil, n = divmod(n, 1_000_000)
+        if mil == 1:
+            parts.append("jedan milijun")
+        elif mil == 2:
+            parts.append("dva milijuna")
+        elif 3 <= mil <= 4:
+            parts.append(f"{_broj_rijecima_hr(mil)} milijuna")
+        else:
+            parts.append(f"{_broj_rijecima_hr(mil)} milijuna")
+
+    # Tisuce
+    if n >= 1000:
+        tis, n = divmod(n, 1000)
+        if tis == 1:
+            parts.append("tisuću")
+        elif tis == 2:
+            parts.append("dvije tisuće")
+        elif 3 <= tis <= 4:
+            parts.append(f"{_ispod_tisucu(tis)} tisuće")
+        else:
+            parts.append(f"{_ispod_tisucu(tis)} tisuća")
+
+    # Ostatak (< 1000)
+    if n > 0:
+        parts.append(_ispod_tisucu(n))
+
+    return " ".join(p for p in parts if p)
+
+
+def iznos_slovima(iznos):
+    """Pretvara iznos EUR u hrvatske rijeci.
+    Npr: 1500.50 -> "tisuću petsto eura i 50/100"
+         100.00  -> "sto eura"
+    """
+    try:
+        iznos = float(iznos)
+        if iznos < 0:
+            return f"minus {iznos_slovima(-iznos)}"
+        euri = int(iznos)
+        centi = round((iznos - euri) * 100)
+        if euri == 0 and centi == 0:
+            return "nula eura"
+        euri_str = _broj_rijecima_hr(euri) if euri > 0 else ""
+        if centi > 0:
+            if euri > 0:
+                return f"{euri_str} eura i {centi:02d}/100"
+            return f"nula eura i {centi:02d}/100"
+        return f"{euri_str} eura"
+    except Exception:
+        return ""
+
+
+def format_eur_s_rijecima(iznos):
+    """Formatira iznos s rijecima u zagradama.
+    Npr: 1500.50 -> "1.500,50 EUR (slovima: tisucu petsto eura i 50/100)"
+    Koristi se u tijelu pravnih dokumenata (ne u tablicama troškova).
+    """
+    formatted = format_eur(iznos)
+    rijecima = iznos_slovima(iznos)
+    if rijecima:
+        return f"{formatted} (slovima: {rijecima})"
+    return formatted
+
+
+# =============================================================================
+# PADEZI — DEKLINACIJA PRAVNIH OZNAKA ULOGA
+# =============================================================================
+
+# Lookup: nominativ -> (genitiv, dativ, akuzativ, instrumental, lokativ)
+_PADEZI_ULOGA = {
+    "Stranka":        ("Stranke",        "Stranci",        "Stranku",        "Strankom",        "Stranci"),
+    "Strana":         ("Strane",         "Strani",         "Stranu",         "Stranom",         "Strani"),
+    "Tužitelj":       ("Tužitelja",      "Tužitelju",      "Tužitelja",      "Tužiteljem",      "Tužitelju"),
+    "Tužiteljica":    ("Tužiteljice",    "Tužiteljici",    "Tužiteljicu",    "Tužiteljicom",    "Tužiteljici"),
+    "Tuženik":        ("Tuženika",       "Tuženiku",       "Tuženika",       "Tuženikom",       "Tuženiku"),
+    "Tužena":         ("Tužene",         "Tuženoj",        "Tuženu",         "Tuženom",         "Tuženoj"),
+    "Vjerovnik":      ("Vjerovnika",     "Vjerovniku",     "Vjerovnika",     "Vjerovnikom",     "Vjerovniku"),
+    "Dužnik":         ("Dužnika",        "Dužniku",        "Dužnika",        "Dužnikom",        "Dužniku"),
+    "Prodavatelj":    ("Prodavatelja",   "Prodavatelju",   "Prodavatelja",   "Prodavateljem",   "Prodavatelju"),
+    "Kupac":          ("Kupca",          "Kupcu",          "Kupca",          "Kupcem",          "Kupcu"),
+    "Roditelj":       ("Roditelja",      "Roditelju",      "Roditelja",      "Roditeljem",      "Roditelju"),
+    "Predlagatelj":   ("Predlagatelja",  "Predlagatelju",  "Predlagatelja",  "Predlagateljem",  "Predlagatelju"),
+    "Protustranka":   ("Protustranke",   "Protustranci",   "Protustranku",   "Protustrankam",   "Protustranci"),
+    "Obveznik":       ("Obveznika",      "Obvezniku",      "Obveznika",      "Obveznikom",      "Obvezniku"),
+    "Primatelj":      ("Primatelja",     "Primatelju",     "Primatelja",     "Primateljem",     "Primatelju"),
+    "Ovrhovoditelj":  ("Ovrhovoditelja", "Ovrhovoditelju", "Ovrhovoditelja", "Ovrhovoditeljem", "Ovrhovoditelju"),
+    "Ovršenik":       ("Ovršenika",      "Ovršeniku",      "Ovršenika",      "Ovršenikom",      "Ovršeniku"),
+    "Posloprimac":    ("Posloprimca",    "Posloprimcu",    "Posloprimca",    "Posloprimcem",    "Posloprimcu"),
+    "Poslodavac":     ("Poslodavca",     "Poslodavcu",     "Poslodavca",     "Poslodavcem",     "Poslodavcu"),
+    "Davatelj":       ("Davatelja",      "Davatelju",      "Davatelja",      "Davateljem",      "Davatelju"),
+    "Jamac":          ("Jamca",          "Jamcu",          "Jamca",          "Jamcem",          "Jamcu"),
+    "Zajmodavac":     ("Zajmodavca",     "Zajmodavcu",     "Zajmodavca",     "Zajmodavcem",     "Zajmodavcu"),
+    "Zajmoprimac":    ("Zajmoprimca",    "Zajmoprimcu",    "Zajmoprimca",    "Zajmoprimcem",    "Zajmoprimcu"),
+    "Darovatelj":     ("Darovatelja",    "Darovatelju",    "Darovatelja",    "Darovateljem",    "Darovatelju"),
+    "Obdarenik":      ("Obdarenika",     "Obdareniku",     "Obdarenika",     "Obdarenikom",     "Obdareniku"),
+    "Posrednik":      ("Posrednika",     "Posredniku",     "Posrednika",     "Posrednikom",     "Posredniku"),
+    "Najmodavac":     ("Najmodavca",     "Najmodavcu",     "Najmodavca",     "Najmodavcem",     "Najmodavcu"),
+    "Najmoprimac":    ("Najmoprimca",    "Najmoprimcu",    "Najmoprimca",    "Najmoprimcem",    "Najmoprimcu"),
+}
+
+_PADEZ_IDX = {"nom": -1, "gen": 0, "dat": 1, "akuz": 2, "instr": 3, "lok": 4}
+
+
+def _padez_uloge(uloga, padez="gen"):
+    """Deklinira oznaku uloge u trazeni padez.
+    uloga: npr. 'Strana 1', 'Roditelj 2', 'Kupac'
+    padez: 'nom'|'gen'|'dat'|'akuz'|'instr'|'lok'
+    Vraca dekliniranu ulogu, ili uloga nepromijenjena ako nije u tablici.
+    """
+    if not uloga:
+        return uloga
+    idx = _PADEZ_IDX.get(padez, 0)
+    if idx == -1:
+        return uloga  # nominativ — vrati neizmijenjeno
+
+    # Odvoji broj od uloge (npr. "Strana 1" → base="Strana", suffix=" 1")
+    dijelovi = uloga.strip().split()
+    if len(dijelovi) > 1 and dijelovi[-1].isdigit():
+        base = " ".join(dijelovi[:-1])
+        br_suffix = " " + dijelovi[-1]
+    else:
+        base = uloga.strip()
+        br_suffix = ""
+
+    if base in _PADEZI_ULOGA:
+        return _PADEZI_ULOGA[base][idx] + br_suffix
+
+    return uloga  # fallback: nepromijenjena
+
+
 # --- Javne pomocne funkcije (isti potpisi kao original) ---
 
 

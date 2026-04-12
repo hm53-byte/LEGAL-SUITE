@@ -4,7 +4,7 @@
 # Sporazumni raskid
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, _rimski_broj
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj
 
 
 def generiraj_darovanje(darovatelj, obdarenik, podaci):

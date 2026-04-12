@@ -4,7 +4,7 @@
 # Dva ugovora: Najam stanova (A-B) i Upravljanje kapacitetom (B-C)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, _escape
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _escape
 
 
 def generiraj_ugovor_najam_ab(najmodavac, najmoprimac, nekretnina, podaci):

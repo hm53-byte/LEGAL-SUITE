@@ -2,7 +2,7 @@
 # GENERATORI: Tuzbe (parnicni postupak, brisovna tuzba)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import _escape, format_text, formatiraj_troskovnik, format_eur
+from pomocne import _escape, format_text, formatiraj_troskovnik, format_eur, format_eur_s_rijecima
 
 
 def generiraj_tuzbu_pro(sud, zastupanje, tuzitelj, tuzenik, vps, vrsta, data, troskovi_dict):
@@ -28,7 +28,7 @@ def generiraj_tuzbu_pro(sud, zastupanje, tuzitelj, tuzenik, vps, vrsta, data, tr
         <div class='section-title'>III. TUŽBENI ZAHTJEV</div>
         <div class='justified'>Slijedom navedenog, budući da Tuženik nije podmirio svoju dospjelu obvezu, Tužitelj predlaže da naslovni Sud donese sljedeću<br><br>
         <div style="text-align: center; font-weight: bold;">PRESUDU</div><br>
-        <b>I. Nalaže se Tuženiku</b> da Tužitelju isplati iznos od <b>{format_eur(vps)}</b> zajedno sa zakonskom zateznom kamatom koja teče od dana dospijeća {data['datum_dospijeca']} pa do isplate, po stopi određenoj zakonom.<br><br>
+        <b>I. Nalaže se Tuženiku</b> da Tužitelju isplati iznos od <b>{format_eur_s_rijecima(vps)}</b> zajedno sa zakonskom zateznom kamatom koja teče od dana dospijeća {data['datum_dospijeca']} pa do isplate, po stopi određenoj zakonom.<br><br>
         <b>II. Nalaže se Tuženiku</b> da Tužitelju naknadi troškove ovog parničnog postupka, u roku od 15 dana, zajedno sa zateznom kamatom od dana donošenja presude do isplate.
         </div>
         {troskovnik_html}

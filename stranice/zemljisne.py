@@ -46,6 +46,14 @@ def render_zemljisne():
             prikazi_dokument(doc, "Tabularna.docx", "Preuzmi dokument")
 
     elif zk_usluga == "ZK Prijedlog (Uknjižba)":
+        st.warning(
+            "**Upozorenje — obvezno angažiranje odvjetnika ili javnog bilježnika:** "
+            "Sukladno Zakonu o zemljišnim knjigama (NN 63/19, čl. 109.) i Zakonu o javnom bilježništvu, "
+            "isprava koja je temelj za uknjižbu prava vlasništva (tabularna isprava / clausula intabulandi) "
+            "mora biti sastavljena ili ovjerena pred javnim bilježnikom ili odvjetnikom. "
+            "Prijedlog za uknjižbu možete podnijeti osobno, ali bez valjane solemnizacije/ovjere "
+            "isprava neće biti prihvaćena. **Preporučujemo konzultaciju s odvjetnikom ili javnim bilježnikom.**"
+        )
         sud = odabir_suda("Sud", vrsta="opcinski", key="zk_sud")
         c1, c2, c3 = st.columns(3)
         ko = c1.text_input("K.O.", "Centar")

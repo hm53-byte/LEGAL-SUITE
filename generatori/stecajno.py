@@ -3,7 +3,7 @@
 # Prijedlog za stecaj, Prijava trazbine, Stecaj potrosaca (osobni bankrot)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, formatiraj_troskovnik
+from pomocne import format_text, format_eur, format_eur_s_rijecima, formatiraj_troskovnik
 
 
 def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):

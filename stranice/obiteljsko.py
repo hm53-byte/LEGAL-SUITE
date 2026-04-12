@@ -49,7 +49,7 @@ def _render_sporazum_razvod():
     """Prijedlog za sporazumni razvod braka - ObZ čl. 50-55."""
     st.info(
         "Sporazumni razvod braka: bračni drugovi zajednički podnose prijedlog. "
-        "Obavezno prethodno savjetovanje kod CZSS-a (ObZ čl. 321-331)."
+        "Obavezno prethodno savjetovanje kod Zavoda za socijalni rad (ObZ čl. 321-331)."
     )
 
     c1, c2 = st.columns(2)
@@ -66,7 +66,7 @@ def _render_sporazum_razvod():
     datum_braka = st.date_input("Datum sklapanja braka", key="sr_datum_braka")
 
     ima_savjetovanje = st.checkbox(
-        "Provedeno obvezno savjetovanje kod CZSS-a", key="sr_savjetovanje"
+        "Provedeno obvezno savjetovanje kod Zavoda za socijalni rad", key="sr_savjetovanje"
     )
 
     st.subheader("Zajednička djeca")
@@ -125,7 +125,7 @@ def _render_tuzba_razvod():
     """Tužba za razvod braka - ObZ čl. 47-49."""
     st.info(
         "Tužba za razvod braka: podnosi jedan bračni drug. "
-        "Obavezno prethodno savjetovanje kod CZSS-a (ObZ čl. 321-331)."
+        "Obavezno prethodno savjetovanje kod Zavoda za socijalni rad (ObZ čl. 321-331)."
     )
 
     c1, c2 = st.columns(2)
@@ -143,7 +143,7 @@ def _render_tuzba_razvod():
     mjesto_braka = c2.text_input("Mjesto sklapanja braka", key="tr_mjesto_braka")
 
     ima_savjetovanje = st.checkbox(
-        "Provedeno obvezno savjetovanje kod CZSS-a", key="tr_savjetovanje"
+        "Provedeno obvezno savjetovanje kod Zavoda za socijalni rad", key="tr_savjetovanje"
     )
 
     razlog = st.text_area(

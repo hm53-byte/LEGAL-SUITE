@@ -2,7 +2,7 @@
 # GENERATORI: Ovrsni prijedlog + Prigovor protiv rjesenja o ovrsi JB
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import formatiraj_troskovnik, format_eur, format_text
+from pomocne import formatiraj_troskovnik, format_eur, format_eur_s_rijecima, format_text
 
 
 def generiraj_ovrhu_pro(jb, ovrhovoditelj, ovrsenik, trazbina, isprava, troskovi_dict):
@@ -21,7 +21,7 @@ def generiraj_ovrhu_pro(jb, ovrhovoditelj, ovrsenik, trazbina, isprava, troskovi
         <br><div class='header-doc'>PRIJEDLOG ZA OVRHU<br><span style='font-size:11pt; font-weight:normal'>na temelju vjerodostojne isprave</span></div>
         <div class='justified'>Na temelju vjerodostojne isprave – <b>{isprava}</b> od dana {trazbina['datum_racuna']}, iz koje proizlazi dospjela tražbina Ovrhovoditelja prema Ovršeniku, Ovrhovoditelj predlaže da Javni bilježnik donese sljedeće:</div>
         <div style='border: 2px solid black; padding: 15px; margin: 20px 0;'><div class='header-doc' style='margin:0;'>RJEŠENJE O OVRSI</div><div style='text-align:center; font-size:10pt;'>(na temelju vjerodostojne isprave)</div><br>
-        <div class='justified'><b>I. NALAŽE SE Ovršeniku</b> da Ovrhovoditelju u roku od osam dana od dana dostave ovog rješenja namiri tražbinu u iznosu od <b>{format_eur(trazbina['glavnica'])}</b>, zajedno sa zakonskim zateznim kamatama koje teku od dana dospijeća <b>{trazbina['dospjece']}</b> pa do isplate, kao i da mu naknadi troškove ovog postupka u iznosu od <b>{format_eur(ukupno_trosak)}</b>.<br><br>
+        <div class='justified'><b>I. NALAŽE SE Ovršeniku</b> da Ovrhovoditelju u roku od osam dana od dana dostave ovog rješenja namiri tražbinu u iznosu od <b>{format_eur_s_rijecima(trazbina['glavnica'])}</b>, zajedno sa zakonskim zateznim kamatama koje teku od dana dospijeća <b>{trazbina['dospjece']}</b> pa do isplate, kao i da mu naknadi troškove ovog postupka u iznosu od <b>{format_eur_s_rijecima(ukupno_trosak)}</b>.<br><br>
         <b>II. ODREĐUJE SE OVRHA</b> radi naplate tražbine iz točke I. ovog rješenja i troškova postupka. Ovrha će se provesti na novčanim sredstvima Ovršenika po svim računima kod banaka, te na cjelokupnoj imovini Ovršenika.</div></div>
         {troskovnik_html}
         <br><br><div class='signature-row'><div style='display:inline-block; width: 50%;'></div><div class='signature-block'><b>OVRHOVODITELJ</b><br><br><br>______________________</div></div>
@@ -146,9 +146,9 @@ def generiraj_ovrhu_ovrsna_isprava(sud, ovrhovoditelj, ovrsenik, podaci, troskov
             f"<div style='text-align:center; font-size:10pt;'>(na temelju ovršne isprave)</div><br>"
             f"<div class='justified'>"
             f"<b>I. NALAŽE SE Ovršeniku</b> da Ovrhovoditelju u roku od osam (8) dana od dana "
-            f"dostave ovog rješenja namiri tražbinu u iznosu od <b>{format_eur(glavnica)}</b>, "
+            f"dostave ovog rješenja namiri tražbinu u iznosu od <b>{format_eur_s_rijecima(glavnica)}</b>, "
             f"zajedno sa zakonskim zateznim kamatama koje teku od dana <b>{kamate_od}</b> pa do isplate, "
-            f"kao i da mu naknadi troškove ovog postupka u iznosu od <b>{format_eur(ukupno_trosak)}</b>.<br><br>"
+            f"kao i da mu naknadi troškove ovog postupka u iznosu od <b>{format_eur_s_rijecima(ukupno_trosak)}</b>.<br><br>"
             f"<b>II. ODREĐUJE SE OVRHA</b> radi naplate tražbine iz točke I. ovog rješenja i troškova "
             f"postupka, i to {sredstvo_tekst}."
             f"</div></div>"

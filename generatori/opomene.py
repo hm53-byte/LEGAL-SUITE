@@ -3,7 +3,7 @@
 # Pravni temelj: ZOO, Ovrsni zakon
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur
+from pomocne import format_text, format_eur, format_eur_s_rijecima
 
 
 def generiraj_opomenu(
@@ -42,7 +42,7 @@ def generiraj_opomenu(
             f"<div class='justified'>{pravni_temelj}, ovime Vas pozivamo "
             f"da u roku od <b>{rok} ({_broj_rijecima(rok)}) dana</b> od primitka ove opomene "
             f"podmirite dospjelu obvezu u ukupnom iznosu od "
-            f"<b>{format_eur(trazbina['glavnica'])}</b>.</div><br>"
+            f"<b>{format_eur_s_rijecima(trazbina['glavnica'])}</b>.</div><br>"
             f"<div class='section-title'>OSNOVA TRAŽBINE</div>"
             f"<div class='justified'>{opis_osnove}</div><br>"
             f"<div class='justified'>Obveza je dospjela dana <b>{podaci.get('datum_dospijeca', '________')}</b> "
@@ -55,7 +55,7 @@ def generiraj_opomenu(
             f"obveze u smislu odredbi Zakona o obveznim odnosima.</div><br>"
             f"<div class='section-title'>PODACI ZA UPLATU</div>"
             f"<div class='justified'>"
-            f"Iznos: <b>{format_eur(trazbina['glavnica'])}</b><br>"
+            f"Iznos: <b>{format_eur_s_rijecima(trazbina['glavnica'])}</b><br>"
             f"IBAN: {podaci.get('iban', '____________________')}<br>"
             f"Poziv na broj: {podaci.get('poziv_na_broj', '____________________')}<br>"
             f"Opis plaćanja: {podaci.get('opis_placanja', 'Podmirenje duga po opomeni')}"

@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, _rimski_broj
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj
 
 
 # ---------------------------------------------------------------------------
@@ -97,7 +97,7 @@ def generiraj_drustveni_ugovor(osnivaci, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}.</div>"
             f"<div class='section-title' style='text-align: center;'>(Temeljni kapital i poslovni udjeli)</div>"
-            f"<div class='justified'>Temeljni kapital društva iznosi <b>{format_eur(temeljni_kapital)}</b>.</div><br>"
+            f"<div class='justified'>Temeljni kapital društva iznosi <b>{format_eur_s_rijecima(temeljni_kapital)}</b>.</div><br>"
             f"<div class='justified'>Temeljni kapital podijeljen je na poslovne udjele kako slijedi:</div><br>"
         )
         for i, osn in enumerate(osnivaci, 1):
@@ -276,7 +276,7 @@ def generiraj_prijenos_udjela(prenositelj, stjecatelj, drustvo, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Predmet ugovora)</div>"
             f"<div class='justified'>Prenositelj je imatelj poslovnog udjela u nominalnom iznosu od "
-            f"<b>{format_eur(nominalni_iznos)}</b> u društvu:<br><br>"
+            f"<b>{format_eur_s_rijecima(nominalni_iznos)}</b> u društvu:<br><br>"
             f"<b>{drustvo_info}</b><br><br>"
             f"Ovim ugovorom Prenositelj prenosi navedeni poslovni udio na Stjecatelja.</div><br>"
         )
@@ -285,7 +285,7 @@ def generiraj_prijenos_udjela(prenositelj, stjecatelj, drustvo, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Naknada)</div>"
             f"<div class='justified'>Ugovorena cijena za prijenos poslovnog udjela iznosi "
-            f"<b>{format_eur(cijena)}</b>.<br><br>"
+            f"<b>{format_eur_s_rijecima(cijena)}</b>.<br><br>"
             f"{format_text(nacin_placanja) if nacin_placanja else 'Cijena se plaća u roku od 8 dana od potpisa ovog ugovora.'}"
             f"</div><br>"
         )
@@ -498,7 +498,7 @@ def _sec_cijena(podaci, clanak_ref):
         "<div class='section-title' style='text-align: center;'>KUPOPRODAJNA CIJENA I NAČIN PLAĆANJA</div>"
         f"<div class='section-title' style='text-align: center;'>Članak {n1}.</div>"
         f"<div class='justified'>(1) Ugovorne strane su suglasne da ukupna kupoprodajna "
-        f"cijena za Poduzeće iznosi <b>{format_eur(kupoprodajna_cijena)}</b>.<br><br>"
+        f"cijena za Poduzeće iznosi <b>{format_eur_s_rijecima(kupoprodajna_cijena)}</b>.<br><br>"
         f"(2) Kupoprodajna cijena utvrđena je na temelju provedenog dubinskog snimanja, "
         f"financijskih izvješća Prodavatelja te sporazuma ugovornih strana.</div><br>"
     )
@@ -507,11 +507,11 @@ def _sec_cijena(podaci, clanak_ref):
             f"<div class='section-title' style='text-align: center;'>Članak {n2}.</div>"
             f"<div class='justified'>(1) Kupac se obvezuje platiti kupoprodajnu cijenu "
             f"na sljedeći način:<br><br>"
-            f"a) Iznos od <b>{format_eur(prijeboj_iznos)}</b> namiruje se prijebojem "
+            f"a) Iznos od <b>{format_eur_s_rijecima(prijeboj_iznos)}</b> namiruje se prijebojem "
             f"(kompenzacijom) s dospjelom tražbinom sukladno čl. 195. ZOO-a: "
             f"{format_text(prijeboj_opis)}. Ugovorne strane su suglasne da se navedenim "
             f"prijebojem u cijelosti namiruje predmetna tražbina Kupca prema Prodavatelju.<br><br>"
-            f"b) Preostali iznos od <b>{format_eur(preostali_iznos)}</b> Kupac će uplatiti "
+            f"b) Preostali iznos od <b>{format_eur_s_rijecima(preostali_iznos)}</b> Kupac će uplatiti "
             f"na žiro-račun Prodavatelja u roku od {rok_placanja} ({rok_placanja}) dana "
             f"od dana sklapanja ovog Ugovora.<br><br>"
             f"(2) U slučaju zakašnjenja s plaćanjem, Kupac se obvezuje platiti zakonske "
@@ -521,7 +521,7 @@ def _sec_cijena(podaci, clanak_ref):
         placanje_art = (
             f"<div class='section-title' style='text-align: center;'>Članak {n2}.</div>"
             f"<div class='justified'>(1) Kupac se obvezuje kupoprodajnu cijenu u iznosu "
-            f"od <b>{format_eur(kupoprodajna_cijena)}</b> uplatiti na žiro-račun "
+            f"od <b>{format_eur_s_rijecima(kupoprodajna_cijena)}</b> uplatiti na žiro-račun "
             f"Prodavatelja u roku od {rok_placanja} ({rok_placanja}) dana od dana "
             f"sklapanja ovog Ugovora.<br><br>"
             f"(2) U slučaju zakašnjenja s plaćanjem, Kupac se obvezuje platiti zakonske "

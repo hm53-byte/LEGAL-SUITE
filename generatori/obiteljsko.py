@@ -2,7 +2,7 @@
 # GENERATORI: Obiteljsko pravo (razvod, bracni ugovor, roditeljska skrb, uzdrzavanje)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, _rimski_broj
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj, _padez_uloge
 
 
 def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
@@ -58,7 +58,8 @@ def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
             parts.append(f"<br>")
             if ima_savjetovanje:
                 parts.append(
-                    f"Predlagatelji su sudjelovali u obveznom savjetovanju "
+                    f"Predlagatelji su sudjelovali u obveznom savjetovanju pred "
+                    f"<b>ZAVODOM ZA SOCIJALNI RAD</b> "
                     f"prije pokretanja sudskog postupka, sukladno članku 321. Obiteljskog zakona."
                     f"<br><br>"
                 )
@@ -66,7 +67,7 @@ def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
                 parts.append(
                     f"<i>Napomena: Sukladno članku 321. Obiteljskog zakona, bračni drugovi koji imaju "
                     f"zajedničku maloljetnu djecu dužni su prije pokretanja postupka sudjelovati "
-                    f"u obveznom savjetovanju.</i><br><br>"
+                    f"u obveznom savjetovanju pred <b>ZAVODOM ZA SOCIJALNI RAD</b>.</i><br><br>"
                 )
             if plan_roditeljske_skrbi:
                 parts.append(
@@ -100,7 +101,8 @@ def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
                 f"background-color: #fff5f5;'>"
                 f"<b>VAŽNA NAPOMENA:</b> Bračni drugovi koji imaju zajedničku maloljetnu djecu "
                 f"obvezni su prije podnošenja prijedloga za razvod braka sudjelovati u postupku "
-                f"obveznog savjetovanja (čl. 321.-325. Obiteljskog zakona). Prijedlogu se prilaže "
+                f"obveznog savjetovanja pred <b>ZAVODOM ZA SOCIJALNI RAD</b> "
+                f"(čl. 321.-325. Obiteljskog zakona). Prijedlogu se prilaže "
                 f"potvrda o provedenom obveznom savjetovanju."
                 f"</div>"
             )
@@ -218,7 +220,8 @@ def generiraj_tuzbu_razvod(tuzitelj, tuzenik, podaci):
             parts.append(f"<br>")
             if ima_savjetovanje:
                 parts.append(
-                    f"Tužitelj je sudjelovao u obveznom savjetovanju sukladno "
+                    f"Tužitelj je sudjelovao u obveznom savjetovanju pred "
+                    f"<b>ZAVODOM ZA SOCIJALNI RAD</b>, sukladno "
                     f"članku 321. Obiteljskog zakona.<br><br>"
                 )
             if zahtjev_djeca:
@@ -577,7 +580,7 @@ def generiraj_roditeljsku_skrb(roditelj1, roditelj2, podaci):
 
         parts.append(
             f"<b>{roditelj_obveznik}</b> obvezuje se uplaćivati mjesečni iznos za "
-            f"uzdržavanje djeteta/djece u iznosu od <b>{format_eur(alimentacija_iznos)}</b>.<br><br>"
+            f"uzdržavanje djeteta/djece u iznosu od <b>{format_eur_s_rijecima(alimentacija_iznos)}</b>.<br><br>"
         )
 
         if alimentacija_datum_dospijeca:
@@ -589,7 +592,7 @@ def generiraj_roditeljsku_skrb(roditelj1, roditelj2, podaci):
         if alimentacija_iban:
             parts.append(
                 f"Uplata se vrši na IBAN: <b>{format_text(alimentacija_iban)}</b>, "
-                f"koji glasi na {roditelj_primatelj}.<br><br>"
+                f"koji glasi na {_padez_uloge(roditelj_primatelj, 'akuz')}.<br><br>"
             )
 
         parts.append(
@@ -712,7 +715,7 @@ def generiraj_ugovor_uzdrzavanje(obveznik, primatelj, podaci):
         parts.append(
             f"<div class='justified'>"
             f"Obveznik uzdržavanja obvezuje se plaćati mjesečni iznos uzdržavanja "
-            f"u iznosu od <b>{format_eur(iznos_mjesecno)}</b>.<br><br>"
+            f"u iznosu od <b>{format_eur_s_rijecima(iznos_mjesecno)}</b>.<br><br>"
             f"Navedeni iznos uzdržavanja može se uskladiti jednom godišnje sukladno "
             f"promjenama troškova života ili promijenjenim okolnostima, sporazumom stranaka "
             f"ili odlukom suda."

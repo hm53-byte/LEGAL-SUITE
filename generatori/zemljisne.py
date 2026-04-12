@@ -2,7 +2,7 @@
 # GENERATORI: Zemljisne knjige (tabularna, ZK prijedlog)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import formatiraj_troskovnik, format_text, format_eur
+from pomocne import formatiraj_troskovnik, format_text, format_eur, format_eur_s_rijecima
 
 
 def generiraj_tabularnu_doc(prod, kup, ko, cest, ul, opis, dat):
@@ -213,7 +213,7 @@ def generiraj_upis_hipoteke(sud, vjerovnik, zalozni_duznik, podaci, troskovi_dic
             f"<div style='text-align: center; border: 1px solid black; padding: 10px; margin: 20px 0;'>"
             f"UKNJIŽBU ZALOŽNOG PRAVA (HIPOTEKE)<br>"
             f"u C list (Teretovnicu)<br>"
-            f"u korist Vjerovnika, radi osiguranja tražbine u iznosu od {format_eur(iznos_trazbine)}<br>"
+            f"u korist Vjerovnika, radi osiguranja tražbine u iznosu od {format_eur_s_rijecima(iznos_trazbine)}<br>"
             f"s pripadajućim kamatama i troškovima</div><br>"
             f"<i>Napomena: Upis založnog prava je konstitutivan – hipoteka nastaje tek upisom u zemljišnu knjigu. "
             f"Založno pravo djeluje erga omnes (pravo slijeđenja) te se može ostvariti prema svakom kasnijem vlasniku nekretnine.</i></div>"

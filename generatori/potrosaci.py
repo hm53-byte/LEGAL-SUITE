@@ -3,7 +3,7 @@
 # Pravni temelj: Zakon o zastiti potrosaca, ZOO, EU Direktiva 2011/83/EU
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur
+from pomocne import format_text, format_eur, format_eur_s_rijecima
 
 
 def generiraj_reklamaciju(potrosac, podaci):
@@ -35,7 +35,7 @@ def generiraj_reklamaciju(potrosac, podaci):
             "povrat_novca": (
                 "Sukladno člancima 410. i 412. Zakona o obveznim odnosima, zahtijevam "
                 "<b>raskid ugovora i povrat kupovnine</b> u iznosu od "
-                f"<b>{format_eur(cijena)}</b>, obzirom da popravak ili zamjena nisu mogući "
+                f"<b>{format_eur_s_rijecima(cijena)}</b>, obzirom da popravak ili zamjena nisu mogući "
                 "odnosno predstavljaju nerazmjerno opterećenje."
             ),
             "snizenje_cijene": (
@@ -66,7 +66,7 @@ def generiraj_reklamaciju(potrosac, podaci):
             f"Datum kupnje: <b>{datum_kupnje}</b><br>"
             f"Broj fiskalnog računa: <b>{broj_racuna}</b><br>"
             f"Opis proizvoda/usluge: <b>{opis_proizvoda}</b><br>"
-            f"Plaćena cijena: <b>{format_eur(cijena)}</b>"
+            f"Plaćena cijena: <b>{format_eur_s_rijecima(cijena)}</b>"
             "</div><br>"
         )
 
