@@ -106,7 +106,7 @@ def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
             f"<br><div class='justified' style='border: 1px solid #999; padding: 12px; "
             f"background-color: #f9f9f9; margin-top: 15px;'>"
             f"<b>NAPOMENE:</b><br>"
-            f"1. Predujam za troškove stečajnog postupka u iznosu od <b>{format_eur(predujam)}</b> "
+            f"1. Predujam za troškove stečajnog postupka u iznosu od <b>{format_eur_s_rijecima(predujam)}</b> "
             f"uplaćuje se na račun suda sukladno čl. 110. Stečajnog zakona.<br>"
             f"2. Prilaže se FINA potvrda o blokadi računa dužnika.<br>"
             f"3. Dostava i komunikacija sa sudom obavlja se putem sustava e-Komunikacija.</div>"

@@ -215,7 +215,7 @@ def generiraj_ovrhu_na_nekretnini(sud, ovrhovoditelj, ovrsenik, podaci, troskovi
             f"<div class='header-doc' style='margin:0;'>RJEŠENJE O OVRSI NA NEKRETNINI</div><br>"
             f"<div class='justified'>"
             f"<b>I. NALAŽE SE Ovršeniku</b> da Ovrhovoditelju namiri tražbinu u iznosu od "
-            f"<b>{format_eur(glavnica)}</b>, zajedno sa zakonskim zateznim kamatama od "
+            f"<b>{format_eur_s_rijecima(glavnica)}</b>, zajedno sa zakonskim zateznim kamatama od "
             f"<b>{kamate_od}</b> do isplate, te troškove postupka u iznosu od "
             f"<b>{format_eur(ukupno_trosak)}</b>.<br><br>"
             f"<b>II. ODREĐUJE SE zabilježba ovrhe</b> u zemljišnoj knjizi Općinskog suda, "

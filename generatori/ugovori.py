@@ -145,7 +145,7 @@ def generiraj_ugovor_o_radu(poslodavac, radnik, podaci):
         <div class='section-title'>Članak 1. (Predmet i početak rada)</div><div class='justified'>Radnik počinje s radom dana <b>{podaci.get('datum_start', '_______')}</b>. {clanak_trajanje} {probni_rad_txt}</div>
         <div class='section-title'>Članak 2. (Mjesto i opis poslova)</div><div class='justified'>Radnik će obavljati poslove na radnom mjestu: <b>{podaci.get('naziv_radnog_mjesta', '_______')}</b>.<br><b>Opis poslova:</b> {podaci.get('opis_posla', 'Opisani u opisu radnog mjesta kod Poslodavca')}.<br>Mjesto rada je: {podaci.get('mjesto_rada', 'u sjedištu Poslodavca i na terenu po potrebi')}.</div>
         <div class='section-title'>Članak 3. (Radno vrijeme i odmori)</div><div class='justified'>Radnik će raditi u punom radnom vremenu od {podaci.get('radno_vrijeme', 40)} sati tjedno. Radnik ima pravo na dnevni odmor (stanku) u trajanju od 30 minuta.</div>
-        <div class='section-title'>Članak 4. (Plaća i naknade)</div><div class='justified'>Za obavljeni rad Poslodavac će Radniku isplaćivati osnovnu bruto plaću u iznosu od <b>{format_eur(podaci.get('bruto_placa', 0))}</b> mjesečno.</div>
+        <div class='section-title'>Članak 4. (Plaća i naknade)</div><div class='justified'>Za obavljeni rad Poslodavac će Radniku isplaćivati osnovnu bruto plaću u iznosu od <b>{format_eur_s_rijecima(podaci.get('bruto_placa', 0))}</b> mjesečno.</div>
         <div class='section-title'>Članak 5. (Godišnji odmor)</div><div class='justified'>Radnik ima pravo na plaćeni godišnji odmor u trajanju od najmanje {podaci.get('godisnji_odmor', 20)} radnih dana.</div>
         <div class='section-title'>Članak 6. (Završne odredbe)</div><div class='justified'>Ovaj Ugovor sastavljen je u 3 (tri) istovjetna primjerka.</div>
         <div class='signature-row'><div class='signature-block'><b>ZA POSLODAVCA</b><br><br><br>______________________</div><div class='signature-block'><b>RADNIK</b><br><br><br>______________________</div></div>
@@ -347,7 +347,7 @@ def generiraj_ugovor_rad_na_daljinu(poslodavac, radnik, podaci):
             f"<div class='section-title'>Članak {clanak_br}. (Naknada operativnih troškova)</div>"
             f"<div class='justified'>Poslodavac će Radniku mjesečno nadoknađivati troškove rada na daljinu "
             f"(režije, internetska veza, električna energija i sl.) u paušalnom iznosu od "
-            f"<b>{format_eur(podaci.get('naknada_troskova', 0))}</b>.</div><br>"
+            f"<b>{format_eur_s_rijecima(podaci.get('naknada_troskova', 0))}</b>.</div><br>"
         )
         clanak_br += 1
 
@@ -476,7 +476,7 @@ def generiraj_sporazumni_prestanak(poslodavac, radnik, podaci):
             parts.append(
                 f"<div class='section-title'>Članak {clanak_br}. (Otpremnina)</div>"
                 f"<div class='justified'>Poslodavac se obvezuje Radniku isplatiti otpremninu u iznosu od "
-                f"<b>{format_eur(otpremnina)}</b> bruto, najkasnije s posljednjom plaćom. "
+                f"<b>{format_eur_s_rijecima(otpremnina)}</b> bruto, najkasnije s posljednjom plaćom. "
                 f"Visina otpremnine ugovorena je slobodnom voljom ugovornih strana.</div><br>"
             )
             clanak_br += 1
@@ -579,7 +579,7 @@ def generiraj_zabranu_natjecanja(poslodavac, radnik, podaci):
         parts.append(
             f"<div class='section-title'>Članak {clanak_br}. (Naknada)</div>"
             f"<div class='justified'>Poslodavac se obvezuje Radniku za vrijeme trajanja zabrane natjecanja "
-            f"mjesečno isplaćivati naknadu u iznosu od <b>{format_eur(podaci.get('mjesecna_naknada', 0))}</b>.<br><br>"
+            f"mjesečno isplaćivati naknadu u iznosu od <b>{format_eur_s_rijecima(podaci.get('mjesecna_naknada', 0))}</b>.<br><br>"
             f"Sukladno članku 102. stavku 3. Zakona o radu, naknada ne smije biti manja od polovice "
             f"prosječne plaće isplaćene Radniku u tri mjeseca prije prestanka radnog odnosa. "
             f"<b>Bez ugovorene naknade ugovorna zabrana natjecanja nema pravnog učinka.</b></div><br>"
@@ -589,7 +589,7 @@ def generiraj_zabranu_natjecanja(poslodavac, radnik, podaci):
         parts.append(
             f"<div class='section-title'>Članak {clanak_br}. (Ugovorna kazna)</div>"
             f"<div class='justified'>U slučaju kršenja zabrane natjecanja, Radnik se obvezuje Poslodavcu "
-            f"platiti ugovornu kaznu u iznosu od <b>{format_eur(podaci.get('ugovorna_kazna', 0))}</b>.<br><br>"
+            f"platiti ugovornu kaznu u iznosu od <b>{format_eur_s_rijecima(podaci.get('ugovorna_kazna', 0))}</b>.<br><br>"
             f"Plaćanjem ugovorne kazne prestaje obveza zabrane natjecanja.</div><br>"
         )
         clanak_br += 1

@@ -430,7 +430,7 @@ def generiraj_nda(strana_a, strana_b, podaci):
                 f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Ugovorna kazna)</div>"
                 f"<div class='justified'>U slučaju povrede obveze čuvanja tajnosti, strana koja je povrijedila "
                 f"ovu obvezu dužna je drugoj strani isplatiti ugovornu kaznu u iznosu od "
-                f"<b>{format_eur(ugovorna_kazna)}</b> za svaku utvrđenu povredu, "
+                f"<b>{format_eur_s_rijecima(ugovorna_kazna)}</b> za svaku utvrđenu povredu, "
                 f"neovisno o pravu na naknadu pretrpljene štete.</div><br>"
             )
             clanak += 1

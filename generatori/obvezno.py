@@ -62,7 +62,7 @@ def generiraj_darovanje(darovatelj, obdarenik, podaci):
                 f"Površina: <b>{format_text(povrsina)}</b>"
             )
         if vrijednost:
-            parts.append(f"<br><br>Procijenjena vrijednost predmeta darovanja iznosi <b>{format_eur(vrijednost)}</b>.")
+            parts.append(f"<br><br>Procijenjena vrijednost predmeta darovanja iznosi <b>{format_eur_s_rijecima(vrijednost)}</b>.")
         parts.append("</div><br>")
         clanak += 1
 
@@ -220,7 +220,7 @@ def generiraj_cesiju(cedent, cesionar, podaci):
             parts.append(
                 f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Naknada)</div>"
                 f"<div class='justified'>Za ustupljenu tražbinu Cesionar se obvezuje Cedentu isplatiti "
-                f"naknadu u iznosu od <b>{format_eur(naknada)}</b>.<br><br>"
+                f"naknadu u iznosu od <b>{format_eur_s_rijecima(naknada)}</b>.<br><br>"
                 f"Naknada se plaća u roku od 8 (osam) dana od dana potpisa ovog Ugovora, "
                 f"na račun Cedenta.</div><br>"
             )
@@ -425,7 +425,7 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
             f"<div class='justified'>Ugovorne strane utvrđuju da između Vjerovnika i glavnog dužnika:<br><br>"
             f"<b>Glavni dužnik:</b> {format_text(glavni_duznik)}<br><br>"
             f"postoji obveza iz ugovora broj <b>{format_text(broj_ugovora_kredita)}</b> "
-            f"u iznosu od <b>{format_eur(iznos_duga)}</b>"
+            f"u iznosu od <b>{format_eur_s_rijecima(iznos_duga)}</b>"
         )
         if kamatna_stopa:
             parts.append(f", uz ugovorenu kamatnu stopu od <b>{format_text(kamatna_stopa)}</b>")
@@ -765,12 +765,12 @@ def generiraj_licenciju(davatelj, stjecatelj, podaci):
         elif naknada_tip == "pausalni":
             naknada_opis = (
                 f"Stjecatelj se obvezuje Davatelju jednokratno platiti licencninu u paušalnom iznosu "
-                f"od <b>{format_eur(naknada_iznos)}</b>, u roku od 15 dana od potpisa ovog Ugovora."
+                f"od <b>{format_eur_s_rijecima(naknada_iznos)}</b>, u roku od 15 dana od potpisa ovog Ugovora."
             )
         else:
             naknada_opis = (
                 f"Stjecatelj se obvezuje Davatelju plaćati kombiniranu licencninu:<br><br>"
-                f"a) jednokratni paušalni iznos od <b>{format_eur(naknada_iznos)}</b> pri potpisu Ugovora;<br>"
+                f"a) jednokratni paušalni iznos od <b>{format_eur_s_rijecima(naknada_iznos)}</b> pri potpisu Ugovora;<br>"
                 f"b) tekuću tantijemu (royalty) od <b>{format_text(naknada_postotak)}%</b> od neto prihoda, "
                 f"s tromjesečnim obračunom."
             )
