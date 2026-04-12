@@ -294,7 +294,7 @@ def _render_prodaja_poduzeca():
         help="Ukupna ugovorena cijena za prodaju poduzeća."
     )
     rok_placanja = c2.number_input(
-        "Rok plaćanja ostatka (dana)", min_value=1, value=30, key="pp_rok"
+        "Rok plaćanja ostatka (dana)", min_value=0, value=0, key="pp_rok"
     )
 
     with st.expander("Prijeboj (kompenzacija) — neobavezno"):
@@ -394,7 +394,7 @@ def _render_prodaja_poduzeca():
             "Trajanje zabrane", "3 (tri) godine", key="pp_zab_trajanje"
         )
         zabrana_kazna = c2.number_input(
-            "Ugovorna kazna za kršenje (EUR)", min_value=0.0, value=50000.0, key="pp_zab_kazna"
+            "Ugovorna kazna za kršenje (EUR)", min_value=0.0, value=0.0, key="pp_zab_kazna"
         )
 
     with st.expander("Preživjela jamstva prema trećim osobama — neobavezno"):
@@ -407,15 +407,15 @@ def _render_prodaja_poduzeca():
     st.subheader("Odgovornost i završne odredbe")
     c1, c2, c3 = st.columns(3)
     cap_odgovornosti_posto = c1.number_input(
-        "Cap odgovornosti (%)", min_value=1, max_value=100, value=20, key="pp_cap",
+        "Gornja granica odgovornosti (%)", min_value=0, max_value=100, value=0, key="pp_cap",
         help="Ukupna odgovornost Prodavatelja po jamstvima ograničena je na ovaj postotak kupoprodajne cijene."
     )
     survival_period = c2.number_input(
-        "Survival Period (godina)", min_value=1, max_value=10, value=2, key="pp_survival",
+        "Rok važenja jamstava (godina)", min_value=1, max_value=10, value=1, key="pp_survival",
         help="Rok u kojemu Kupac mora podnijeti zahtjeve temeljem izjava i jamstava."
     )
     ugovorna_kazna = c3.number_input(
-        "Ugovorna kazna za odustanak (EUR)", min_value=0.0, value=100000.0, key="pp_uk"
+        "Ugovorna kazna za odustanak (EUR)", min_value=0.0, value=0.0, key="pp_uk"
     )
 
     st.subheader("Struktura dokumenta")

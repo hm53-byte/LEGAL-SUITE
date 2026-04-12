@@ -537,12 +537,13 @@ def _sec_cijena(podaci, clanak_ref):
         f"sljedeći mehanizam usklađenja:<br><br>"
         f"(2) Na dan primopredaje, ovlašteni predstavnici obiju ugovornih strana zajedno će "
         f"utvrditi stvarno stanje zaliha popisom (inventurom) te sačiniti Zapisnik o stanju "
-        f"zaliha na dan primopredaje (<b>Closing Inventory</b>), koji čini sastavni dio "
-        f"Zapisnika o primopredaji.<br><br>"
+        f"zaliha na dan primopredaje (dalje: <b>Zapisnik o zalihama</b>), koji čini sastavni "
+        f"dio Zapisnika o primopredaji.<br><br>"
         f"(3) Ako ukupna tržišna vrijednost stvarnih zaliha premašuje ili ne dostiže "
-        f"referentnu vrijednost za više od <b>EUR 5.000,00</b> (prag de minimis), razliku "
-        f"nadoplaćuje ili vraća odgovarajuća strana u roku od 15 dana od potpisivanja "
-        f"Zapisnika o primopredaji. Razlike ispod praga od EUR 5.000,00 ne podliježu "
+        f"referentnu vrijednost za više od <b>5.000,00 EUR (slovima: pet tisuća eura)</b> "
+        f"(dalje: Prag de minimis), razliku nadoplaćuje ili vraća odgovarajuća strana u "
+        f"roku od 15 (petnaest) dana od potpisivanja Zapisnika o primopredaji. "
+        f"Razlike ispod praga od 5.000,00 EUR (slovima: pet tisuća eura) ne podliježu "
         f"usklađenju.<br><br>"
         f"(4) Ako stranke ne postignu suglasnost o vrijednosti zaliha, imenuju neovisnog "
         f"ovlaštenog procjenitelja (metodom naizmjeničnog isključivanja s liste HGK) čiji "
@@ -567,7 +568,7 @@ def _sec_nekretnine(podaci, clanak_ref):
     if ima_hipoteku and hipoteka_banka and hipoteka_iznos > 0:
         parts.append(
             f"(2) Nekretnina iz stavka 1. ovog članka opterećena je hipotekom za "
-            f"osiguranje tražbine u iznosu od <b>{format_eur(hipoteka_iznos)}</b> "
+            f"osiguranje tražbine u iznosu od <b>{format_eur_s_rijecima(hipoteka_iznos)}</b> "
             f"u korist {format_text(hipoteka_banka)}. Kupac izjavljuje da je upoznat "
             f"s postojanjem hipoteke te preuzima nekretninu s navedenim teretom.<br><br>"
             f"(3) Prodavatelj se obvezuje pribaviti suglasnost navedene banke za "
@@ -652,7 +653,7 @@ def _sec_pokretnine(podaci, clanak_ref):
         f"sljedeće pokretnine:<br><br>{format_text(pokretnine_opis)}<br><br>"
         f"(2) Prijenos vlasništva pokretnina izvršit će se predajom u posjed Kupca "
         f"na dan potpisa ovog Ugovora, odnosno najkasnije u roku od 15 (petnaest) "
-        f"dana od dana potpisa ovog Ugovora, čime Kupac stječa pravo vlasništva "
+        f"dana od dana potpisa ovog Ugovora, čime Kupac stječe pravo vlasništva "
         f"sukladno čl. 116. Zakona o vlasništvu i drugim stvarnim pravima.<br><br>"
         f"(3) O primopredaji pokretnina sastavit će se primopredajni zapisnik koji "
         f"potpisuju obje ugovorne strane (Prilog 3.).</div><br>"
@@ -681,7 +682,7 @@ def _sec_novcana_sredstva(podaci, clanak_ref):
         f"<div class='section-title' style='text-align: center;'>NOVČANA SREDSTVA<br>"
         f"Članak {n}.</div>"
         f"<div class='justified'>(1) Prodavatelj prenosi na Kupca novčana sredstva u "
-        f"iznosu od <b>{format_eur(novcana_sredstva)}</b> koja se na dan sklapanja "
+        f"iznosu od <b>{format_eur_s_rijecima(novcana_sredstva)}</b> koja se na dan sklapanja "
         f"ovog Ugovora nalaze na žiro-računu Prodavatelja.<br><br>"
         f"(2) Prijenos novčanih sredstava izvršit će se nalogom za prijenos na "
         f"žiro-račun Kupca u roku od 5 (pet) radnih dana od dana potpisa ovog "
@@ -739,8 +740,8 @@ def _sec_radni_odnosi(podaci, clanak_ref):
         f"(5) Prodavatelj i Kupac solidarno odgovaraju za obveze iz radnog odnosa "
         f"nastale do dana prijenosa Poduzeća prema zaposlenicima. Za obveze nastale "
         f"do i uključujući dan primopredaje (neiskorišteni odmori, neisplaćeni bonusi "
-        f"i stimulacije, prekovremeni rad) Prodavatelj se obvezuje obeštećenjem "
-        f"(indemnityjem) zaštititi Kupca od takvih zahtjeva, u roku od 15 (petnaest) "
+        f"i stimulacije, prekovremeni rad) Prodavatelj se obvezuje naknadom štete "
+        f"zaštititi Kupca od takvih zahtjeva, u roku od 15 (petnaest) "
         f"dana od podnošenja pisanog zahtjeva s dokazima.</div><br>"
     )
 
@@ -783,7 +784,7 @@ def _sec_zabrana_natjecanja(podaci, clanak_ref):
         f"(2) Zabrana iz stavka 1. ovog članka ne odnosi se na pasivno vlasništvo "
         f"do 5% javno uvrštenih dionica konkurentskog društva.<br><br>"
         f"(3) Za svako utvrđeno kršenje zabrane, Prodavatelj je dužan Kupcu platiti "
-        f"ugovornu kaznu u iznosu od <b>{format_eur(zabrana_kazna)}</b> za svaki "
+        f"ugovornu kaznu u iznosu od <b>{format_eur_s_rijecima(zabrana_kazna)}</b> za svaki "
         f"pojedini slučaj kršenja, neovisno o naknadi stvarne štete. Kupac zadržava "
         f"pravo zahtijevati i sudsku zabranu nastavka štetne radnje.<br><br>"
         f"(4) Prodavatelj izjavljuje da prihvaća ovu obvezu dobrovoljno te da je "
@@ -845,8 +846,10 @@ def _sec_prezivjela_jamstva(podaci, clanak_ref):
         f"(4) Prodavatelj koji je platio po aktiviranom jamstvu upućuje Kupcu pisanu "
         f"obavijest s dokazima. Kupac ima <b>15 (petnaest) radnih dana</b> da dostavi "
         f"Fiducijaru pisani prigovor. Ako Kupac u tom roku ne dostavi prigovor "
-        f"(negativna suglasnost sukladno čl. 265. st. 3. ZOO-a), Fiducijar otpušta "
-        f"sredstva Prodavatelju u roku od 5 radnih dana od isteka roka za prigovor. "
+        f"(ugovorno uređena negativna suglasnost, sukladno načelu slobode uređivanja "
+        f"obveznih odnosa, čl. 2. i čl. 17. ZOO-a, te odredbama Ugovora o fiduciji "
+        f"koji čini prilog ovom Ugovoru), Fiducijar otpušta "
+        f"sredstva Prodavatelju u roku od 5 (pet) radnih dana od isteka roka za prigovor. "
         f"Ako Kupac pravodobno dostavi prigovor, spor se rješava u ubrzanom "
         f"arbitražnom postupku pri Stalnom izbranom sudištu HGK.<br><br>"
         f"(5) Fiducijarni račun ostaje aktivan do dana kad su sva preživjela jamstva "
@@ -879,16 +882,18 @@ def _sec_izjave_jamstva(podaci, clanak_ref):
         f"arbitražni ili upravni postupci vezani uz Poduzeće.<br><br>"
         f"(2) Ukupna kumulativna odgovornost Prodavatelja po osnovi svih zahtjeva "
         f"koji se temelje na povredi izjava i jamstava iz stavka 1. ovog članka "
-        f"ograničena je na iznos od <b>{format_eur(cap_eur)}</b> "
-        f"({cap_odgovornosti_posto}% kupoprodajne cijene; dalje: <b>Cap odgovornosti</b>).<br><br>"
+        f"ograničena je na iznos od <b>{format_eur_s_rijecima(cap_eur)}</b> "
+        f"({cap_odgovornosti_posto}% kupoprodajne cijene; dalje: <b>Gornja granica odgovornosti</b>).<br><br>"
         f"(3) Kupac nema pravo podnijeti zahtjev Prodavatelju za povredu izjave ili "
-        f"jamstva ako iznos tog pojedinog zahtjeva ne prelazi <b>EUR 5.000,00</b> "
-        f"(<b>De minimis prag</b>). Ako zbroj više zahtjeva koji su svaki ispod De minimis "
-        f"praga prelazi EUR 20.000,00, Kupac ima pravo podnijeti zahtjev za cijeli zbroj.<br><br>"
+        f"jamstva ako iznos tog pojedinog zahtjeva ne prelazi "
+        f"<b>{format_eur_s_rijecima(5000)}</b> "
+        f"(dalje: <b>Prag de minimis</b>). Ako zbroj više zahtjeva koji su svaki ispod "
+        f"Praga de minimis prelazi {format_eur_s_rijecima(20000)}, Kupac ima pravo "
+        f"podnijeti zahtjev za cijeli zbroj.<br><br>"
         f"(4) Svi zahtjevi temeljem izjava i jamstava moraju biti podneseni najkasnije u "
         f"roku od <b>{survival_period} ({survival_period}) {god_oblik}</b> "
         f"od dana primopredaje Poduzeća, uz iznimku poreznih i radnopravnih zahtjeva za "
-        f"koje rok iznosi 3 (tri) godine (<b>Survival Period</b>).</div><br>"
+        f"koje rok iznosi 3 (tri) godine (dalje: <b>Rok važenja jamstava</b>).</div><br>"
         f"<div class='section-title' style='text-align: center;'>IZJAVE I JAMSTVA KUPCA</div>"
         f"<div class='section-title' style='text-align: center;'>Članak {n2}.</div>"
         f"<div class='justified'>Kupac izjavljuje i jamči Prodavatelju:<br><br>"
@@ -904,8 +909,8 @@ def _sec_izjave_jamstva(podaci, clanak_ref):
 def _sec_porezne_odredbe(podaci, clanak_ref):
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Porezne odredbe)</div>"
+        f"<div class='section-title' style='text-align: center;'>Porezne odredbe</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Porez na promet nekretnina koji temeljem ovog "
         f"Ugovora tereti prijenos nekretnine snosi Kupac, sukladno Zakonu o porezu na "
         f"promet nekretnina.<br><br>"
@@ -926,8 +931,8 @@ def _sec_porezne_odredbe(podaci, clanak_ref):
 def _sec_primopredaja(podaci, clanak_ref):
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Primopredaja Poduzeća)</div>"
+        f"<div class='section-title' style='text-align: center;'>Primopredaja Poduzeća</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Primopredaja Poduzeća izvršit će se u roku od "
         f"30 (trideset) dana od dana potpisa ovog Ugovora, osim ako ovim Ugovorom za "
         f"pojedine dijelove imovine nije predviđen drukčiji rok.<br><br>"
@@ -942,8 +947,8 @@ def _sec_primopredaja(podaci, clanak_ref):
 def _sec_nedostaci(podaci, clanak_ref):
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Odgovornost za materijalne i pravne nedostatke)</div>"
+        f"<div class='section-title' style='text-align: center;'>Odgovornost za materijalne i pravne nedostatke</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Prodavatelj odgovara Kupcu za materijalne i pravne "
         f"nedostatke prenesene imovine sukladno odredbama ZOO-a (čl. 400.–422. ZOO-a).<br><br>"
         f"(2) Kupac je dužan pregledati Poduzeće pri preuzimanju te o eventualnim "
@@ -958,25 +963,25 @@ def _sec_ugovorna_kazna(podaci, clanak_ref):
     ugovorna_kazna = podaci.get("ugovorna_kazna", 100000)
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Ugovorna kazna)</div>"
+        f"<div class='section-title' style='text-align: center;'>Ugovorna kazna</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) U slučaju da bilo koja ugovorna strana ne ispuni "
         f"ili neuredno ispuni svoje obveze iz ovog Ugovora, druga strana ima pravo "
         f"zahtijevati ispunjenje obveze te naknadu štete sukladno općim pravilima ZOO-a.<br><br>"
         f"(2) U slučaju da Prodavatelj odustane od izvršenja ovog Ugovora nakon njegova "
         f"sklapanja, dužan je Kupcu platiti ugovornu kaznu u iznosu od "
-        f"<b>{format_eur(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.<br><br>"
+        f"<b>{format_eur_s_rijecima(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.<br><br>"
         f"(3) U slučaju da Kupac odustane od izvršenja ovog Ugovora nakon njegova "
         f"sklapanja, dužan je Prodavatelju platiti ugovornu kaznu u istom iznosu od "
-        f"<b>{format_eur(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.</div><br>"
+        f"<b>{format_eur_s_rijecima(ugovorna_kazna)}</b>, neovisno o eventualnoj naknadi štete.</div><br>"
     )
 
 
 def _sec_povjerljivost(podaci, clanak_ref):
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Povjerljivost)</div>"
+        f"<div class='section-title' style='text-align: center;'>Povjerljivost</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Ugovorne strane se obvezuju čuvati kao poslovnu "
         f"tajnu sve informacije i podatke koje su saznale u vezi s ovim Ugovorom, "
         f"uključujući podatke iz postupka dubinskog snimanja, a koje nisu javno dostupne.<br><br>"
@@ -989,8 +994,8 @@ def _sec_sporovi(podaci, clanak_ref):
     sud_mjesto = podaci.get("sud_mjesto", "Zagrebu")
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Rješavanje sporova)</div>"
+        f"<div class='section-title' style='text-align: center;'>Rješavanje sporova</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Ugovorne strane će nastojati sve sporove koji "
         f"proizlaze iz ovog Ugovora riješiti sporazumno, mirnim putem.<br><br>"
         f"(2) U slučaju da sporazumno rješavanje nije moguće u roku od 30 (trideset) "
@@ -1002,8 +1007,8 @@ def _sec_sporovi(podaci, clanak_ref):
 def _sec_zavrsne(podaci, clanak_ref):
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
-        f"<div class='section-title' style='text-align: center;'>Članak {n}. "
-        f"(Završne odredbe)</div>"
+        f"<div class='section-title' style='text-align: center;'>Završne odredbe</div>"
+        f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Ovaj Ugovor stupa na snagu danom potpisa obiju "
         f"ugovornih strana.<br><br>"
         f"(2) Izmjene i dopune ovog Ugovora valjane su samo ako su učinjene u pisanom "
