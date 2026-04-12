@@ -20,6 +20,20 @@ def _render_darovanje():
     """Ugovor o darovanju - ZOO čl. 479-498."""
     st.subheader("Ugovor o darovanju")
 
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — darovatelj i obdarenik
+- Čl. 1. — Predmet darovanja (opis, vrsta: nekretnina / pokretnina / obećanje)
+- Čl. 2. — Zemljišnoknjižni podaci (za nekretnine)
+- Čl. 3. — Clausula intabulandi / Predaja (ovisno o vrsti predmeta)
+- Čl. 4. — Pravo doživotnog uživanja (ako je odabrano)
+- Čl. 5. — Jamstvo za pravne nedostatke
+- Čl. 6. — Opoziv darovanja (ZOO čl. 490-498)
+- Čl. 7. — Završne odredbe (javnobilježnička forma, primjerci)
+- Potpisi stranaka
+        """)
+
     s1, _, _ = unos_stranke("DAROVATELJ", "dar_s1")
     s2, _, _ = unos_stranke("OBDARENIK", "dar_s2")
 

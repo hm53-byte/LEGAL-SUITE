@@ -1,5 +1,7 @@
 # -----------------------------------------------------------------------------
 # GENERATORI: Kazneno pravo (kaznena prijava, privatna tuzba, zalba na presudu)
+# Kazneni zakon (NN 125/11, 144/12, 56/15, 61/15, 101/17, 118/18, 126/19, 84/21, 114/22, 114/23, 36/24)
+# Zakon o kaznenom postupku (NN 152/08, 76/09, 80/11, 91/12, 143/12, 56/13, 145/13, 152/14, 70/17, 126/19)
 # -----------------------------------------------------------------------------
 from datetime import date
 from pomocne import format_text, format_eur, formatiraj_troskovnik, _rimski_broj as _rimski

@@ -25,6 +25,17 @@ def render_tuzbe():
 
     napuni_primjerom('tuzba', '')
 
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — sud, tužitelj i tuženik
+- Predmet spora — radi (opis), VPS, datum dospijeća
+- I. Činjenični navodi i dokazi (točke obrazloženja s dokazima)
+- Tužbeni zahtjev — isplata glavnice, zakonske zatezne kamate, troškovnik
+- Troškovnik — odvjetnička nagrada (Tbr. 7), PDV, sudska pristojba (Tbr. 1)
+- Potpis tužitelja / zastupnika
+        """)
+
     # Vise tuzitelja/tuzenika
     vise_stranaka = st.checkbox("Više tužitelja / tuženika", key="tuzbe_vise")
 

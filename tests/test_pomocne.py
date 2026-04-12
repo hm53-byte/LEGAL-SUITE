@@ -6,7 +6,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pomocne import _escape, _validiraj_oib, _rimski_broj, format_eur, format_navodnici
+from pomocne import _escape, _validiraj_oib, _rimski_broj, format_eur, format_navodnici, _padez_ime, _padez_uloge
 
 
 class TestEscape:
@@ -125,3 +125,64 @@ class TestFormatNavodnici:
     def test_no_quotes(self):
         text = "nema navodnika"
         assert format_navodnici(text) == text
+
+
+class TestPadezIme:
+    """Testovi za deklinaciju osobnih imena."""
+
+    def test_musko_ime_prezime_gen(self):
+        assert _padez_ime("Ivan Horvat", "gen") == "Ivana Horvata"
+
+    def test_musko_ic_prezime_gen(self):
+        assert _padez_ime("Marko Babic", "gen") == "Marka Babica"
+
+    def test_zensko_ime_a_gen(self):
+        assert _padez_ime("Ana Horvat", "gen") == "Ane Horvata"
+
+    def test_marija_gen(self):
+        assert _padez_ime("Marija Juric", "gen") == "Marije Jurica"
+
+    def test_petar_nepostojano_a_gen(self):
+        assert _padez_ime("Petar Kovac", "gen") == "Petra Kovaca"
+
+    def test_marko_o_dat(self):
+        assert _padez_ime("Marko Juric", "dat") == "Marku Juricu"
+
+    def test_ivan_instr(self):
+        assert _padez_ime("Ivan Horvat", "instr") == "Ivanom Horvatom"
+
+    def test_nominativ_nema_promjene(self):
+        assert _padez_ime("Ivan Horvat", "nom") == "Ivan Horvat"
+
+    def test_prazno(self):
+        assert _padez_ime("", "gen") == ""
+        assert _padez_ime(None, "gen") is None
+
+    def test_samo_ime(self):
+        assert _padez_ime("Ivan", "gen") == "Ivana"
+        assert _padez_ime("Ana", "dat") == "Ani"
+
+    def test_petar_lok(self):
+        assert _padez_ime("Petar", "lok") == "Petru"
+
+
+class TestPadezUloge:
+    """Testovi za deklinaciju oznaka uloga."""
+
+    def test_tuzitelj_gen(self):
+        assert _padez_uloge("Tužitelj", "gen") == "Tužitelja"
+
+    def test_kupac_dat(self):
+        assert _padez_uloge("Kupac", "dat") == "Kupcu"
+
+    def test_strana_s_brojem(self):
+        assert _padez_uloge("Strana 1", "gen") == "Strane 1"
+
+    def test_roditelj_s_brojem(self):
+        assert _padez_uloge("Roditelj 2", "dat") == "Roditelju 2"
+
+    def test_nepoznata_uloga(self):
+        assert _padez_uloge("Nepoznato", "gen") == "Nepoznato"
+
+    def test_nom_nema_promjene(self):
+        assert _padez_uloge("Tužitelj", "nom") == "Tužitelj"

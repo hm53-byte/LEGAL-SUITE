@@ -252,6 +252,95 @@ def _padez_uloge(uloga, padez="gen"):
     return uloga  # fallback: nepromijenjena
 
 
+# PADEZI — DEKLINACIJA OSOBNIH IMENA
+# =============================================================================
+
+# Osnova za "nepostojano a" u imenima: petar → petr (gen: petra)
+_NEPOSTOJANO_A_IME = {
+    "petar": "petr",
+    "nikola": None,  # završava na -a, poseban slucaj — vec obradjeno kao -a pattern
+}
+
+# Nastavci za padeze u obliku (gen, dat, akuz, instr, lok)
+_PADEZ_IDX_IME = {"nom": -1, "gen": 0, "dat": 1, "akuz": 2, "instr": 3, "lok": 4}
+
+
+def _deklinaj_token_ime(token, idx):
+    """
+    Deklinira jedan token (ime ili prezime) prema zadanom indeksu padeza.
+    idx: 0=gen, 1=dat, 2=akuz, 3=instr, 4=lok
+    Vraca originalni token ako pravilo nije primjenjivo.
+    """
+    if not token or len(token) < 2:
+        return token
+
+    t = token
+    tl = t.lower()
+
+    # Prezimena/imena na -ić (muška deklinacija: Babić → Babića, Babiću...)
+    if tl.endswith("ić"):
+        sufixes = ("ića", "iću", "ića", "ićem", "iću")
+        return t[:-2] + sufixes[idx]
+
+    # ASCII fallback na -ic (bez dijakritike)
+    if tl.endswith("ic") and len(tl) > 3:
+        sufixes = ("ica", "icu", "ica", "icem", "icu")
+        return t[:-2] + sufixes[idx]
+
+    # Nepostojano 'a' — iznimka za "Petar" → osnova "Petr"
+    nepost = _NEPOSTOJANO_A_IME.get(tl)
+    if nepost is not None:
+        # Rekonstruiraj s originalnim velikim slovom
+        base = t[0] + nepost[1:]  # sačuvaj prvo slovo
+        sufixes = ("a", "u", "a", "om", "u")
+        return base + sufixes[idx]
+
+    # Imena/prezimena na -a (Ana, Marija, Luka, Nikola, Siniša...)
+    if tl.endswith("a"):
+        sufixes = ("e", "i", "u", "om", "i")
+        return t[:-1] + sufixes[idx]
+
+    # Prezimena/imena na -o (Marko, Ivo, Bruno...)
+    if tl.endswith("o"):
+        sufixes = ("a", "u", "a", "om", "u")
+        return t[:-1] + sufixes[idx]
+
+    # Muška imena/prezimena na suglasnik (Ivan, Horvat, Kovač, Matej...)
+    samoglasnici = set("aeiouAEIOU")
+    if tl[-1] not in samoglasnici:
+        sufixes = ("a", "u", "a", "om", "u")
+        return t + sufixes[idx]
+
+    # Fallback — ne mijenjaj
+    return t
+
+
+def _padez_ime(ime_prezime, padez="gen"):
+    """
+    Otprilike deklinira osobno ime i prezime na hrvatski.
+    Radi za vecinu uobicajenih hrvatskih imena i prezimena.
+    Za nejasne slucajeve (nepostojano a, slozenice) vraca nominativ.
+
+    ime_prezime: npr. 'Ivan Horvat', 'Ana Babić', 'Nikola Jurić'
+    padez: 'nom'|'gen'|'dat'|'akuz'|'instr'|'lok'
+
+    Primjeri:
+        _padez_ime('Ivan Horvat', 'gen')  → 'Ivana Horvata'
+        _padez_ime('Ana Babić', 'gen')    → 'Ane Babić'  (prezime ostaje jer je zensko)
+        _padez_ime('Marko Jurić', 'dat')  → 'Marku Juriću'
+        _padez_ime('Petar Kovač', 'gen')  → 'Petra Kovača'
+    """
+    if not ime_prezime:
+        return ime_prezime
+    idx = _PADEZ_IDX_IME.get(padez, 0)
+    if idx == -1:
+        return ime_prezime
+
+    tokens = ime_prezime.strip().split()
+    declined = [_deklinaj_token_ime(t, idx) for t in tokens]
+    return " ".join(declined)
+
+
 # --- Javne pomocne funkcije (isti potpisi kao original) ---
 
 
@@ -865,12 +954,17 @@ PRIMJERI = {
     'obiteljsko_razvod': {
         'opis': 'Sporazumni prijedlog za razvod braka',
         'stranke': {
-            'ob1_ime': 'Ivan Horvat',
-            'ob1_oib': '12345678903',
-            'ob1_adresa': 'Ilica 42, 10000 Zagreb',
-            'ob2_ime': 'Ana Horvat',
-            'ob2_oib': '98765432101',
-            'ob2_adresa': 'Ilica 42, 10000 Zagreb',
+            'sr_p1_tip': 'Fizička osoba',
+            'sr_p1_ime': 'Ivan Horvat',
+            'sr_p1_oib': '12345678903',
+            'sr_p1_adresa': 'Ilica 42, 10000 Zagreb',
+            'sr_p2_tip': 'Fizička osoba',
+            'sr_p2_ime': 'Ana Horvat',
+            'sr_p2_oib': '98765432101',
+            'sr_p2_adresa': 'Ilica 42, 10000 Zagreb',
+        },
+        'podaci': {
+            'sr_mjesto_braka': 'Zagreb',
         },
     },
     'stecaj_potrosac': {

@@ -9,7 +9,7 @@ from pomocne import format_text, format_eur
 def generiraj_zalbu_zup(zalitelj, podaci):
     """
     Generira žalbu u upravnom postupku.
-    Pravni temelj: Zakon o općem upravnom postupku (NN 47/09, 110/21).
+    Pravni temelj: Zakon o općem upravnom postupku (NN 47/09, 110/21, 104/25).
     """
     try:
         danas = date.today().strftime("%d.%m.%Y.")
@@ -109,7 +109,7 @@ def generiraj_zalbu_zup(zalitelj, podaci):
 def generiraj_tuzbu_zus(tuzitelj, tuzenik_tijelo, podaci):
     """
     Generira tužbu u upravnom sporu.
-    Pravni temelj: Zakon o upravnim sporovima (NN 20/10, 143/12, 152/14, 94/16, 29/17, 110/21).
+    Pravni temelj: Zakon o upravnim sporovima (NN 20/10, 143/12, 152/14, 94/16, 29/17, 110/21, 36/24, 104/25).
     """
     try:
         danas = date.today().strftime("%d.%m.%Y.")
@@ -235,7 +235,7 @@ def generiraj_tuzbu_zus(tuzitelj, tuzenik_tijelo, podaci):
 def generiraj_zahtjev_informacije(podnositelj, podaci):
     """
     Generira zahtjev za pristup informacijama.
-    Pravni temelj: Zakon o pravu na pristup informacijama (NN 25/13, 85/15, 69/22).
+    Pravni temelj: Zakon o pravu na pristup informacijama (NN 25/13, 85/15, 69/22, 104/25).
     """
     try:
         danas = date.today().strftime("%d.%m.%Y.")
@@ -266,7 +266,7 @@ def generiraj_zahtjev_informacije(podnositelj, podaci):
         # Pravni temelj
         parts.append(
             "<div class='justified'>Na temelju članka 18. stavka 1. Zakona o pravu na pristup informacijama "
-            "(NN 25/13, 85/15, 69/22), podnosim zahtjev za pristup informacijama kako slijedi:</div><br>"
+            "(NN 25/13, 85/15, 69/22, 104/25), podnosim zahtjev za pristup informacijama kako slijedi:</div><br>"
         )
 
         # 1. Tijelo javne vlasti
@@ -335,7 +335,7 @@ def generiraj_prigovor_predstavku(podnositelj, podaci):
         if tip == "prigovor":
             naslov = "PRIGOVOR NA POSTUPANJE"
             uvodni_tekst = (
-                "Na temelju članka 122. Zakona o općem upravnom postupku (NN 47/09, 110/21), "
+                "Na temelju članka 122. Zakona o općem upravnom postupku (NN 47/09, 110/21, 104/25), "
                 "podnosim prigovor na postupanje službenika tijela državne uprave kako slijedi:"
             )
         else:

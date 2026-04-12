@@ -4,7 +4,7 @@
 # Ugovor o uzdrzavanju
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox
+from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, napuni_primjerom
 from generatori.obiteljsko import (
     generiraj_sporazum_razvod,
     generiraj_tuzbu_razvod,
@@ -51,6 +51,19 @@ def _render_sporazum_razvod():
         "Sporazumni razvod braka: bračni drugovi zajednički podnose prijedlog. "
         "Obavezno prethodno savjetovanje kod Zavoda za socijalni rad (ObZ čl. 321-331)."
     )
+
+    napuni_primjerom('obiteljsko_razvod', '')
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — sud i stranke (predlagatelji)
+- I. Činjenično stanje (podaci o braku)
+- II. Poremećaj bračnih odnosa
+- III. Maloljetna djeca (ako postoje) — plan roditeljske skrbi
+- IV. Petitum (prijedlog odluke suda)
+- Potpisi predlagatelja
+        """)
 
     c1, c2 = st.columns(2)
     with c1:
@@ -127,6 +140,18 @@ def _render_tuzba_razvod():
         "Tužba za razvod braka: podnosi jedan bračni drug. "
         "Obavezno prethodno savjetovanje kod Zavoda za socijalni rad (ObZ čl. 321-331)."
     )
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — sud i stranke (tužitelj / tuženik)
+- I. Činjenično stanje (podaci o braku)
+- II. Razlozi razvoda braka
+- III. Maloljetna djeca (ako postoje) — zahtjev glede djece
+- IV. Tužbeni zahtjev
+- Troškovnik
+- Potpis tužitelja
+        """)
 
     c1, c2 = st.columns(2)
     with c1:
@@ -210,6 +235,20 @@ def _render_bracni_ugovor():
         "Bračni ugovor mora biti sklopljen u pisanom obliku i ovjeren kod javnog bilježnika "
         "(ObZ čl. 40). Clausula intabulandi je potrebna za nekretnine."
     )
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — stranke i vrsta ugovora (bračni / predbračni / dioba)
+- Čl. 1. — Predmet ugovora
+- Čl. 2. — Imovina strane 1 (zasebna imovina)
+- Čl. 3. — Imovina strane 2 (zasebna imovina)
+- Čl. 4. — Zajednička imovina (ako postoji)
+- Čl. 5. — Clausula intabulandi (za nekretnine, ako je odabrana)
+- Čl. 6. — Primjena prava i nadležnost suda
+- Čl. 7. — Završne odredbe (oblik, primjerci, stupanje na snagu)
+- Potpisi stranaka i javnog bilježnika
+        """)
 
     vrsta = st.selectbox(
         "Vrsta ugovora",
@@ -304,6 +343,18 @@ def _render_roditeljska_skrb():
         "Sporazum o roditeljskoj skrbi uređuje stanovanje djeteta, raspored kontakta "
         "s drugim roditeljem i uzdržavanje (ObZ čl. 104-112)."
     )
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — stranke (roditelji) i djeca
+- I. Podaci o djeci (ime, datum rođenja, OIB)
+- II. Mjesto stanovanja djeteta (adresa, kod kojeg roditelja)
+- III. Vrijeme provođenja s djetetom (raspored kontakta, praznici, ljetni odmor)
+- IV. Uzdržavanje djeteta (iznos, datum dospijeća, IBAN)
+- V. Posebne odredbe (zdravlje, obrazovanje, izvannastavne aktivnosti — ako postoje)
+- Potpisi oba roditelja
+        """)
 
     c1, c2 = st.columns(2)
     with c1:
@@ -415,6 +466,17 @@ def _render_ugovor_uzdrzavanje():
         "Ugovor o uzdržavanju djeteta mora biti ovjeren kod javnog bilježnika "
         "i ima snagu ovršne isprave - clausula exequendi (ObZ čl. 305)."
     )
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — obveznik i primatelj uzdržavanja, podaci o djetetu
+- Čl. 1. — Predmet ugovora (uzdržavanje djeteta)
+- Čl. 2. — Iznos uzdržavanja (EUR/mj., datum dospijeća, IBAN)
+- Čl. 3. — Clausula exequendi (ovršna klauzula, ako je odabrana)
+- Čl. 4. — Završne odredbe (oblik, primjerci)
+- Potpisi stranaka i javnog bilježnika
+        """)
 
     c1, c2 = st.columns(2)
     with c1:

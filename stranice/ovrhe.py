@@ -17,6 +17,20 @@ from generatori.ovrhe import (
 
 def _render_prijedlog_ovrhe():
     """Prijedlog za ovrhu na temelju vjerodostojne isprave."""
+    napuni_primjerom('ovrha', '')
+
+    with st.expander("Pregled strukture dokumenta", expanded=False):
+        st.markdown("""
+**Dokument će sadržavati:**
+- Zaglavlje — javni bilježnik, ovrhovoditelj i ovršenik
+- Uvod — prijedlog za ovrhu temeljem vjerodostojne isprave (čl. 278. OZ)
+- Vjerodostojna isprava — naziv, datum i iznos glavnice
+- Tražbina — glavnica, zatezne kamate od datuma dospijeća (čl. 29. ZOO)
+- Troškovnik — odvjetnička nagrada, nagrada JB-u, PDV, sudska pristojba
+- Prijedlog ovrhe — sredstvo i predmet ovrhe (novčana sredstva)
+- Potpis predlagatelja
+        """)
+
     jb = st.text_input("Javni bilježnik (Ime, Prezime, Grad)", placeholder="Ivan Horvat, Zagreb",
                        help="Javni bilježnik kojem se podnosi prijedlog za ovrhu na temelju vjerodostojne isprave (čl. 278. OZ).")
 

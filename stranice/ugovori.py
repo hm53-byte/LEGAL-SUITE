@@ -9,6 +9,7 @@ from pomocne import (
     prikazi_dokument,
     _rimski_broj,
     doc_selectbox,
+    napuni_primjerom,
 )
 from klauzule import KATEGORIJE, dohvati_klauzule, dohvati_klauzulu_po_nazivu
 from generatori.ugovori import (
@@ -133,6 +134,9 @@ def _render_gradjansko_pravo():
         ["Kupoprodaja", "Najam/Zakup", "Ugovor o djelu (Usluga)", "Zajam"],
         key="ug_gp_tip",
     )
+
+    if tip == "Kupoprodaja":
+        napuni_primjerom('ugovor_kupoprodaja', '')
 
     c1, c2 = st.columns(2)
     s1, _, _ = unos_stranke("PRVA STRANA", "u1")
