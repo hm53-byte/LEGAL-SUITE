@@ -404,7 +404,22 @@ def _render_prodaja_poduzeca():
             help="Aktivira mehanizam supstitucije jamstava, fiducijarnog depozita i negativne suglasnosti."
         )
 
-    st.subheader("Odgovornost i završne odredbe")
+    st.subheader("Rokovi i završne odredbe")
+    c1, c2, c3 = st.columns(3)
+    rok_primopredaje = c1.number_input(
+        "Rok primopredaje (dana)", min_value=0, value=0, key="pp_rok_primopredaje",
+        help="Rok u danima za primopredaju poduzeća od dana potpisa (čl. o primopredaji)."
+    )
+    rok_povjerljivosti = c2.number_input(
+        "Rok povjerljivosti (godina)", min_value=0, value=0, key="pp_rok_povj",
+        help="Trajanje obveze čuvanja poslovne tajne od dana sklapanja ugovora."
+    )
+    broj_primjeraka = c3.number_input(
+        "Broj primjeraka ugovora", min_value=0, value=0, key="pp_primjerci",
+        help="Ukupan broj istovjetnih primjeraka ugovora (završne odredbe)."
+    )
+
+    st.subheader("Odgovornost")
     c1, c2, c3 = st.columns(3)
     cap_odgovornosti_posto = c1.number_input(
         "Gornja granica odgovornosti (%)", min_value=0, max_value=100, value=0, key="pp_cap",
@@ -462,6 +477,9 @@ def _render_prodaja_poduzeca():
                 "cap_odgovornosti_posto": cap_odgovornosti_posto,
                 "survival_period_godina": survival_period,
                 "ugovorna_kazna": ugovorna_kazna,
+                "rok_primopredaje": rok_primopredaje,
+                "rok_povjerljivosti": rok_povjerljivosti,
+                "broj_primjeraka": broj_primjeraka,
             },
             sekcije_redoslijed=odabrane_sekcije,
         )

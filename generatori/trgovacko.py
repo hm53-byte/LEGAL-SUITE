@@ -929,12 +929,14 @@ def _sec_porezne_odredbe(podaci, clanak_ref):
 
 
 def _sec_primopredaja(podaci, clanak_ref):
+    rok = podaci.get("rok_primopredaje", 0)
+    rok_tekst = f"{rok} ({rok}) dana" if rok else "___"
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
         f"<div class='section-title' style='text-align: center;'>Primopredaja Poduzeća</div>"
         f"<div class='section-title' style='text-align: center;'>Članak {n}.</div>"
         f"<div class='justified'>(1) Primopredaja Poduzeća izvršit će se u roku od "
-        f"30 (trideset) dana od dana potpisa ovog Ugovora, osim ako ovim Ugovorom za "
+        f"<b>{rok_tekst}</b> od dana potpisa ovog Ugovora, osim ako ovim Ugovorom za "
         f"pojedine dijelove imovine nije predviđen drukčiji rok.<br><br>"
         f"(2) O primopredaji će se sastaviti zapisnik koji potpisuju obje ugovorne strane, "
         f"a koji će sadržavati detaljan popis sve prenesene imovine, obveza, ugovora i "
@@ -978,6 +980,8 @@ def _sec_ugovorna_kazna(podaci, clanak_ref):
 
 
 def _sec_povjerljivost(podaci, clanak_ref):
+    rok = podaci.get("rok_povjerljivosti", 0)
+    rok_tekst = f"{rok} ({rok}) {('godinu' if rok == 1 else 'godine' if rok < 5 else 'godina')}" if rok else "___"
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
         f"<div class='section-title' style='text-align: center;'>Povjerljivost</div>"
@@ -985,7 +989,7 @@ def _sec_povjerljivost(podaci, clanak_ref):
         f"<div class='justified'>(1) Ugovorne strane se obvezuju čuvati kao poslovnu "
         f"tajnu sve informacije i podatke koje su saznale u vezi s ovim Ugovorom, "
         f"uključujući podatke iz postupka dubinskog snimanja, a koje nisu javno dostupne.<br><br>"
-        f"(2) Obveza povjerljivosti traje 3 (tri) godine od dana sklapanja ovog "
+        f"(2) Obveza povjerljivosti traje <b>{rok_tekst}</b> od dana sklapanja ovog "
         f"Ugovora.</div><br>"
     )
 
@@ -1005,6 +1009,8 @@ def _sec_sporovi(podaci, clanak_ref):
 
 
 def _sec_zavrsne(podaci, clanak_ref):
+    broj_primjeraka = podaci.get("broj_primjeraka", 0)
+    primjerci_tekst = f"{broj_primjeraka} ({broj_primjeraka})" if broj_primjeraka else "___"
     n = clanak_ref[0]; clanak_ref[0] += 1
     return (
         f"<div class='section-title' style='text-align: center;'>Završne odredbe</div>"
@@ -1019,8 +1025,8 @@ def _sec_zavrsne(podaci, clanak_ref):
         f"i namjeri ugovornih strana.<br><br>"
         f"(4) Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se odredbe "
         f"ZOO-a, ZTD-a, ZR-a i drugih relevantnih propisa Republike Hrvatske.<br><br>"
-        f"(5) Ovaj Ugovor sastavljen je u 4 (četiri) istovjetna primjerka, od kojih "
-        f"svaka ugovorna strana zadržava po 2 (dva) primjerka.</div><br>"
+        f"(5) Ovaj Ugovor sastavljen je u <b>{primjerci_tekst}</b> istovjetnih primjeraka, "
+        f"od kojih svaka ugovorna strana zadržava po jednak broj primjeraka.</div><br>"
     )
 
 
