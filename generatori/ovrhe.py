@@ -2,7 +2,7 @@
 # GENERATORI: Ovrsni prijedlog + Prigovor protiv rjesenja o ovrsi JB
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import formatiraj_troskovnik, format_eur, format_eur_s_rijecima, format_text
+from pomocne import formatiraj_troskovnik, format_eur, format_eur_s_rijecima, format_text, u_lokativu
 
 
 def generiraj_ovrhu_pro(jb, ovrhovoditelj, ovrsenik, trazbina, isprava, troskovi_dict):
@@ -78,7 +78,7 @@ def generiraj_prigovor_ovrhe(sud, ovrsenik, ovrhovoditelj, podaci, troskovi_dict
             f"{troskovnik_html}"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>OVRŠENIK</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )
@@ -155,7 +155,7 @@ def generiraj_ovrhu_ovrsna_isprava(sud, ovrhovoditelj, ovrsenik, podaci, troskov
             f"{troskovnik_html}"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>OVRHOVODITELJ</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )
@@ -243,7 +243,7 @@ def generiraj_ovrhu_na_nekretnini(sud, ovrhovoditelj, ovrsenik, podaci, troskovi
             f"</div>"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>OVRHOVODITELJ</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )
@@ -316,7 +316,7 @@ def generiraj_ovrhu_na_placi(sud, ovrhovoditelj, ovrsenik, podaci, troskovi_dict
             f"{troskovnik_html}"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>OVRHOVODITELJ</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )
@@ -386,7 +386,7 @@ def generiraj_obustavu_ovrhe(sud, podaci):
             f"</div>"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>OVRHOVODITELJ</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )
@@ -472,7 +472,7 @@ def generiraj_privremenu_mjeru(sud, predlagatelj, protivnik, podaci, troskovi_di
             f"{troskovnik_html}"
             f"<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {mjesto}, dana {danas}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(mjesto)}, dana {danas}</td>'
             f'<td width="50%" align="center"><b>PREDLAGATELJ OSIGURANJA</b><br><br><br>______________________</td>'
             f"</tr></table>"
         )

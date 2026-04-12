@@ -2,7 +2,7 @@
 # GENERATORI: Zemljisne knjige (tabularna, ZK prijedlog)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import formatiraj_troskovnik, format_text, format_eur, format_eur_s_rijecima
+from pomocne import formatiraj_troskovnik, format_text, format_eur, format_eur_s_rijecima, u_lokativu
 
 
 def generiraj_tabularnu_doc(prod, kup, ko, cest, ul, opis, dat):
@@ -110,7 +110,7 @@ def generiraj_zabilježbu(sud, predlagatelj, podaci):
             f"<li>Dokaz o uplati sudske pristojbe</li>"
             f"</ol></div>"
             f"<div class='doc-body justified'>"
-            f"U {format_text(mjesto)}, {datum}</div><br><br>"
+            f"U {format_text(u_lokativu(mjesto))}, {datum}</div><br><br>"
             f'<table width="100%" border="0"><tr><td width="50%"></td>'
             f'<td width="50%" align="center"><b>PREDLAGATELJ</b><br><br>______________________</td></tr></table>'
         )
@@ -167,7 +167,7 @@ def generiraj_predbiježbu(sud, predlagatelj, protustranka, podaci):
             f"<li>Dokaz o državljanstvu / OIB (preslika osobne iskaznice)</li>"
             f"</ol></div>"
             f"<div class='doc-body justified'>"
-            f"U {format_text(mjesto)}, {datum}</div><br><br>"
+            f"U {format_text(u_lokativu(mjesto))}, {datum}</div><br><br>"
             f'<table width="100%" border="0"><tr><td width="50%"></td>'
             f'<td width="50%" align="center"><b>PREDLAGATELJ</b><br><br>______________________</td></tr></table>'
         )
@@ -226,7 +226,7 @@ def generiraj_upis_hipoteke(sud, vjerovnik, zalozni_duznik, podaci, troskovi_dic
             f"</ol></div>"
             f"{troskovnik_html}<br>"
             f"<div class='doc-body justified'>"
-            f"U {format_text(mjesto)}, {datum}</div><br><br>"
+            f"U {format_text(u_lokativu(mjesto))}, {datum}</div><br><br>"
             f'<table width="100%" border="0"><tr><td width="50%"></td>'
             f'<td width="50%" align="center"><b>VJEROVNIK (PREDLAGATELJ)</b><br><br>______________________</td></tr></table>'
         )
@@ -351,7 +351,7 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
             f"<li>Dokaz o uplati sudske pristojbe</li>"
             f"</ol></div>"
             f"<div class='doc-body justified'>"
-            f"U {format_text(mjesto)}, {datum}</div><br><br>"
+            f"U {format_text(u_lokativu(mjesto))}, {datum}</div><br><br>"
             f'<table width="100%" border="0"><tr><td width="50%"></td>'
             f'<td width="50%" align="center"><b>VLASNIK (PREDLAGATELJ)</b><br><br>______________________</td></tr></table>'
         )
@@ -443,7 +443,7 @@ def generiraj_upis_sluznosti(sud, predlagatelj, podaci, troskovi_dict):
             f"</ol></div>"
             f"{troskovnik_html}<br>"
             f"<div class='doc-body justified'>"
-            f"U {format_text(mjesto)}, {datum}</div><br><br>"
+            f"U {format_text(u_lokativu(mjesto))}, {datum}</div><br><br>"
             f'<table width="100%" border="0"><tr><td width="50%"></td>'
             f'<td width="50%" align="center"><b>PREDLAGATELJ</b><br><br>______________________</td></tr></table>'
         )

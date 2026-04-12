@@ -3,13 +3,13 @@
 # Prijedlog za stecaj, Prijava trazbine, Stecaj potrosaca (osobni bankrot)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, format_eur_s_rijecima, formatiraj_troskovnik
+from pomocne import format_text, format_eur, format_eur_s_rijecima, formatiraj_troskovnik, u_lokativu
 
 
 def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
     """
     Prijedlog za otvaranje stečajnog postupka.
-    Pravni temelj: Stečajni zakon (NN 71/15, 104/17)
+    Pravni temelj: Stečajni zakon (NN 71/15, 104/17, 36/22)
     """
     try:
         danas = date.today().strftime("%d.%m.%Y.")
@@ -30,7 +30,7 @@ def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
         if razlog == "nesposobnost_za_placanje":
             razlog_tekst = (
                 f"Stečajni dužnik je nesposoban za plaćanje u smislu članka 6. stavka 2. "
-                f"Stečajnog zakona (NN 71/15, 104/17). Računi dužnika blokirani su neprekidno "
+                f"Stečajnog zakona (NN 71/15, 104/17, 36/22). Računi dužnika blokirani su neprekidno "
                 f"<b>{blokada_dana} dana</b>, što prelazi zakonski minimum od 60 dana neprekidne "
                 f"blokade. Dužnik nije u mogućnosti ispunjavati svoje dospjele novčane obveze, "
                 f"čime su ispunjene pretpostavke za utvrđenje nesposobnosti za plaćanje."
@@ -88,7 +88,7 @@ def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
 
         parts.append(
             f"<div class='section-title'>{prijedlog_sekcija}. PRIJEDLOG</div>"
-            f"<div class='justified'>Na temelju članka 109. Stečajnog zakona (NN 71/15, 104/17), "
+            f"<div class='justified'>Na temelju članka 109. Stečajnog zakona (NN 71/15, 104/17, 36/22), "
             f"predlagatelj predlaže da naslovni sud:</div><br>"
             f"<div class='justified'>"
             f"<b>I.</b> Otvori stečajni postupak nad dužnikom <b>{format_text(tvrtka)}</b>, "
@@ -122,7 +122,7 @@ def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
         )
 
         parts.append(
-            f"<br><div class='justified'>U {format_text(mjesto)}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PREDLAGATELJ</b><br>(vlastoručni potpis)</div>"
             f"</div>"
@@ -136,7 +136,7 @@ def generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict):
 def generiraj_prijavu_trazbine(vjerovnik, podaci):
     """
     Prijava tražbine u stečajnom postupku.
-    Pravni temelj: Stečajni zakon (NN 71/15, 104/17) čl. 173-178
+    Pravni temelj: Stečajni zakon (NN 71/15, 104/17, 36/22) čl. 173-178
     """
     try:
         danas = date.today().strftime("%d.%m.%Y.")
@@ -170,7 +170,7 @@ def generiraj_prijavu_trazbine(vjerovnik, podaci):
 
             f"<div class='header-doc'>PRIJAVA TRAŽBINE U STEČAJNOM POSTUPKU</div>",
 
-            f"<div class='justified'>Na temelju članka 173. Stečajnog zakona (NN 71/15, 104/17), "
+            f"<div class='justified'>Na temelju članka 173. Stečajnog zakona (NN 71/15, 104/17, 36/22), "
             f"vjerovnik prijavljuje svoju tražbinu u stečajnom postupku koji se vodi nad "
             f"dužnikom <b>{format_text(duznik_naziv)}</b>, pod brojem predmeta "
             f"<b>{format_text(broj_predmeta)}</b>, kako slijedi:</div><br>",
@@ -235,7 +235,7 @@ def generiraj_prijavu_trazbine(vjerovnik, podaci):
         )
 
         parts.append(
-            f"<br><div class='justified'>U {format_text(mjesto)}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>VJEROVNIK</b><br>(vlastoručni potpis)</div>"
             f"</div>"
@@ -416,7 +416,7 @@ def generiraj_stecaj_potrosaca(podnositelj, podaci):
         )
 
         parts.append(
-            f"<br><div class='justified'>U {format_text(mjesto)}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PODNOSITELJ</b><br>(vlastoručni potpis)</div>"
             f"</div>"

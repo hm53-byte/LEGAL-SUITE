@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj, u_lokativu
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ def generiraj_drustveni_ugovor(osnivaci, podaci):
             "<div class='header-doc'>DRUŠTVENI UGOVOR<br>"
             "<span style='font-size: 12pt; font-weight: normal;'>"
             "o osnivanju društva s ograničenom odgovornošću</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između osnivača:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između osnivača:</div><br>",
         ]
 
         for i, osn in enumerate(osnivaci, 1):
@@ -268,7 +268,7 @@ def generiraj_prijenos_udjela(prenositelj, stjecatelj, drustvo, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             "ZAHTIJEVANA FORMA: JAVNOBILJEŽNIČKA OVJERA POTPISA</div>",
             "<div class='header-doc'>UGOVOR O PRIJENOSU POSLOVNOG UDJELA</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. PRENOSITELJ (prodavatelj udjela):</b><br>{prenositelj}</div>",
             f"<div class='party-info'><b>2. STJECATELJ (kupac udjela):</b><br>{stjecatelj}</div><br>",
         ]
@@ -370,7 +370,7 @@ def generiraj_nda(strana_a, strana_b, podaci):
             "<div class='header-doc'>UGOVOR O POVJERLJIVOSTI<br>"
             "<span style='font-size: 11pt; font-weight: normal;'>"
             "(Non-Disclosure Agreement / NDA)</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. STRANA A "
             f"({'Davatelj i Primatelj informacija' if vrsta == 'uzajamni' else 'Davatelj informacija'}):</b><br>"
             f"{strana_a}</div>",
@@ -440,7 +440,7 @@ def generiraj_nda(strana_a, strana_b, podaci):
             f"<div class='justified'>Ovaj Ugovor sastavljen je u 2 (dva) istovjetna primjerka, "
             f"po jedan za svaku Ugovornu stranu.<br><br>"
             f"Na ovaj Ugovor primjenjuje se pravo Republike Hrvatske. "
-            f"Za sporove iz ovog Ugovora nadležan je stvarno nadležni sud u {mjesto}.</div><br>"
+            f"Za sporove iz ovog Ugovora nadležan je stvarno nadležni sud u {u_lokativu(mjesto)}.</div><br>"
         )
 
         parts.append(
@@ -470,7 +470,7 @@ def _sec_predmet(podaci, clanak_ref):
         f"odnose koji su s tim Poduzećem povezani, a kako je to detaljno navedeno u "
         f"člancima ovog Ugovora.<br><br>"
         f"(3) Na ovaj Ugovor primjenjuju se odredbe Zakona o obveznim odnosima "
-        f"(NN 35/05 i izmjene; dalje: ZOO), Zakona o trgovačkim društvima "
+        f"(NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23; dalje: ZOO), Zakona o trgovačkim društvima "
         f"(NN 111/93 i izmjene; dalje: ZTD), Zakona o radu "
         f"(NN 93/14 i izmjene; dalje: ZR) te drugih relevantnih propisa.</div><br>"
         f"<div class='section-title' style='text-align: center;'>Članak {n2}.</div>"
@@ -1004,7 +1004,7 @@ def _sec_sporovi(podaci, clanak_ref):
         f"proizlaze iz ovog Ugovora riješiti sporazumno, mirnim putem.<br><br>"
         f"(2) U slučaju da sporazumno rješavanje nije moguće u roku od 30 (trideset) "
         f"dana od nastanka spora, za rješavanje spora nadležan je stvarno i mjesno "
-        f"nadležni sud u {format_text(sud_mjesto)}.</div><br>"
+        f"nadležni sud u {format_text(u_lokativu(sud_mjesto))}.</div><br>"
     )
 
 
@@ -1056,6 +1056,63 @@ _SEKCIJE_FN_PRODAJA = {
 }
 
 
+_PRILOG_MAP = {
+    "nekretnine":       "Opisnik nekretnine (ZK izvadak, posjedovni list, tlocrt)",
+    "trabine":          "Popis tražbina s pregledom dospijeća i dužnicima",
+    "mjenice":          "Popis mjenica s fotokopijama prednje i naličja",
+    "poslovni_udjeli":  "Potvrde o poslovnim udjelima u društvima kćerima",
+    "pokretnine":       "Popis pokretnina — inventar imovine (strojevi, oprema, vozila, zalihe)",
+    "vrijednosni_papiri": "Popis vrijednosnih papira s kontrolnim brojevima",
+    "novcana_sredstva": "Potvrda banke o stanju na žiro-računu na dan potpisivanja",
+    "preuzete_obveze":  "Pregled preuzetih obveza s dospijećima i vjerovnicima",
+    "radni_odnosi":     "Popis zaposlenika koji se prenose (čl. 137. ZR)",
+    "tekuci_ugovori":   "Popis tekućih ugovora koji se prenose (čl. 127.–131. ZOO)",
+}
+
+
+def _generiraj_popis_priloga(sekcije_redoslijed, podaci):
+    """Automatski generira numerirani popis Priloga na temelju odabranih sekcija."""
+    stavke = []
+
+    # Javnobilježnički akt je uvijek Prilog 1 za prijenos nekretnina
+    if podaci.get("ima_nekretninu"):
+        stavke.append("Javnobilježnički akt / clausula intabulandi za prijenos nekretnina")
+
+    for sek_id in sekcije_redoslijed:
+        naziv = _PRILOG_MAP.get(sek_id)
+        if naziv:
+            # Provjeri je li sekcija zaista aktivna u podacima
+            aktivna = {
+                "nekretnine":         podaci.get("ima_nekretninu"),
+                "trabine":            podaci.get("ima_trabinu"),
+                "mjenice":            podaci.get("ima_mjenice"),
+                "poslovni_udjeli":    podaci.get("ima_poslovnih_udjela"),
+                "pokretnine":         podaci.get("ima_pokretnine"),
+                "vrijednosni_papiri": podaci.get("ima_vrijednosnih_papira"),
+                "novcana_sredstva":   podaci.get("prenosi_novac"),
+                "preuzete_obveze":    bool(podaci.get("preuzete_obveze", "").strip()),
+                "radni_odnosi":       podaci.get("broj_zaposlenika", 0) > 0,
+                "tekuci_ugovori":     bool(podaci.get("tekuci_ugovori", "").strip()),
+            }.get(sek_id, True)
+            if aktivna:
+                stavke.append(naziv)
+
+    if not stavke:
+        return ""
+
+    rows = "".join(
+        f"<tr><td style='padding: 4px 8px; vertical-align: top;'><b>Prilog {i + 1}:</b></td>"
+        f"<td style='padding: 4px 8px;'>{naziv}</td></tr>"
+        for i, naziv in enumerate(stavke)
+    )
+    return (
+        "<div class='section-title' style='margin-top: 30px;'>POPIS PRILOGA</div>"
+        "<div class='justified' style='font-size: 10pt;'>"
+        "Sastavni dijelovi ovog Ugovora su sljedeći Prilozi:</div><br>"
+        f"<table width='100%' border='0' style='font-size: 10pt;'>{rows}</table><br>"
+    )
+
+
 def generiraj_prodaju_poduzeca(prodavatelj, kupac, podaci, sekcije_redoslijed=None):
     """
     Ugovor o prodaji poduzeća kao organizirane gospodarske cjeline - ZOO, ZTD čl. 275, ZR čl. 137
@@ -1075,7 +1132,7 @@ def generiraj_prodaju_poduzeca(prodavatelj, kupac, podaci, sekcije_redoslijed=No
             "ZAHTIJEVANA FORMA: PISANA — za prijenos nekretnina obvezna clausula intabulandi; "
             "preporučuje se javnobilježnička solemnizacija</div>",
             "<div class='header-doc'>UGOVOR O PRODAJI PODUZEĆA</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. PRODAVATELJ:</b><br>{prodavatelj}</div>",
             f"<div class='party-info'><b>2. KUPAC:</b><br>{kupac}</div><br>",
         ]
@@ -1085,8 +1142,12 @@ def generiraj_prodaju_poduzeca(prodavatelj, kupac, podaci, sekcije_redoslijed=No
             if fn:
                 parts.append(fn(podaci, clanak_ref))
 
+        popis_priloga = _generiraj_popis_priloga(sekcije_redoslijed, podaci)
+        if popis_priloga:
+            parts.append(popis_priloga)
+
         parts.append(
-            f"<div class='justified'>{mjesto}, dana {danas} godine.</div><br><br>"
+            f"<div class='justified'>{u_lokativu(mjesto)}, dana {danas} godine.</div><br><br>"
             f"<table width='100%' border='0'><tr>"
             f"<td width='50%' align='center'>"
             f"<b>ZA PRODAVATELJA</b><br><br><br>"
@@ -1132,7 +1193,7 @@ def generiraj_zapisnik_uprave(drustvo, podaci):
             "<span style='font-size: 12pt; font-weight: normal;'>"
             "sjednice Uprave društva</span></div>",
             f"<div class='justified'>"
-            f"Sjednica Uprave održana je u {mjesto}, dana <b>{danas}</b>, "
+            f"Sjednica Uprave održana je u {u_lokativu(mjesto)}, dana <b>{danas}</b>, "
             f"s početkom u {vrijeme_pocetak} sati.</div><br>",
             f"<div class='justified'><b>Prisutni članovi Uprave:</b> {format_text(prisutni)}</div>",
         ]

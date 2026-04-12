@@ -3,7 +3,7 @@
 # Pravni temelj: ZPP cl. 89-98, ZOO cl. 308-331
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text
+from pomocne import format_text, u_lokativu
 
 
 def generiraj_punomoc(vrsta, vlastodavac, punomocnik, podaci):
@@ -44,7 +44,7 @@ def _opca_punomoc(vlastodavac, punomocnik, podaci, mjesto, danas):
         f"88/01, 117/03, 2/07, 84/08, 96/08, 123/08, 57/11, 148/11, 25/13, 89/14, 70/19, 80/22, 114/22, 155/23) "
         f"i članka 308. - 331. Zakona o obveznim odnosima.</div><br>"
         f"<br>"
-        f"<div class='justified'>U {mjesto}, dana {danas}</div><br>"
+        f"<div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
         f"<div class='signature-row'>"
         f"<div class='signature-block'><b>VLASTODAVAC</b><br>(vlastoručni potpis)</div>"
         f"</div>"
@@ -78,7 +78,7 @@ def _posebna_punomoc(vlastodavac, punomocnik, podaci, mjesto, danas):
         f"88/01, 117/03, 2/07, 84/08, 96/08, 123/08, 57/11, 148/11, 25/13, 89/14, 70/19, 80/22, 114/22, 155/23) "
         f"i članka 308. - 331. Zakona o obveznim odnosima.</div><br>"
         f"<br>"
-        f"<div class='justified'>U {mjesto}, dana {danas}</div><br>"
+        f"<div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
         f"<div class='signature-row'>"
         f"<div class='signature-block'><b>VLASTODAVAC</b><br>(vlastoručni potpis)</div>"
         f"</div>"

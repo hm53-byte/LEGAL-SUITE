@@ -2,13 +2,13 @@
 # GENERATORI: Obiteljsko pravo (razvod, bracni ugovor, roditeljska skrb, uzdrzavanje)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj, _padez_uloge
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj, _padez_uloge, u_lokativu
 
 
 def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
     """
     Generira prijedlog za sporazumni razvod braka.
-    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23) cl. 50-55.
+    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23, 156/23) cl. 50-55.
     """
     try:
         datum = date.today().strftime("%d.%m.%Y.")
@@ -107,7 +107,7 @@ def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
                 f"</div>"
             )
 
-        parts.append(f"<br><div class='justified'>U {format_text(mjesto)}, dana {datum}</div>")
+        parts.append(f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {datum}</div>")
 
         parts.append(f"""
         <div class='signature-row'>
@@ -142,7 +142,7 @@ def generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci):
 def generiraj_tuzbu_razvod(tuzitelj, tuzenik, podaci):
     """
     Generira tuzbu za razvod braka (sporni razvod).
-    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23) cl. 47-49.
+    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23, 156/23) cl. 47-49.
     """
     try:
         datum = date.today().strftime("%d.%m.%Y.")
@@ -261,7 +261,7 @@ def generiraj_tuzbu_razvod(tuzitelj, tuzenik, podaci):
 
         parts.append(f"</div>")
 
-        parts.append(f"<br><div class='justified'>U {format_text(mjesto)}, dana {datum}</div>")
+        parts.append(f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {datum}</div>")
 
         parts.append(
             f"<br><div class='justified'><b>PRILOZI:</b><br>"
@@ -451,7 +451,7 @@ def generiraj_bracni_ugovor(strana1, strana2, podaci):
             f"</div>"
         )
 
-        parts.append(f"<br><div class='justified'>U {format_text(mjesto)}, dana {datum}</div>")
+        parts.append(f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {datum}</div>")
 
         parts.append(f"""
         <div class='signature-row'>
@@ -478,7 +478,7 @@ def generiraj_bracni_ugovor(strana1, strana2, podaci):
 def generiraj_roditeljsku_skrb(roditelj1, roditelj2, podaci):
     """
     Generira plan o zajednickoj roditeljskoj skrbi.
-    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23) cl. 104-106.
+    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23, 156/23) cl. 104-106.
     """
     try:
         datum = date.today().strftime("%d.%m.%Y.")
@@ -620,7 +620,7 @@ def generiraj_roditeljsku_skrb(roditelj1, roditelj2, podaci):
             f"</div>"
         )
 
-        parts.append(f"<br><div class='justified'>U {format_text(mjesto)}, dana {datum}</div>")
+        parts.append(f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {datum}</div>")
 
         parts.append(f"""
         <div class='signature-row'>
@@ -646,7 +646,7 @@ def generiraj_ugovor_uzdrzavanje(obveznik, primatelj, podaci):
     """
     Generira ugovor o uzdrzavanju.
     ZAHTIJEVANA FORMA: Solemnizacija pred javnim biljeznickom (za ovrsnost).
-    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23) cl. 307-312.
+    Pravni temelj: Obiteljski zakon (NN 103/15, 98/19, 47/20, 49/23, 156/23) cl. 307-312.
     """
     try:
         datum = date.today().strftime("%d.%m.%Y.")
@@ -805,7 +805,7 @@ def generiraj_ugovor_uzdrzavanje(obveznik, primatelj, podaci):
             f"</div>"
         )
 
-        parts.append(f"<br><div class='justified'>U {format_text(mjesto)}, dana {datum}</div>")
+        parts.append(f"<br><div class='justified'>U {format_text(u_lokativu(mjesto))}, dana {datum}</div>")
 
         parts.append(f"""
         <div class='signature-row'>

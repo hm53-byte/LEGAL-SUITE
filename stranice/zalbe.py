@@ -2,7 +2,7 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe
+from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe, napuni_primjerom
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
 
@@ -11,6 +11,7 @@ def render_zalbe():
     st.header("Žalba na presudu")
 
     zaglavlje_sastavljaca()
+    napuni_primjerom('zalba_presuda', '')
 
     with st.expander("Podaci o sudu i presudi", expanded=True):
         col_s1, col_s2 = st.columns(2)
@@ -19,18 +20,18 @@ def render_zalbe():
         with col_s2:
             sud_drugi = odabir_suda("Drugostupanjski sud", vrsta="zupanijski", key="zal_sud2")
         c1, c2, c3 = st.columns(3)
-        broj_presude = c1.text_input("Poslovni broj presude")
+        broj_presude = c1.text_input("Poslovni broj presude", key="zal_broj_presude")
         datum_presude_input = c2.date_input("Datum dostave presude", key="zal_datum_dostave",
                                              help="Datum kad ste primili presudu. Rok za žalbu je 15 dana od dostave.")
         datum_presude = datum_presude_input.strftime('%d.%m.%Y.')
-        mjesto = c3.text_input("Mjesto", value="Zagreb")
+        mjesto = c3.text_input("Mjesto", value="Zagreb", key="zal_mjesto")
         provjeri_rok_zalbe(datum_presude_input, rok_dana=15, opis="rok za žalbu (čl. 348. ZPP)")
 
     with st.expander("Stranke", expanded=False):
         col_tuz, col_tuzen = st.columns(2)
         stranke = {
-            'tuzitelj': col_tuz.text_input("Tužitelj"),
-            'tuzenik': col_tuzen.text_input("Tuženik"),
+            'tuzitelj': col_tuz.text_input("Tužitelj", key="zal_tuzitelj"),
+            'tuzenik': col_tuzen.text_input("Tuženik", key="zal_tuzenik"),
         }
 
     with st.expander("Sadržaj žalbe", expanded=True):

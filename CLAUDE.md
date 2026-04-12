@@ -1,7 +1,7 @@
 # CLAUDE.md - LegalTech Suite Pro Handoff
 
-> **Last updated:** 2026-04-12 (Session 11)
-> **Status:** 60+ generators, 21 modules, 142 tests; iznosi slovima, padezi, ZZK uputa, CZSS→ZAVOD ZA SOCIJALNI RAD
+> **Last updated:** 2026-04-12 (Session 13)
+> **Status:** 60+ generators, 21 modules, 159 tests; u_lokativu() u svim generatorima, napuni_primjerom na zalbe/punomoci/ugovor_o_radu, Prilog lista prodaja_poduzeca, SZ/ZOO/ObZ reference, _padez_ime() u potvrdi
 > **Deploy:** Streamlit Community Cloud from `hm53-byte/LEGAL-SUITE` main branch
 
 ---
@@ -252,3 +252,5 @@ All generators output HTML fragments (not full documents). The wrapper `<div cla
 | 8 | Button sidebar nav, vodič wizard, napuni_primjerom, deadline checks, tabs, CSS fixes, 129 tests |
 | 9 | **Sidebar CSS fix (Cloud), ikone u sidebaru, vodič redizajn (kartice+težina), quick start, success banner, help tekst, napuni_primjerom na opomene/upravno** |
 | 10 | **UI overhaul: fix nn_pretraga/eoglasna/kalendar bugs, redesign login (guest-first), sidebar search, emoji cleanup, data-driven routing, CSS polish** |
+| 11 | **iznosi slovima, _padez_uloge, ZZK upozorenje, CZSS→Zavod za socijalni rad, autoscroll fix, UI opomene** |
+| 12 | **Pregled strukture dokumenta (8 formi), _padez_ime(), ZUP/ZUS/ZPPI NN 104/25, napuni_primjerom na ovrhe/obiteljsko/ugovori, 159 testova** |

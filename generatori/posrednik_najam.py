@@ -4,7 +4,7 @@
 # Dva ugovora: Najam stanova (A-B) i Upravljanje kapacitetom (B-C)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, format_eur_s_rijecima, _escape
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _escape, u_lokativu
 
 
 def generiraj_ugovor_najam_ab(najmodavac, najmoprimac, nekretnina, podaci):
@@ -16,7 +16,7 @@ def generiraj_ugovor_najam_ab(najmodavac, najmoprimac, nekretnina, podaci):
     """
     try:
         datum_str = podaci.get('datum', date.today()).strftime("%d.%m.%Y.")
-        mjesto = _escape(podaci.get('mjesto', ''))
+        mjesto = _escape(u_lokativu(podaci.get('mjesto', '')))
         trajanje_mj = _escape(str(podaci.get('trajanje_mjeseci', '')))
         datum_pocetka = podaci.get('datum_pocetka')
         datum_pocetka_str = datum_pocetka.strftime("%d.%m.%Y.") if datum_pocetka else '__________'
@@ -324,7 +324,7 @@ def generiraj_ugovor_upravljanje_bc(davatelj, narucitelj, kapacitet, podaci):
     """
     try:
         datum_str = podaci.get('datum', date.today()).strftime("%d.%m.%Y.")
-        mjesto = _escape(podaci.get('mjesto', ''))
+        mjesto = _escape(u_lokativu(podaci.get('mjesto', '')))
         podrucje = _escape(podaci.get('podrucje_djelovanja', ''))
 
         bazni_kap = _escape(str(kapacitet.get('bazni_kapacitet', '')))

@@ -4,7 +4,7 @@
 # Zakon o kaznenom postupku (NN 152/08, 76/09, 80/11, 91/12, 143/12, 56/13, 145/13, 152/14, 70/17, 126/19)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, formatiraj_troskovnik, _rimski_broj as _rimski
+from pomocne import format_text, format_eur, formatiraj_troskovnik, _rimski_broj as _rimski, u_lokativu
 
 
 def generiraj_kaznenu_prijavu(prijavitelj, podaci):
@@ -79,7 +79,7 @@ def generiraj_kaznenu_prijavu(prijavitelj, podaci):
 
         # Potpis
         parts.append(
-            f"<div class='justified'>U {podaci.get('mjesto', '___________')}, dana {danas}</div>"
+            f"<div class='justified'>U {u_lokativu(podaci.get('mjesto', '___________'))}, dana {danas}</div>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PRIJAVITELJ</b></div>"
             f"</div>"
@@ -175,7 +175,7 @@ def generiraj_privatnu_tuzbu(tuzitelj, okrivljenik, podaci, troskovi_dict):
 
         # Potpis
         parts.append(
-            f"<div class='justified'>U {podaci.get('mjesto', '___________')}, dana {danas}</div>"
+            f"<div class='justified'>U {u_lokativu(podaci.get('mjesto', '___________'))}, dana {danas}</div>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PRIVATNI TUŽITELJ</b></div>"
             f"</div>"
@@ -320,7 +320,7 @@ def generiraj_zalbu_kaznena_presuda(zalitelj, podaci, troskovi_dict):
 
         # Potpis
         parts.append(
-            f"<div class='justified'>U {podaci.get('mjesto', '___________')}, dana {danas}</div>"
+            f"<div class='justified'>U {u_lokativu(podaci.get('mjesto', '___________'))}, dana {danas}</div>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>ŽALITELJ</b></div>"
             f"</div>"

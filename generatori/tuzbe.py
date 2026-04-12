@@ -2,7 +2,7 @@
 # GENERATORI: Tuzbe (parnicni postupak, brisovna tuzba)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import _escape, format_text, formatiraj_troskovnik, format_eur, format_eur_s_rijecima
+from pomocne import _escape, format_text, formatiraj_troskovnik, format_eur, format_eur_s_rijecima, u_lokativu
 
 
 def generiraj_tuzbu_pro(sud, zastupanje, tuzitelj, tuzenik, vps, vrsta, data, troskovi_dict):
@@ -77,7 +77,7 @@ def generiraj_brisovnu_tuzbu(sud, zastupanje, tuzitelj, tuzenik, nekretnina, pod
             f"<b>IV.</b> Nalaže se Tuženiku naknaditi trošak.</div>"
             f"{troskovnik_html}<br><br>"
             f'<table width="100%" border="0"><tr>'
-            f'<td width="50%" align="left">U {podaci_spora["mjesto"]}, dana {datum}</td>'
+            f'<td width="50%" align="left">U {u_lokativu(podaci_spora["mjesto"])}, dana {datum}</td>'
             f'<td width="50%" align="center"><b>TUŽITELJ</b><br><br><br>______________________</td></tr></table>'
         )
     except Exception as e:

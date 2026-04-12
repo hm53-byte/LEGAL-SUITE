@@ -2,7 +2,7 @@
 # GENERATORI: Zalbe
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, formatiraj_troskovnik
+from pomocne import format_text, formatiraj_troskovnik, u_lokativu
 
 
 def generiraj_zalbu_pro(sud_prvi, sud_drugi, stranke, podaci_o_presudi, razlozi, tekst_obrazlozenja, troskovnik):
@@ -19,7 +19,7 @@ def generiraj_zalbu_pro(sud_prvi, sud_drugi, stranke, podaci_o_presudi, razlozi,
         <div class='section-title'>I. OBRAZLOŽENJE</div><div class='justified'>{format_text(tekst_obrazlozenja)}</div>
         <div class='section-title'>II. PRIJEDLOG</div><div class='justified'>Slijedom navedenog, predlaže se da naslovni drugostupanjski sud ovu žalbu uvaži, pobijanu presudu ukine i predmet vrati prvostupanjskom sudu na ponovno suđenje.</div>
         {troskovnik_html}
-        <br><div class='justified'>U {podaci_o_presudi['mjesto']}, dana {danas}</div>
+        <br><div class='justified'>U {u_lokativu(podaci_o_presudi['mjesto'])}, dana {danas}</div>
         <div class='signature-row'>
         <div class='signature-block'><b>ŽALITELJ</b><br>(po punomoćniku)</div>
         </div>

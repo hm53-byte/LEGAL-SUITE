@@ -2,7 +2,7 @@
 # GENERATORI: Ugovori (prilagodeni, standardni, radno pravo)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, formatiraj_troskovnik, format_eur, _rimski_broj
+from pomocne import format_text, formatiraj_troskovnik, format_eur, _rimski_broj, u_lokativu, _padez_ime
 
 
 def generiraj_prilagodeni_ugovor(naslov, mjesto, datum, rok_vazenja, s1, s2, urbroj, struktura):
@@ -105,7 +105,7 @@ def generiraj_ugovor_standard(tip_ugovora, stranka1, stranka2, podaci, opcije, t
         trosak_prikaz = formatiraj_troskovnik(troskovi_dict) if troskovi_dict else ""
         return (
             f"<div class='header-doc'>{naslov}</div>"
-            f"<div class='doc-body'>Sklopljen u {podaci['mjesto']}, dana {datum}, između:</div>"
+            f"<div class='doc-body'>Sklopljen u {u_lokativu(podaci['mjesto'])}, dana {datum}, između:</div>"
             f"<div class='party-info'>1. <b>{u1}:</b><br>{stranka1}<br><br>2. <b>{u2}:</b><br>{stranka2}</div>"
             f"<div class='section-title'>Članak 1.</div>"
             f"<div class='doc-body'>{format_text(podaci['predmet_clanak'])}</div>"
@@ -141,7 +141,7 @@ def generiraj_ugovor_o_radu(poslodavac, radnik, podaci):
         )
         return f"""
         <div class='header-doc'>UGOVOR O RADU<br><span style='font-size: 12pt; font-weight: normal;'>{vrsta_tekst}</span></div>
-        <div class='justified'>Sklopljen u {podaci.get('mjesto_sklapanja', 'Zagrebu')}, dana {datum} godine, između:<br><br>1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>2. <b>RADNIK:</b><br>{radnik}</div>
+        <div class='justified'>Sklopljen u {u_lokativu(podaci.get('mjesto_sklapanja', 'Zagreb'))}, dana {datum} godine, između:<br><br>1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>2. <b>RADNIK:</b><br>{radnik}</div>
         <div class='section-title'>Članak 1. (Predmet i početak rada)</div><div class='justified'>Radnik počinje s radom dana <b>{podaci.get('datum_start', '_______')}</b>. {clanak_trajanje} {probni_rad_txt}</div>
         <div class='section-title'>Članak 2. (Mjesto i opis poslova)</div><div class='justified'>Radnik će obavljati poslove na radnom mjestu: <b>{podaci.get('naziv_radnog_mjesta', '_______')}</b>.<br><b>Opis poslova:</b> {podaci.get('opis_posla', 'Opisani u opisu radnog mjesta kod Poslodavca')}.<br>Mjesto rada je: {podaci.get('mjesto_rada', 'u sjedištu Poslodavca i na terenu po potrebi')}.</div>
         <div class='section-title'>Članak 3. (Radno vrijeme i odmori)</div><div class='justified'>Radnik će raditi u punom radnom vremenu od {podaci.get('radno_vrijeme', 40)} sati tjedno. Radnik ima pravo na dnevni odmor (stanku) u trajanju od 30 minuta.</div>
@@ -185,7 +185,7 @@ def generiraj_aneks_ugovora_o_radu(poslodavac, radnik, podaci):
             f"<div class='header-doc'>ANEKS UGOVORA O RADU<br>"
             f"<span style='font-size: 12pt; font-weight: normal;'>"
             f"(Dodatak Ugovoru o radu od {datum_osnovnog})</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {datum} godine, između:<br><br>"
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {datum} godine, između:<br><br>"
             f"1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>"
             f"2. <b>RADNIK:</b><br>{radnik}</div><br>",
             f"<div class='section-title'>Članak 1. (Predmet aneksa)</div>"
@@ -297,7 +297,7 @@ def generiraj_ugovor_rad_na_daljinu(poslodavac, radnik, podaci):
             f"<span style='font-size: 12pt; font-weight: normal;'>{vrsta_tekst}</span></div>",
             f"<div class='justified' style='font-size: 10pt;'>"
             f"ZAHTIJEVANA FORMA: PISANA (ZoR čl. 17 i 17.a)</div><br>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {datum} godine, između:<br><br>"
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {datum} godine, između:<br><br>"
             f"1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>"
             f"2. <b>RADNIK:</b><br>{radnik}</div><br>",
         ]
@@ -428,7 +428,7 @@ def generiraj_sporazumni_prestanak(poslodavac, radnik, podaci):
             f"<div class='header-doc'>SPORAZUM O PRESTANKU UGOVORA O RADU</div>",
             f"<div class='justified' style='font-size: 10pt;'>"
             f"ZAHTIJEVANA FORMA: PISANA (ZoR čl. 113 – nevaljanost bez pisanog oblika)</div><br>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {datum} godine, između:<br><br>"
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {datum} godine, između:<br><br>"
             f"1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>"
             f"2. <b>RADNIK:</b><br>{radnik}</div><br>",
         ]
@@ -545,7 +545,7 @@ def generiraj_zabranu_natjecanja(poslodavac, radnik, podaci):
             f"<div class='header-doc'>UGOVOR O ZABRANI NATJECANJA</div>",
             f"<div class='justified' style='font-size: 10pt;'>"
             f"ZAHTIJEVANA FORMA: PISANA (ZoR čl. 101-105 – ništetnost bez pisanog oblika)</div><br>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {datum} godine, između:<br><br>"
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {datum} godine, između:<br><br>"
             f"1. <b>POSLODAVAC:</b><br>{poslodavac}<br><br>"
             f"2. <b>RADNIK:</b><br>{radnik}</div><br>",
         ]
@@ -637,12 +637,14 @@ def generiraj_potvrdu_o_zaposlenju(poslodavac, radnik, podaci):
         datum_od = podaci.get("datum_od", "________")
         datum_do = podaci.get("datum_do", "________")
         opis_poslova = podaci.get("opis_poslova", "________")
+        radnik_ime_gen = _padez_ime(podaci.get("radnik_ime", ""), "gen")
+        radnik_prikaz = f"<b>{radnik_ime_gen}</b>" if radnik_ime_gen else radnik
 
         parts = [
             f"<div class='party-info'><b>POSLODAVAC:</b><br>{poslodavac}</div><br>",
             f"<div class='header-doc'>POTVRDA O ZAPOSLENJU</div>",
             f"<div class='justified'>"
-            f"Potvrđuje se da je {radnik} bio/bila zaposlen/a kod gore navedenog Poslodavca "
+            f"Potvrđuje se da je {radnik_prikaz} bio/bila zaposlen/a kod gore navedenog Poslodavca "
             f"u razdoblju od <b>{datum_od}</b> do <b>{datum_do}</b> na poslovima: "
             f"<b>{opis_poslova}</b>.</div><br>",
             f"<div class='justified'>Potvrda se izdaje na zahtjev Radnika u svrhu predočavanja "

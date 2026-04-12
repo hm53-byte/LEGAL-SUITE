@@ -4,7 +4,7 @@
 # Sporazumni raskid
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj
+from pomocne import format_text, format_eur, format_eur_s_rijecima, _rimski_broj, u_lokativu
 
 
 def generiraj_darovanje(darovatelj, obdarenik, podaci):
@@ -41,7 +41,7 @@ def generiraj_darovanje(darovatelj, obdarenik, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             f"ZAHTIJEVANA FORMA: {forma_tekst}</div>",
             "<div class='header-doc'>UGOVOR O DAROVANJU</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. DAROVATELJ:</b><br>{darovatelj}</div>",
             f"<div class='party-info'><b>2. OBDARENIK:</b><br>{obdarenik}</div><br>",
         ]
@@ -127,7 +127,7 @@ def generiraj_darovanje(darovatelj, obdarenik, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Završne odredbe)</div>"
             f"<div class='justified'>Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se "
-            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22), "
+            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23), "
             f"posebice odredbe o ugovoru o darovanju (čl. 479.-498.).<br><br>"
             f"Ovaj Ugovor sastavljen je u potrebnom broju primjeraka.</div><br>"
         )
@@ -184,7 +184,7 @@ def generiraj_cesiju(cedent, cesionar, podaci):
             "<div class='header-doc'>UGOVOR O CESIJI<br>"
             "<span style='font-size: 12pt; font-weight: normal;'>"
             "(Prijenos tražbine)</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. CEDENT (ustupatelj tražbine):</b><br>{cedent}</div>",
             f"<div class='party-info'><b>2. CESIONAR (primatelj tražbine):</b><br>{cesionar}</div><br>",
         ]
@@ -262,7 +262,7 @@ def generiraj_cesiju(cedent, cesionar, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Završne odredbe)</div>"
             f"<div class='justified'>Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se "
-            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22), "
+            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23), "
             f"posebice odredbe o ustupanju tražbine (čl. 80.-89.).<br><br>"
             f"Ovaj Ugovor sastavljen je u 3 (tri) istovjetna primjerka — po jedan za svaku ugovornu stranu "
             f"te jedan za dostavu dužniku.</div><br>"
@@ -302,7 +302,7 @@ def generiraj_kompenzaciju(strana_a, strana_b, podaci):
             "<div class='header-doc'>SPORAZUM O KOMPENZACIJI<br>"
             "<span style='font-size: 12pt; font-weight: normal;'>"
             "(Prijeboj)</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. STRANA A:</b><br>{strana_a}</div>",
             f"<div class='party-info'><b>2. STRANA B:</b><br>{strana_b}</div><br>",
         ]
@@ -414,7 +414,7 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             f"ZAHTIJEVANA FORMA: {forma_tekst}</div>",
             "<div class='header-doc'>UGOVOR O JAMSTVU</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. VJEROVNIK:</b><br>{vjerovnik}</div>",
             f"<div class='party-info'><b>2. JAMAC:</b><br>{jamac}</div><br>",
         ]
@@ -491,7 +491,7 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Završne odredbe)</div>"
             f"<div class='justified'>Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se "
-            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22), "
+            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23), "
             f"posebice odredbe o jamstvu (čl. 104.-126.).<br><br>"
             f"Ovaj Ugovor sastavljen je u 3 (tri) istovjetna primjerka.</div><br>"
         )
@@ -547,7 +547,7 @@ def generiraj_ugovor_o_gradenju(narucitelj, izvodac, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             "ZAHTIJEVANA FORMA: PISANA (ZOO čl. 620 — ništetnost bez pisanog oblika)</div>",
             "<div class='header-doc'>UGOVOR O GRAĐENJU</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. NARUČITELJ (investitor):</b><br>{narucitelj}</div>",
             f"<div class='party-info'><b>2. IZVOĐAČ:</b><br>{izvodac}</div><br>",
         ]
@@ -650,7 +650,7 @@ def generiraj_ugovor_o_gradenju(narucitelj, izvodac, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Završne odredbe)</div>"
             f"<div class='justified'>Na sva pitanja koja nisu uređena ovim Ugovorom primjenjuju se "
-            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22), "
+            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23), "
             f"posebice odredbe o ugovoru o građenju (čl. 620.-636.), te odredbe Zakona o gradnji.<br><br>"
             f"Ovaj Ugovor sastavljen je u 4 (četiri) istovjetna primjerka, po dva za svaku ugovornu stranu.</div><br>"
         )
@@ -700,7 +700,7 @@ def generiraj_licenciju(davatelj, stjecatelj, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             "ZAHTIJEVANA FORMA: PISANA</div>",
             "<div class='header-doc'>UGOVOR O LICENCIJI</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. DAVATELJ LICENCIJE (licensor):</b><br>{davatelj}</div>",
             f"<div class='party-info'><b>2. STJECATELJ LICENCIJE (licencijat):</b><br>{stjecatelj}</div><br>",
         ]
@@ -864,7 +864,7 @@ def generiraj_posredovanje(posrednik, nalogodavac, podaci):
             "<div class='header-doc'>UGOVOR O POSREDOVANJU<br>"
             "<span style='font-size: 12pt; font-weight: normal;'>"
             "u prometu nekretnina</span></div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. POSREDNIK:</b><br>{posrednik}"
         ]
         if rjesenje_hgk:
@@ -1011,7 +1011,7 @@ def generiraj_sporazumni_raskid(strana1, strana2, podaci):
             "border: 1px solid black; padding: 8px; margin-bottom: 20px;'>"
             f"ZAHTIJEVANA FORMA: {forma_tekst}</div>",
             "<div class='header-doc'>SPORAZUM O RASKIDU UGOVORA</div>",
-            f"<div class='justified'>Sklopljen u {mjesto}, dana {danas} godine, između:</div><br>",
+            f"<div class='justified'>Sklopljen u {u_lokativu(mjesto)}, dana {danas} godine, između:</div><br>",
             f"<div class='party-info'><b>1. STRANA:</b><br>{strana1}</div>",
             f"<div class='party-info'><b>2. STRANA:</b><br>{strana2}</div><br>",
         ]
@@ -1083,7 +1083,7 @@ def generiraj_sporazumni_raskid(strana1, strana2, podaci):
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Završne odredbe)</div>"
             f"<div class='justified'>Na sva pitanja koja nisu uređena ovim Sporazumom primjenjuju se "
-            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22), "
+            f"odredbe Zakona o obveznim odnosima (NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22, 155/23), "
             f"posebice odredbe o raskidu ugovora (čl. 327.-332.).<br><br>"
             f"Ovaj Sporazum sastavljen je u 2 (dva) istovjetna primjerka, po jedan za svaku ugovornu stranu.</div><br>"
         )

@@ -212,6 +212,7 @@ def _render_radno_pravo():
 
 
 def _render_ugovor_o_radu():
+    napuni_primjerom('ugovor_o_radu', '')
     c1, c2 = st.columns(2)
     p, _, _ = unos_stranke("POSLODAVAC", "p")
     r, _, _ = unos_stranke("RADNIK", "r")
@@ -236,12 +237,12 @@ def _render_ugovor_o_radu():
     if podaci['probni_rad']:
         podaci['probni_rad_mj'] = c_prob.number_input("Trajanje (mjeseci)", 1, 6, 3)
     podaci['godisnji_odmor'] = c_go.number_input("Godišnji odmor (dana)", value=24)
-    podaci['naziv_radnog_mjesta'] = st.text_input("Radno mjesto")
-    podaci['opis_posla'] = st.text_area("Opis poslova (kratko)")
-    podaci['mjesto_rada'] = st.text_input("Mjesto rada", "sjedište Poslodavca")
+    podaci['naziv_radnog_mjesta'] = st.text_input("Radno mjesto", key="ur_naziv_radnog_mjesta")
+    podaci['opis_posla'] = st.text_area("Opis poslova (kratko)", key="ur_opis_posla")
+    podaci['mjesto_rada'] = st.text_input("Mjesto rada", "sjedište Poslodavca", key="ur_mjesto_rada")
     c_sat, c_pla = st.columns(2)
     podaci['radno_vrijeme'] = c_sat.number_input("Tjedno radno vrijeme (sati)", value=40)
-    podaci['bruto_placa'] = c_pla.number_input("Bruto plaća (EUR)")
+    podaci['bruto_placa'] = c_pla.number_input("Bruto plaća (EUR)", key="ur_bruto_placa")
     podaci['datum_start'] = datum_start.strftime('%d.%m.%Y.')
     podaci['mjesto_sklapanja'] = mjesto_sklapanja
 
@@ -460,6 +461,7 @@ def _render_potvrda_o_zaposlenju():
         'datum_do': datum_do.strftime('%d.%m.%Y.'),
         'opis_poslova': opis_poslova,
         'mjesto': mjesto,
+        'radnik_ime': st.session_state.get('pz_r_ime', ''),
     }
 
     if st.button("Generiraj potvrdu", type="primary", key="pz_btn"):

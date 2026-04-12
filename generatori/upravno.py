@@ -3,7 +3,7 @@
 # Pravni temelj: ZUP, ZUS, ZPPI, Ustav RH
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, format_eur
+from pomocne import format_text, format_eur, u_lokativu
 
 
 def generiraj_zalbu_zup(zalitelj, podaci):
@@ -95,7 +95,7 @@ def generiraj_zalbu_zup(zalitelj, podaci):
 
         # Potpis
         parts.append(
-            f"<br><div class='justified'>U {mjesto}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>ŽALITELJ</b><br>(vlastoručni potpis)</div>"
             f"</div>"
@@ -221,7 +221,7 @@ def generiraj_tuzbu_zus(tuzitelj, tuzenik_tijelo, podaci):
 
         # Potpis
         parts.append(
-            f"<br><div class='justified'>U {mjesto}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>TUŽITELJ</b><br>(vlastoručni potpis)</div>"
             f"</div>"
@@ -306,7 +306,7 @@ def generiraj_zahtjev_informacije(podnositelj, podaci):
 
         # Potpis
         parts.append(
-            f"<br><div class='justified'>U {mjesto}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PODNOSITELJ ZAHTJEVA</b><br>(vlastoručni potpis)</div>"
             f"</div>"
@@ -402,7 +402,7 @@ def generiraj_prigovor_predstavku(podnositelj, podaci):
 
         # Potpis
         parts.append(
-            f"<br><div class='justified'>U {mjesto}, dana {danas}</div><br>"
+            f"<br><div class='justified'>U {u_lokativu(mjesto)}, dana {danas}</div><br>"
             f"<div class='signature-row'>"
             f"<div class='signature-block'><b>PODNOSITELJ</b><br>(vlastoručni potpis)</div>"
             f"</div>"

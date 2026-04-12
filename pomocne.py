@@ -339,6 +339,41 @@ def _deklinaj_token_ime(token, idx):
     return t
 
 
+# =============================================================================
+# LOKATIV GRADOVA — "u Zagrebu", "pred Splitskim sudom"
+# =============================================================================
+
+_LOKATIV_GRADOVA = {
+    "Zagreb":          "Zagrebu",
+    "Split":           "Splitu",
+    "Rijeka":          "Rijeci",
+    "Osijek":          "Osijeku",
+    "Zadar":           "Zadru",
+    "Pula":            "Puli",
+    "Slavonski Brod":  "Slavonskom Brodu",
+    "Karlovac":        "Karlovcu",
+    "Varaždin":        "Varaždinu",
+    "Šibenik":         "Šibeniku",
+    "Sisak":           "Sisku",
+    "Velika Gorica":   "Velikoj Gorici",
+    "Dubrovnik":       "Dubrovniku",
+    "Bjelovar":        "Bjelovaru",
+    "Vukovar":         "Vukovaru",
+    "Koprivnica":      "Koprivnici",
+    "Požega":          "Požegi",
+    "Čakovec":         "Čakovcu",
+    "Gospić":          "Gospiću",
+    "Virovitica":      "Virovitici",
+}
+
+
+def u_lokativu(grad):
+    """Vraća lokativni oblik naziva grada za 'u [grad]', 'Sklopljen u [grad]'.
+    Ako grad nije u rječniku, vraća nepromijenjeni string (sigurni fallback).
+    """
+    return _LOKATIV_GRADOVA.get(grad, grad)
+
+
 def _padez_ime(ime_prezime, padez="gen"):
     """
     Otprilike deklinira osobno ime i prezime na hrvatski.
@@ -907,12 +942,12 @@ PRIMJERI = {
     'zalba_presuda': {
         'opis': 'Žalba na presudu radi isplate - pogrešno utvrđeno činjenično stanje',
         'stranke': {
-            'tuzitelj': 'Ante Kovačević',
-            'tuzenik': 'Marko Novak',
+            'zal_tuzitelj': 'Ante Kovačević',
+            'zal_tuzenik': 'Marko Novak',
         },
         'podaci': {
-            'broj_presude': 'P-456/2024',
-            'mjesto': 'Zagreb',
+            'zal_broj_presude': 'P-456/2024',
+            'zal_mjesto': 'Zagreb',
         },
     },
     'ugovor_kupoprodaja': {
@@ -939,24 +974,29 @@ PRIMJERI = {
             'r_adresa': 'Savska 25, 10000 Zagreb',
         },
         'podaci': {
-            'naziv_radnog_mjesta': 'Pravni savjetnik',
-            'opis_posla': 'Pravno savjetovanje, izrada ugovora i pravnih mišljenja',
-            'mjesto_rada': 'sjedište Poslodavca',
-            'bruto_placa': 2000.0,
+            'ur_naziv_radnog_mjesta': 'Pravni savjetnik',
+            'ur_opis_posla': 'Pravno savjetovanje, izrada ugovora i pravnih mišljenja, '
+                             'zastupanje pred sudovima i tijelima uprave',
+            'ur_mjesto_rada': 'sjedište Poslodavca',
+            'ur_bruto_placa': 2000.0,
         },
     },
     'punomoc': {
         'opis': 'Posebna punomoć za zastupanje u parničnom postupku',
         'stranke': {
-            'pn_ime': 'Ivan Horvat',
-            'pn_oib': '12345678903',
-            'pn_adresa': 'Ilica 42, 10000 Zagreb',
+            'pm_v_ime': 'Ivan Horvat',
+            'pm_v_oib': '12345678903',
+            'pm_v_adresa': 'Ilica 42, 10000 Zagreb',
+            'pm_p_ime': 'Marko Novak, odvjetnik',
+            'pm_p_oib': '98765432101',
+            'pm_p_adresa': 'Ulica kralja Zvonimira 5, 10000 Zagreb',
         },
         'podaci': {
-            'opis_ovlastenja': 'Zastupanje u parničnom postupku pred Općinskim građanskim sudom u Zagrebu, '
-                               'poslovni broj P-123/2024, uključujući podnošenje tužbe, prisustvovanje ročištima, '
-                               'sklapanje nagodbe, podnošenje pravnih lijekova i poduzimanje svih pravnih radnji '
-                               'u postupku.',
+            'pm_opseg': 'Zastupanje u parničnom postupku pred Općinskim građanskim sudom u Zagrebu, '
+                        'poslovni broj P-123/2024, uključujući podnošenje tužbe, prisustvovanje ročištima, '
+                        'sklapanje nagodbe, podnošenje pravnih lijekova i poduzimanje svih pravnih radnji '
+                        'u postupku.',
+            'pm_mjesto': 'Zagreb',
         },
     },
     'trgovacko_drustveni': {

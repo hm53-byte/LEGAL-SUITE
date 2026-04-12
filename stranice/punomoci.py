@@ -2,7 +2,7 @@
 # STRANICA: Punomoc (opca i posebna)
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, zaglavlje_sastavljaca
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, zaglavlje_sastavljaca, napuni_primjerom
 from generatori.punomoci import generiraj_punomoc
 
 
@@ -10,6 +10,7 @@ def render_punomoci():
     st.header("Punomoć")
 
     zaglavlje_sastavljaca()
+    napuni_primjerom('punomoc', '')
 
     vrsta = st.radio(
         "Vrsta punomoći:",
@@ -23,7 +24,7 @@ def render_punomoci():
     with col2:
         punomocnik, _, _ = unos_stranke("PUNOMOĆNIK", "pm_p")
 
-    mjesto = st.text_input("Mjesto", "Zagreb")
+    mjesto = st.text_input("Mjesto", "Zagreb", key="pm_mjesto")
 
     podaci = {"mjesto": mjesto}
 
@@ -35,6 +36,7 @@ def render_punomoci():
             "Opis predmeta / opseg ovlaštenja",
             placeholder="Opišite predmet u kojem punomoćnik zastupa vlastodavca...",
             height=120,
+            key="pm_opseg",
         )
 
     if st.button("Generiraj punomoć", type="primary"):
