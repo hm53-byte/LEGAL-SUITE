@@ -519,12 +519,20 @@ Razvojni ciklusi se vode kao **Kandidati K1, K2, K3, ...** Svaki kandidat je arh
 
 **LOC**: 160 (helper + 88 call-site izmjena).
 
+#### K2 — Hermesov sync outbox (BRZ_MOZAK P2 hibrid ciklus, promote-an 2026-04-27)
+
+**Što**: offline-first PWA arhitektura kompatibilna s K1 audit lancem. Service Worker presretač + IndexedDB outbox + idempotency UUID; **generacija docx-a ostaje 100% server-side** (Python pure functions) jer port na JS bi razbio K1 deterministic guarantee. Klijent serijalizira formu u outbox kad offline; sync worker POST-a na Cloudflare Worker `/api/sync` koji validira UNIQUE constraint na `client_event_id`, prosljeđuje na Streamlit, i K1 chain link se računa server-side u istoj transakciji.
+
+**Status**: BRZ_MOZAK P2 ciklus zatvoren 7/7 USPJEH (UBOJICA 7/7 + SUDAC 7/7, delta 0). Vidi `GLAVNI_INZINJER/IDEJE/CIKLUS_K2_2026-04-27.md` (audit log) i `GLAVNI_INZINJER/IDEJE/Ideja_K2_Hermesov_sync_outbox.md` (implementacijski plan). **Implementacija nije pokrenuta** — preduvjeti: Supabase + CF Worker live deploy.
+
+**LOC procjena**: 665 (545 src + 120 test) = 11.7 dana solo dev rok.
+
 ### Roadmap
 
 Po dogovorenom prioritetu:
 
-- **K2 — PWA + Service Worker + IndexedDB** (sljedeće, BRZ_MOZAK P2 hibrid ciklus): offline-first arhitektura. Mora biti kompatibilna s K1 audit lancem (offline → online sync ne smije razbiti hash chain).
-- **K4 — Generator versioning registry**: već dijelom realizirano kroz K1 (`generators_registry.json`); preostaje JSON Schema validation per-generator (`schema_in`, `schema_out` polja).
+- **K2 implementacija** — kad cloud setup završen (Supabase + Stripe + CF Worker deploy)
+- **K4 — Generator versioning registry proširenje**: dodati `schema_in`/`schema_out` JSON Schema polja u postojeći `generators_registry.json`; per-generator validacija; sinergija s K2 (client-side IDB validation prije save-a u outbox).
 - **K1 faza 2 — Merkle root javno** (BACKLOG): aktivira se kad korporativni klijent zatraži external auditability.
 
 ### Auth migracija (planirano, blocker za K3 produkciju)
