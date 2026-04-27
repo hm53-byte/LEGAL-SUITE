@@ -2,7 +2,7 @@
 # STRANICA: Upravno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, napuni_primjerom
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, napuni_primjerom, audit_kwargs
 from generatori.upravno import (
     generiraj_zalbu_zup,
     generiraj_tuzbu_zus,
@@ -74,20 +74,20 @@ def _render_zalba_zup():
 
     st.markdown("---")
     if st.button("Generiraj žalbu (ZUP)", type="primary", key="zup_btn"):
-        doc = generiraj_zalbu_zup(
-            zalitelj,
-            {
-                'mjesto': mjesto,
-                'drugostupanjsko_tijelo': drugostupanjsko_tijelo,
-                'prvostupanjsko_tijelo': prvostupanjsko_tijelo,
-                'klasa': klasa,
-                'urbroj': urbroj,
-                'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
-                'razlozi': razlozi,
-                'zalbeni_prijedlog': zalbeni_prijedlog,
-            },
-        )
-        prikazi_dokument(doc, "Zalba_ZUP.docx", "Preuzmi dokument")
+        podaci = {
+            'mjesto': mjesto,
+            'drugostupanjsko_tijelo': drugostupanjsko_tijelo,
+            'prvostupanjsko_tijelo': prvostupanjsko_tijelo,
+            'klasa': klasa,
+            'urbroj': urbroj,
+            'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
+            'razlozi': razlozi,
+            'zalbeni_prijedlog': zalbeni_prijedlog,
+        }
+        doc = generiraj_zalbu_zup(zalitelj, podaci)
+        audit_input = {"zalitelj_html": zalitelj, "podaci": podaci}
+        prikazi_dokument(doc, "Zalba_ZUP.docx", "Preuzmi dokument",
+                         **audit_kwargs("zalba_zup", audit_input, "upravno"))
 
 
 def _render_tuzba_zus():
@@ -161,23 +161,26 @@ def _render_tuzba_zus():
 
     st.markdown("---")
     if st.button("Generiraj tužbu (ZUS)", type="primary", key="zus_btn"):
-        doc = generiraj_tuzbu_zus(
-            tuzitelj,
-            tuzenik_tijelo,
-            {
-                'mjesto': mjesto,
-                'sud': sud,
-                'klasa': klasa,
-                'urbroj': urbroj,
-                'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
-                'razlozi_nezakonitosti': razlozi_nezakonitosti,
-                'zahtjev_rasprava': zahtjev_rasprava,
-                'zahtjev_privremena_mjera': zahtjev_privremena_mjera,
-                'privremena_mjera_razlog': privremena_mjera_razlog,
-                'tuzbeni_zahtjev': tuzbeni_zahtjev,
-            },
-        )
-        prikazi_dokument(doc, "Tuzba_ZUS.docx", "Preuzmi dokument")
+        podaci = {
+            'mjesto': mjesto,
+            'sud': sud,
+            'klasa': klasa,
+            'urbroj': urbroj,
+            'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
+            'razlozi_nezakonitosti': razlozi_nezakonitosti,
+            'zahtjev_rasprava': zahtjev_rasprava,
+            'zahtjev_privremena_mjera': zahtjev_privremena_mjera,
+            'privremena_mjera_razlog': privremena_mjera_razlog,
+            'tuzbeni_zahtjev': tuzbeni_zahtjev,
+        }
+        doc = generiraj_tuzbu_zus(tuzitelj, tuzenik_tijelo, podaci)
+        audit_input = {
+            "tuzitelj_html": tuzitelj,
+            "tuzenik_tijelo": tuzenik_tijelo,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Tuzba_ZUS.docx", "Preuzmi dokument",
+                         **audit_kwargs("tuzba_zus", audit_input, "upravno"))
 
 
 def _render_zahtjev_informacije():
@@ -217,16 +220,16 @@ def _render_zahtjev_informacije():
 
     st.markdown("---")
     if st.button("Generiraj zahtjev za pristup informacijama", type="primary", key="zppi_btn"):
-        doc = generiraj_zahtjev_informacije(
-            podnositelj,
-            {
-                'mjesto': mjesto,
-                'tijelo_javne_vlasti': tijelo_javne_vlasti,
-                'opis_informacije': opis_informacije,
-                'nacin_pristupa': nacin_pristupa,
-            },
-        )
-        prikazi_dokument(doc, "Zahtjev_informacije.docx", "Preuzmi dokument")
+        podaci = {
+            'mjesto': mjesto,
+            'tijelo_javne_vlasti': tijelo_javne_vlasti,
+            'opis_informacije': opis_informacije,
+            'nacin_pristupa': nacin_pristupa,
+        }
+        doc = generiraj_zahtjev_informacije(podnositelj, podaci)
+        audit_input = {"podnositelj_html": podnositelj, "podaci": podaci}
+        prikazi_dokument(doc, "Zahtjev_informacije.docx", "Preuzmi dokument",
+                         **audit_kwargs("zahtjev_informacije", audit_input, "upravno"))
 
 
 def _render_prigovor_predstavka():
@@ -292,19 +295,19 @@ def _render_prigovor_predstavka():
 
     st.markdown("---")
     if st.button("Generiraj prigovor / predstavku", type="primary", key="pp_btn"):
-        doc = generiraj_prigovor_predstavku(
-            podnositelj,
-            {
-                'mjesto': mjesto,
-                'tijelo': tijelo,
-                'celnik_tijela': celnik_tijela,
-                'opis_problema': opis_problema,
-                'sluzbenici': sluzbenici,
-                'klasa_predmeta': klasa_predmeta,
-                'tip': tip,
-            },
-        )
-        prikazi_dokument(doc, "Prigovor_predstavka.docx", "Preuzmi dokument")
+        podaci = {
+            'mjesto': mjesto,
+            'tijelo': tijelo,
+            'celnik_tijela': celnik_tijela,
+            'opis_problema': opis_problema,
+            'sluzbenici': sluzbenici,
+            'klasa_predmeta': klasa_predmeta,
+            'tip': tip,
+        }
+        doc = generiraj_prigovor_predstavku(podnositelj, podaci)
+        audit_input = {"podnositelj_html": podnositelj, "podaci": podaci}
+        prikazi_dokument(doc, "Prigovor_predstavka.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"upravno_{tip}", audit_input, "upravno"))
 
 
 def render_upravno():
