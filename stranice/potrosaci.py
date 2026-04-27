@@ -2,7 +2,7 @@
 # STRANICA: Zastita potrosaca (Consumer protection)
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, audit_kwargs
 from generatori.potrosaci import (
     generiraj_reklamaciju,
     generiraj_jednostrani_raskid,
@@ -59,21 +59,21 @@ def _render_reklamacija():
 
     st.markdown("---")
     if st.button("Generiraj reklamaciju", type="primary", key="rek_btn"):
-        doc = generiraj_reklamaciju(
-            potrosac,
-            {
-                "mjesto": mjesto,
-                "trgovac_naziv": trgovac_naziv,
-                "trgovac_adresa": trgovac_adresa,
-                "datum_kupnje": datum_kupnje.strftime("%d.%m.%Y."),
-                "broj_racuna": broj_racuna,
-                "opis_proizvoda": opis_proizvoda,
-                "opis_nedostatka": opis_nedostatka,
-                "zahtjev": zahtjev,
-                "cijena": cijena,
-            },
-        )
-        prikazi_dokument(doc, "Reklamacija.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": mjesto,
+            "trgovac_naziv": trgovac_naziv,
+            "trgovac_adresa": trgovac_adresa,
+            "datum_kupnje": datum_kupnje.strftime("%d.%m.%Y."),
+            "broj_racuna": broj_racuna,
+            "opis_proizvoda": opis_proizvoda,
+            "opis_nedostatka": opis_nedostatka,
+            "zahtjev": zahtjev,
+            "cijena": cijena,
+        }
+        doc = generiraj_reklamaciju(potrosac, podaci)
+        audit_input = {"potrosac_html": potrosac, "podaci": podaci}
+        prikazi_dokument(doc, "Reklamacija.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"reklamacija_{zahtjev}", audit_input, "potrosaci"))
 
 
 def _render_jednostrani_raskid():
@@ -109,19 +109,19 @@ def _render_jednostrani_raskid():
 
     st.markdown("---")
     if st.button("Generiraj izjavu o raskidu", type="primary", key="jr_btn"):
-        doc = generiraj_jednostrani_raskid(
-            potrosac,
-            {
-                "mjesto": mjesto,
-                "trgovac_naziv": trgovac_naziv,
-                "trgovac_adresa": trgovac_adresa,
-                "datum_narudzbe": datum_narudzbe.strftime("%d.%m.%Y."),
-                "datum_isporuke": datum_isporuke.strftime("%d.%m.%Y."),
-                "opis_proizvoda": opis_proizvoda,
-                "broj_narudzbe": broj_narudzbe,
-            },
-        )
-        prikazi_dokument(doc, "Jednostrani_raskid.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": mjesto,
+            "trgovac_naziv": trgovac_naziv,
+            "trgovac_adresa": trgovac_adresa,
+            "datum_narudzbe": datum_narudzbe.strftime("%d.%m.%Y."),
+            "datum_isporuke": datum_isporuke.strftime("%d.%m.%Y."),
+            "opis_proizvoda": opis_proizvoda,
+            "broj_narudzbe": broj_narudzbe,
+        }
+        doc = generiraj_jednostrani_raskid(potrosac, podaci)
+        audit_input = {"potrosac_html": potrosac, "podaci": podaci}
+        prikazi_dokument(doc, "Jednostrani_raskid.docx", "Preuzmi dokument",
+                         **audit_kwargs("jednostrani_raskid", audit_input, "potrosaci"))
 
 
 def _render_prijava_inspekciji():
@@ -200,7 +200,9 @@ def _render_prijava_inspekciji():
             "prilozi": [p for p in st.session_state.pi_prilozi if p.strip()],
         }
         doc = generiraj_prijavu_inspekciji(podnositelj, podaci)
-        prikazi_dokument(doc, "Prijava_inspekciji.docx", "Preuzmi dokument")
+        audit_input = {"podnositelj_html": podnositelj, "podaci": podaci}
+        prikazi_dokument(doc, "Prijava_inspekciji.docx", "Preuzmi dokument",
+                         **audit_kwargs("prijava_inspekciji", audit_input, "potrosaci"))
 
 
 def render_potrosaci():
