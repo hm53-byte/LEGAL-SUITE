@@ -406,78 +406,80 @@ _TEZINA_BOJA = {
 # Zakonski rokovi se ne prikazuju ovdje — oni su dio konkretnog dokumenta i provjeravaju
 # se u zakonu ili kod odvjetnika; app ih ne sugerira u UI-u.
 _PODRUCJA_DETALJI = {
+    # Format svake stavke: (naslov, opis, modul_id) — modul_id je kljuc u _MODULI
+    # za direktnu navigaciju iz vodica (A3 fix 2026-04-27).
     "Ovršno pravo": {
         "dokumenti": [
-            ("Opomena pred tužbu", "Pisana opomena dužniku."),
-            ("Ovršni prijedlog", "Prijedlog za ovrhu na temelju vjerodostojne ili ovršne isprave."),
-            ("Kalkulator kamata", "Izračun zakonskih zateznih kamata (informativni alat, ne pravni savjet)."),
+            ("Opomena pred tužbu", "Pisana opomena dužniku.", "Opomena"),
+            ("Ovršni prijedlog", "Prijedlog za ovrhu na temelju vjerodostojne ili ovršne isprave.", "Ovršno pravo"),
+            ("Kalkulator kamata", "Izračun zakonskih zateznih kamata (informativni alat, ne pravni savjet).", "Kamate"),
         ],
     },
     "Tužbe i parnica": {
         "dokumenti": [
-            ("Tužba za isplatu", "Tužbeni zahtjev za novčanu obvezu."),
-            ("Tužba za naknadu štete", "Tužbeni zahtjev za materijalnu/nematerijalnu štetu."),
+            ("Tužba za isplatu", "Tužbeni zahtjev za novčanu obvezu.", "Tužbe"),
+            ("Tužba za naknadu štete", "Tužbeni zahtjev za materijalnu/nematerijalnu štetu.", "Tužbe"),
         ],
     },
     "Žalbe (ZPP)": {
         "dokumenti": [
-            ("Žalba na presudu", "Pravni lijek protiv prvostupanjske presude (ZPP)."),
-            ("Žalba na rješenje", "Pravni lijek protiv prvostupanjskog rješenja (ZPP)."),
+            ("Žalba na presudu", "Pravni lijek protiv prvostupanjske presude (ZPP).", "Žalbe"),
+            ("Žalba na rješenje", "Pravni lijek protiv prvostupanjskog rješenja (ZPP).", "Žalbe"),
         ],
     },
     "Upravno pravo": {
         "dokumenti": [
-            ("Žalba na rješenje (ZUP)", "Pravni lijek protiv prvostupanjskog upravnog rješenja."),
-            ("Tužba upravnom sudu (ZUS)", "Tužba protiv drugostupanjskog upravnog rješenja."),
-            ("Zahtjev za pristup informacijama (ZPPI)", "Zahtjev tijelu javne vlasti."),
+            ("Žalba na rješenje (ZUP)", "Pravni lijek protiv prvostupanjskog upravnog rješenja.", "Upravno pravo"),
+            ("Tužba upravnom sudu (ZUS)", "Tužba protiv drugostupanjskog upravnog rješenja.", "Upravno pravo"),
+            ("Zahtjev za pristup informacijama (ZPPI)", "Zahtjev tijelu javne vlasti.", "Upravno pravo"),
         ],
     },
     "Ugovori": {
         "dokumenti": [
-            ("Građanski ugovori", "Kupoprodaja, najam, djelo, zajam, NDA."),
-            ("Radni ugovori", "Ugovor o radu, aneks, rad na daljinu."),
-            ("Obvezno pravo", "Darovanje, cesija, kompenzacija, jamstvo."),
+            ("Građanski ugovori", "Kupoprodaja, najam, djelo, zajam, NDA.", "Ugovori"),
+            ("Radni ugovori", "Ugovor o radu, aneks, rad na daljinu.", "Ugovori"),
+            ("Obvezno pravo", "Darovanje, cesija, kompenzacija, jamstvo.", "Obvezno pravo"),
         ],
     },
     "Kazneno pravo": {
         "dokumenti": [
-            ("Kaznena prijava", "Prijava državnom odvjetništvu."),
-            ("Privatna tužba", "Privatna tužba u kaznenom postupku."),
+            ("Kaznena prijava", "Prijava državnom odvjetništvu.", "Kazneno pravo"),
+            ("Privatna tužba", "Privatna tužba u kaznenom postupku.", "Kazneno pravo"),
         ],
     },
     "Zemljišne knjige": {
         "dokumenti": [
-            ("Uknjižba vlasništva", "Tabularna isprava za upis vlasništva."),
-            ("Hipoteka", "Upis ili brisanje hipoteke."),
-            ("Brisovna tužba", "Tužba radi brisanja upisa u zemljišne knjige."),
+            ("Uknjižba vlasništva", "Tabularna isprava za upis vlasništva.", "Zemljišne knjige"),
+            ("Hipoteka", "Upis ili brisanje hipoteke.", "Zemljišne knjige"),
+            ("Brisovna tužba", "Tužba radi brisanja upisa u zemljišne knjige.", "Zemljišne knjige"),
         ],
     },
     "Zaštita potrošača": {
         "dokumenti": [
-            ("Reklamacija", "Pisani prigovor trgovcu."),
-            ("Jednostrani raskid online kupnje", "Obavijest o raskidu ugovora sklopljenog na daljinu."),
-            ("Prijava inspekciji", "Prijava nadležnoj inspekciji."),
+            ("Reklamacija", "Pisani prigovor trgovcu.", "Zaštita potrošača"),
+            ("Jednostrani raskid online kupnje", "Obavijest o raskidu ugovora sklopljenog na daljinu.", "Zaštita potrošača"),
+            ("Prijava inspekciji", "Prijava nadležnoj inspekciji.", "Zaštita potrošača"),
         ],
     },
     "Trgovačko pravo": {
         "dokumenti": [
-            ("Društveni ugovor", "Osnivački akt d.o.o."),
-            ("Prijenos udjela", "Ugovor o prodaji ili darovanju udjela."),
-            ("NDA", "Ugovor o povjerljivosti."),
+            ("Društveni ugovor", "Osnivački akt d.o.o.", "Trgovačko pravo"),
+            ("Prijenos udjela", "Ugovor o prodaji ili darovanju udjela.", "Trgovačko pravo"),
+            ("NDA", "Ugovor o povjerljivosti.", "Trgovačko pravo"),
         ],
     },
     "Obiteljsko pravo": {
         "dokumenti": [
-            ("Sporazumni razvod", "Sporazumni prijedlog za razvod braka."),
-            ("Tužba za razvod", "Tužbeni zahtjev za razvod braka."),
-            ("Bračni ugovor / skrb / uzdržavanje", "Reguliranje imovinskih odnosa, skrbi i uzdržavanja."),
+            ("Sporazumni razvod", "Sporazumni prijedlog za razvod braka.", "Obiteljsko pravo"),
+            ("Tužba za razvod", "Tužbeni zahtjev za razvod braka.", "Obiteljsko pravo"),
+            ("Bračni ugovor / skrb / uzdržavanje", "Reguliranje imovinskih odnosa, skrbi i uzdržavanja.", "Obiteljsko pravo"),
         ],
     },
     "Stečajno pravo": {
         "dokumenti": [
-            ("Osobni stečaj", "Prijedlog za otvaranje postupka osobnog stečaja."),
-            ("Prijedlog za stečaj (pravne osobe)", "Prijedlog za otvaranje stečajnog postupka."),
-            ("Prijava tražbine", "Prijava vjerovnika u stečajnom postupku."),
+            ("Osobni stečaj", "Prijedlog za otvaranje postupka osobnog stečaja.", "Stečajno pravo"),
+            ("Prijedlog za stečaj (pravne osobe)", "Prijedlog za otvaranje stečajnog postupka.", "Stečajno pravo"),
+            ("Prijava tražbine", "Prijava vjerovnika u stečajnom postupku.", "Stečajno pravo"),
         ],
     },
 }
@@ -563,26 +565,38 @@ def _render_pocetna():
         detalji = _VODIC_DETALJI[odabir]
         st.markdown(f"### Tipovi dokumenata: {odabir}")
 
-        for naslov, opis in detalji["dokumenti"]:
+        st.caption("Kliknite na dokument za otvaranje pripadajućeg modula.")
+        for idx, item in enumerate(detalji["dokumenti"]):
+            # Backwards-compat: stari format (naslov, opis); novi (naslov, opis, modul)
+            if len(item) == 3:
+                naslov, opis, modul = item
+            else:
+                naslov, opis = item
+                modul = None
+
+            # Render: opis kao info iznad, gumb s naslovom kao primary action
             st.markdown(
-                f"<div style='background:white;padding:1rem 1.2rem;border-radius:12px;"
-                f"border-left:3px solid #162D50;margin-bottom:0.6rem;"
+                f"<div style='background:white;padding:0.9rem 1.1rem 0.5rem;border-radius:12px;"
+                f"border-left:3px solid #162D50;margin-bottom:0.4rem;"
                 f"box-shadow:0 2px 8px rgba(22,45,80,0.06);'>"
-                f"<b style='color:#162D50;font-size:0.9rem;'>{naslov}</b><br>"
-                f"<span style='color:#3D4A5C;font-size:0.85rem;line-height:1.6;'>{opis}</span>"
+                f"<span style='color:#3D4A5C;font-size:0.82rem;line-height:1.5;'>{opis}</span>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
-
-        # Gumbi za navigaciju
-        kat_data = next((k for k in _VODIC_KATEGORIJE if k["naslov"] == odabir), None)
-        if kat_data:
-            btn_cols = st.columns(len(kat_data["moduli"]))
-            for col, modul in zip(btn_cols, kat_data["moduli"]):
-                with col:
-                    if st.button(f"Otvori: {modul}", key=f"_vn_{modul}", type="primary", use_container_width=True):
-                        _navigate_to(modul)
-                        st.rerun()
+            if modul and modul in _MODULI:
+                if st.button(
+                    f"→ {naslov}",
+                    key=f"_vd_{odabir}_{idx}",
+                    use_container_width=True,
+                ):
+                    _navigate_to(modul)
+                    st.rerun()
+            else:
+                # Fallback ako modul nije specificiran ili ne postoji u _MODULI
+                st.markdown(
+                    f"<b style='color:#162D50;font-size:0.9rem;'>{naslov}</b>",
+                    unsafe_allow_html=True,
+                )
 
         # Auto-scroll: samo kad se odabir upravo promijenio
         _prev_odabir = st.session_state.get("_vodic_odabir_prev", "")
