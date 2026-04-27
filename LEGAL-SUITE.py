@@ -23,7 +23,6 @@ from stranice import (
     render_stecajno,
     render_potrosaci,
     render_pristojbe,
-    render_epredmet,
     render_eoglasna,
     render_kalendar,
     render_nn_pretraga,
@@ -112,7 +111,6 @@ _MODULI = {
     "Kazneno pravo":     {"render": render_kazneno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Kaznena prijava, privatna tužba, žalba"},
     "Stečajno pravo":    {"render": render_stecajno,    "grupa": "Sudski postupci", "docx": True,  "opis": "Osobni stečaj, prijedlog, prijava tražbine"},
     "Zaštita potrošača": {"render": render_potrosaci,   "grupa": "Sudski postupci", "docx": True,  "opis": "Reklamacija, raskid online kupnje"},
-    "e-Predmet":         {"render": render_epredmet,    "grupa": "Alati",  "docx": False, "opis": "Praćenje sudskih predmeta"},
     "Sudske objave":     {"render": render_eoglasna,    "grupa": "Alati",  "docx": False, "opis": "e-Oglasna ploča sudova"},
     "Propisi":           {"render": render_nn_pretraga, "grupa": "Alati",  "docx": False, "opis": "Narodne novine, baza zakona"},
     "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Ročišta, rokovi, podsjetnici"},
@@ -608,12 +606,11 @@ def _render_pocetna():
     st.markdown("---")
     st.markdown("##### Alati")
     _alati = [
-        ("e-Predmet", "Pracenje sudskih predmeta"),
         ("Sudske objave", "e-Oglasna ploca sudova"),
         ("Propisi", "Narodne novine, baza zakona"),
         ("Kalendar", "Rocista, rokovi, podsjetnici"),
     ]
-    cols = st.columns(4)
+    cols = st.columns(3)
     for col, (modul, opis) in zip(cols, _alati):
         with col:
             if st.button(modul, key=f"_alat_{modul}", use_container_width=True):

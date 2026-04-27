@@ -14,7 +14,6 @@ from stranice.kazneno import render_kazneno
 from stranice.stecajno import render_stecajno
 from stranice.potrosaci import render_potrosaci
 from stranice.pristojbe_stranica import render_pristojbe
-from stranice.epredmet import render_epredmet
 from stranice.eoglasna import render_eoglasna
 from stranice.kalendar import render_kalendar
 from stranice.nn_pretraga import render_nn_pretraga
