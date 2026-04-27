@@ -274,10 +274,17 @@ def _scroll_to_top():
     )
 
 def _scroll_to_element(css_selector):
-    """Injektira JS koji scrolla main container do specificnog elementa."""
+    """Injektira JS koji scrolla main container do specificnog elementa.
+
+    Koristi MutationObserver + 600ms timeout fallback jer Streamlit iframe
+    rerender ima varijabilan timing — element ponekad jos nije renderiran
+    300ms nakon st.rerun.
+    """
     import time
     components.html(
-        f"<script>setTimeout(function(){{"
+        f"<script>(function(){{"
+        f"var attempts=0;"
+        f"function tryScroll(){{"
         f"var target=parent.document.querySelector('{css_selector}');"
         f"var container=parent.document.querySelector('section.main');"
         f"if(target&&container){{"
@@ -285,8 +292,15 @@ def _scroll_to_element(css_selector):
         f"var cRect=container.getBoundingClientRect();"
         f"container.scrollTo({{top:container.scrollTop+(rect.top-cRect.top)-20,"
         f"behavior:'smooth'}});"
+        f"return true;"
         f"}}"
-        f"}},300);</script><!-- {time.time_ns()} -->",
+        f"return false;"
+        f"}}"
+        f"// Pokusaj odmah, pa 200ms i 600ms ako element jos nije renderiran"
+        f"if(tryScroll()) return;"
+        f"setTimeout(function(){{if(tryScroll()) return;"
+        f"setTimeout(tryScroll,400);}},200);"
+        f"}})();</script><!-- {time.time_ns()} -->",
         height=0,
     )
 
