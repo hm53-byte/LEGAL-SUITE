@@ -35,6 +35,7 @@
 | 06 | [Milestones](06_MILESTONES.md) | Faze 0-4 s KPI-jevima i decision gate-ima |
 | 07 | [Budući GOAT ciklusi](07_BUDUCI_GOAT_CIKLUSI.md) | Lista odluka koje treba formalno proći GOAT pipeline |
 | 08 | [Rizici](08_RIZICI_I_MITIGACIJE.md) | AZOP, AI Act 2026, nadripisarstvo, Polar.sh API churn |
+| **★** | [**FINISH**](FINISH.md) | **Pre-launch checklist + studentska prava + doktorat scenariji — glavni operativni dokument** |
 
 ---
 
