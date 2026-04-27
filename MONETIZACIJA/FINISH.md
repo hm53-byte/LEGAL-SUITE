@@ -52,6 +52,7 @@
 - [ ] **Email verifikacija** obvezna pri signupu
 - [ ] **Landing page copy** — bez "AI", bez "zamjena za odvjetnika", bez maglovitog "pravna pomoć"
 - [ ] **Welcome email** — kratak, bez bait-framing-a, link na vodič
+- [ ] **Pravopis + padeži review** cijele aplikacije — LanguageTool lokalno (`pip install language_tool_python`) za sve `.py` + `.md` fajlove; Hascheck (FER) kao backup za sumnjive dijelove; Word/LibreOffice spell-check na ~10 random generiranih `.docx` primjera kao final QA. Posebno provjeriti runtime padeže (`_padez_uloge`, `_padez_ime`, `u_lokativu`) s nestandardnim imenima (strana, ženska s `-ić`).
 
 #### Brand & komunikacija
 - [ ] **Vlastita domena** kupljena (`legalsuite.hr` ili sl. preko CARNet)
