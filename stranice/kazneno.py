@@ -2,7 +2,7 @@
 # STRANICA: Kazneno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, formatiraj_troskovnik, odabir_suda, unos_tocaka, napuni_primjerom
+from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, formatiraj_troskovnik, odabir_suda, unos_tocaka, napuni_primjerom, audit_kwargs
 from generatori.kazneno import (
     generiraj_kaznenu_prijavu,
     generiraj_privatnu_tuzbu,
@@ -62,18 +62,18 @@ def _render_kaznena_prijava():
 
     if st.button("Generiraj kaznenu prijavu", type="primary", key="kp_btn"):
         dokazi_lista = dok_lista
-        doc = generiraj_kaznenu_prijavu(
-            prijavitelj,
-            {
-                'nadlezno_tijelo': nadlezno_tijelo,
-                'osumnjicenik_tekst': osumnjicenik_tekst,
-                'clanak_kz': clanak_kz,
-                'opis_djela': opis_djela,
-                'dokazi': dokazi_lista,
-                'mjesto': mjesto,
-            },
-        )
-        prikazi_dokument(doc, "Kaznena_prijava.docx", "Preuzmi dokument")
+        podaci = {
+            'nadlezno_tijelo': nadlezno_tijelo,
+            'osumnjicenik_tekst': osumnjicenik_tekst,
+            'clanak_kz': clanak_kz,
+            'opis_djela': opis_djela,
+            'dokazi': dokazi_lista,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_kaznenu_prijavu(prijavitelj, podaci)
+        audit_input = {"prijavitelj_html": prijavitelj, "podaci": podaci}
+        prikazi_dokument(doc, "Kaznena_prijava.docx", "Preuzmi dokument",
+                         **audit_kwargs("kaznena_prijava", audit_input, "kazneno"))
 
 
 def _render_privatna_tuzba():
@@ -140,26 +140,30 @@ def _render_privatna_tuzba():
 
     if st.button("Generiraj privatnu tužbu", type="primary", key="pt_btn"):
         dokazi_lista = dok_lista_pt
-        doc = generiraj_privatnu_tuzbu(
-            tuzitelj,
-            okrivljenik,
-            {
-                'sud': sud,
-                'clanak_kz': clanak_kz,
-                'datum_djela': datum_djela.strftime('%d.%m.%Y.'),
-                'mjesto_djela': mjesto_djela,
-                'opis_djela': opis_djela,
-                'dokazi': dokazi_lista,
-                'kazneni_zahtjev': kazneni_zahtjev,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Privatna_tuzba.docx", "Preuzmi dokument")
+        podaci = {
+            'sud': sud,
+            'clanak_kz': clanak_kz,
+            'datum_djela': datum_djela.strftime('%d.%m.%Y.'),
+            'mjesto_djela': mjesto_djela,
+            'opis_djela': opis_djela,
+            'dokazi': dokazi_lista,
+            'kazneni_zahtjev': kazneni_zahtjev,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_privatnu_tuzbu(tuzitelj, okrivljenik, podaci, troskovnik)
+        audit_input = {
+            "tuzitelj_html": tuzitelj,
+            "okrivljenik_html": okrivljenik,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Privatna_tuzba.docx", "Preuzmi dokument",
+                         **audit_kwargs("privatna_tuzba", audit_input, "kazneno"))
 
 
 def _render_zalba_kaznena_presuda():
@@ -253,25 +257,29 @@ def _render_zalba_kaznena_presuda():
     st.markdown("---")
 
     if st.button("Generiraj žalbu", type="primary", key="zkp_btn"):
-        doc = generiraj_zalbu_kaznena_presuda(
-            zalitelj,
-            {
-                'sud_drugostupanjski': sud_drugostupanjski,
-                'sud_prvostupanjski': sud_prvostupanjski,
-                'poslovni_broj': poslovni_broj,
-                'datum_presude': datum_presude,
-                'izreka_presude': izreka_presude,
-                'razlozi': razlozi,
-                'zalbeni_prijedlog': zalbeni_prijedlog,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Zalba_kaznena_presuda.docx", "Preuzmi dokument")
+        podaci = {
+            'sud_drugostupanjski': sud_drugostupanjski,
+            'sud_prvostupanjski': sud_prvostupanjski,
+            'poslovni_broj': poslovni_broj,
+            'datum_presude': datum_presude,
+            'izreka_presude': izreka_presude,
+            'razlozi': razlozi,
+            'zalbeni_prijedlog': zalbeni_prijedlog,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_zalbu_kaznena_presuda(zalitelj, podaci, troskovnik)
+        audit_input = {
+            "zalitelj_html": zalitelj,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Zalba_kaznena_presuda.docx", "Preuzmi dokument",
+                         **audit_kwargs("zalba_kaznena_presuda", audit_input, "kazneno"))
 
 
 def render_kazneno():
