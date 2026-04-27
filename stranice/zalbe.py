@@ -2,7 +2,7 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe, napuni_primjerom
+from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe, napuni_primjerom, audit_kwargs
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
 
@@ -98,14 +98,24 @@ def render_zalbe():
             st.warning("Unesite poslovni broj presude.")
         if not obrazlozenje.strip():
             st.warning("Preporučljivo je unijeti obrazloženje žalbe.")
+        presuda = {
+            'broj': broj_presude,
+            'datum': datum_presude,
+            'opseg': opseg,
+            'mjesto': mjesto,
+        }
         doc_html = generiraj_zalbu_pro(
-            sud_prvi, sud_drugi, stranke,
-            {
-                'broj': broj_presude,
-                'datum': datum_presude,
-                'opseg': opseg,
-                'mjesto': mjesto,
-            },
+            sud_prvi, sud_drugi, stranke, presuda,
             razlozi_lista, obrazlozenje, troskovnik_data,
         )
-        prikazi_dokument(doc_html, "Zalba.docx", "Preuzmi dokument")
+        audit_input = {
+            "sud_prvi": sud_prvi,
+            "sud_drugi": sud_drugi,
+            "stranke": stranke,
+            "presuda": presuda,
+            "razlozi": razlozi_lista,
+            "obrazlozenje": obrazlozenje,
+            "troskovnik": troskovnik_data,
+        }
+        prikazi_dokument(doc_html, "Zalba.docx", "Preuzmi dokument",
+                         **audit_kwargs("zalba_presuda", audit_input, "zalbe"))

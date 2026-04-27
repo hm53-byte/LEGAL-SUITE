@@ -2,7 +2,7 @@
 # STRANICA: Punomoc (opca i posebna)
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, zaglavlje_sastavljaca, napuni_primjerom
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, zaglavlje_sastavljaca, napuni_primjerom, audit_kwargs
 from generatori.punomoci import generiraj_punomoc
 
 
@@ -43,4 +43,11 @@ def render_punomoci():
         vrsta_key = "opca" if "Opća" in vrsta else "posebna"
         doc = generiraj_punomoc(vrsta_key, vlastodavac, punomocnik, podaci)
         naziv = "Opca_punomoc.docx" if vrsta_key == "opca" else "Posebna_punomoc.docx"
-        prikazi_dokument(doc, naziv, "Preuzmi dokument")
+        audit_input = {
+            "vrsta_key": vrsta_key,
+            "vlastodavac_html": vlastodavac,
+            "punomocnik_html": punomocnik,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, naziv, "Preuzmi dokument",
+                         **audit_kwargs(f"punomoc_{vrsta_key}", audit_input, "punomoci"))

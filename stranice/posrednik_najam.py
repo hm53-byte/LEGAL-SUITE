@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------------
 import streamlit as st
 from datetime import date
-from pomocne import unos_stranke, prikazi_dokument, _escape
+from pomocne import unos_stranke, prikazi_dokument, _escape, audit_kwargs
 from generatori.posrednik_najam import (
     generiraj_ugovor_najam_ab,
     generiraj_ugovor_upravljanje_bc,
@@ -290,8 +290,23 @@ def render_posrednik_najam():
             "Ugovor o upravljanju (B-C)",
         ])
 
+        audit_input_ab = {
+            "stanodavac_html": a_html,
+            "posrednik_html": b_html,
+            "nekretnina": nekretnina,
+            "podaci": podaci_ab,
+        }
+        audit_input_bc = {
+            "posrednik_html": b_html,
+            "narucitelj_html": c_html,
+            "kapacitet": kapacitet,
+            "podaci": podaci_bc,
+        }
+
         with tab_dok_ab:
-            prikazi_dokument(doc_ab, "Ugovor_o_najmu_AB.docx", "Preuzmi ugovor A-B")
+            prikazi_dokument(doc_ab, "Ugovor_o_najmu_AB.docx", "Preuzmi ugovor A-B",
+                             **audit_kwargs("ugovor_najam_ab", audit_input_ab, "posrednik_najam"))
 
         with tab_dok_bc:
-            prikazi_dokument(doc_bc, "Ugovor_o_upravljanju_BC.docx", "Preuzmi ugovor B-C")
+            prikazi_dokument(doc_bc, "Ugovor_o_upravljanju_BC.docx", "Preuzmi ugovor B-C",
+                             **audit_kwargs("ugovor_upravljanje_bc", audit_input_bc, "posrednik_najam"))

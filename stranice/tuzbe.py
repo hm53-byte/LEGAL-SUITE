@@ -13,6 +13,7 @@ from pomocne import (
     unos_tocaka,
     napuni_primjerom,
     provjeri_zastaru,
+    audit_kwargs,
 )
 from generatori.tuzbe import generiraj_tuzbu_pro
 from pristojbe import pristojba_tuzba, odvjetnicka_nagrada_sastav
@@ -121,17 +122,26 @@ def render_tuzbe():
             st.warning("Unesite vrijednost predmeta spora (VPS) veću od 0.")
         if not cinjenice.strip():
             st.warning("Preporučljivo je unijeti činjenice spora.")
-        doc = generiraj_tuzbu_pro(
-            sud, zastupanje, t1, t2, vps, vrsta,
-            {
-                'cinjenice': cinjenice,
-                'dokazi': dokazi,
-                'datum_dospijeca': datum_dospijeca.strftime('%d.%m.%Y.'),
-            },
-            {
-                'stavka': trosak_sastav,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Tuzba.docx", "Preuzmi dokument")
+        spor = {
+            'cinjenice': cinjenice,
+            'dokazi': dokazi,
+            'datum_dospijeca': datum_dospijeca.strftime('%d.%m.%Y.'),
+        }
+        troskovnik = {
+            'stavka': trosak_sastav,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_tuzbu_pro(sud, zastupanje, t1, t2, vps, vrsta, spor, troskovnik)
+        audit_input = {
+            "sud": sud,
+            "zastupanje": zastupanje,
+            "tuzitelj_html": t1,
+            "tuzenik_html": t2,
+            "vps": vps,
+            "vrsta": vrsta,
+            "spor": spor,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Tuzba.docx", "Preuzmi dokument",
+                         **audit_kwargs("tuzba", audit_input, "tuzbe"))

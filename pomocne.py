@@ -704,8 +704,65 @@ def docx_opcije():
         return watermark, naslov_u_header
 
 
-def prikazi_dokument(doc_html, naziv_datoteke, label_preuzmi="Preuzmi"):
-    """Pomocna funkcija za prikaz dokumenta i download gumb (.docx format)."""
+def _audit_safe(value):
+    """Rekurzivno konvertira non-JSON tipove u JSON-safe (date/datetime → ISO string).
+
+    Potrebno jer `audit_chain.canonical_input_hash` koristi `json.dumps`, koji
+    ne podrzava date/datetime. Druge non-JSON tipove (Decimal, custom objekti)
+    ostavlja netaknute — pozivatelj ih mora pripremiti ili ce audit pasti u tihi
+    fall-through (docx_export.py:603-613).
+    """
+    from datetime import datetime
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {k: _audit_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_audit_safe(v) for v in value]
+    return value
+
+
+def audit_kwargs(doc_type, input_dict, modul):
+    """Helper za K1 audit chain. Vraca kwargs spreman za **unpack u prikazi_dokument().
+
+    Primjer:
+        prikazi_dokument(doc, "Tuzba.docx", "Preuzmi",
+                         **audit_kwargs("tuzba", podaci, "tuzbe"))
+
+    `modul` moze biti kratko ime ('tuzbe'), bez ekstenzije ('generatori/tuzbe')
+    ili puna putanja ('generatori/tuzbe.py'). Helper resolva u 'generatori/<ime>.py'.
+    """
+    if "/" in modul:
+        modul_path = modul if modul.endswith(".py") else f"{modul}.py"
+    else:
+        ime = modul[:-3] if modul.endswith(".py") else modul
+        modul_path = f"generatori/{ime}.py"
+    return {
+        "doc_type": doc_type,
+        "input_dict": _audit_safe(input_dict),
+        "generator_module_path": modul_path,
+    }
+
+
+def prikazi_dokument(
+    doc_html,
+    naziv_datoteke,
+    label_preuzmi="Preuzmi",
+    *,
+    doc_type=None,
+    input_dict=None,
+    generator_module_path=None,
+):
+    """Pomocna funkcija za prikaz dokumenta i download gumb (.docx format).
+
+    K1 audit chain: kad su `doc_type`, `input_dict` i `generator_module_path`
+    proslijedjeni, `pripremi_za_docx` racuna canonical hash, generator hash
+    i upisuje u download_log. Bez njih je no-op (backwards-compat).
+    Konvencija za `doc_type`: flat snake_case (npr. "ugovor_kupoprodaja",
+    "ovrha_vjerodostojna", "tuzba_isplata").
+    """
     # Success banner
     st.markdown(
         "<div style='background:linear-gradient(135deg,#059669 0%,#047857 100%);color:white;"
@@ -727,7 +784,14 @@ def prikazi_dokument(doc_html, naziv_datoteke, label_preuzmi="Preuzmi"):
     watermark_tekst = "NACRT" if st.session_state.get("_docx_watermark") else None
     naslov = docx_naziv.replace('.docx', '').replace('_', ' ') if st.session_state.get("_docx_header") else None
 
-    docx_bytes = pripremi_za_docx(doc_html, watermark=watermark_tekst, naslov_dokumenta=naslov)
+    docx_bytes = pripremi_za_docx(
+        doc_html,
+        watermark=watermark_tekst,
+        naslov_dokumenta=naslov,
+        doc_type=doc_type,
+        input_dict=input_dict,
+        generator_module_path=generator_module_path,
+    )
 
     # Prominentan download gumb PRIJE dokumenta
     st.download_button(

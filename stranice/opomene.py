@@ -2,7 +2,7 @@
 # STRANICA: Opomena pred tuzbu / ovrhu
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, napuni_primjerom, doc_selectbox
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, napuni_primjerom, doc_selectbox, audit_kwargs
 from generatori.opomene import generiraj_opomenu
 
 
@@ -46,19 +46,26 @@ def render_opomene():
 
     if st.button("Generiraj opomenu", type="primary"):
         vrsta_key = "tuzba" if "tužbu" in vrsta else "ovrha"
-        doc = generiraj_opomenu(
-            vrsta_key, v, d,
-            {"glavnica": glavnica},
-            {
-                "rok_dana": rok,
-                "datum_dospijeca": datum_dospijeca.strftime("%d.%m.%Y."),
-                "opis_osnove": opis_osnove,
-                "mjesto": mjesto,
-                "iban": iban if iban else "____________________",
-                "poziv_na_broj": poziv if poziv else "____________________",
-                "opis_placanja": opis_placanja,
-            },
-            zastupanje,
-        )
+        trazbina = {"glavnica": glavnica}
+        podaci = {
+            "rok_dana": rok,
+            "datum_dospijeca": datum_dospijeca.strftime("%d.%m.%Y."),
+            "opis_osnove": opis_osnove,
+            "mjesto": mjesto,
+            "iban": iban if iban else "____________________",
+            "poziv_na_broj": poziv if poziv else "____________________",
+            "opis_placanja": opis_placanja,
+        }
+        doc = generiraj_opomenu(vrsta_key, v, d, trazbina, podaci, zastupanje)
         naziv = "Opomena_pred_tuzbu.docx" if vrsta_key == "tuzba" else "Opomena_pred_ovrhu.docx"
-        prikazi_dokument(doc, naziv, "Preuzmi dokument")
+        slug = "opomena_pred_tuzbu" if vrsta_key == "tuzba" else "opomena_pred_ovrhu"
+        audit_input = {
+            "vrsta_key": vrsta_key,
+            "vjerovnik_html": v,
+            "duznik_html": d,
+            "trazbina": trazbina,
+            "podaci": podaci,
+            "zastupanje": zastupanje,
+        }
+        prikazi_dokument(doc, naziv, "Preuzmi dokument",
+                         **audit_kwargs(slug, audit_input, "opomene"))
