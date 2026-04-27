@@ -194,7 +194,7 @@ if not _is_simple_mode:
             for name in _filtered:
                 is_active = st.session_state._active_module == name
                 if st.sidebar.button(
-                    f"{'> ' if is_active else ''}{name}",
+                    name,
                     key=f"_sb_{name}",
                     type="primary" if is_active else "secondary",
                     use_container_width=True,
@@ -207,7 +207,7 @@ if not _is_simple_mode:
         # Početna gumb
         is_home = st.session_state._active_module == "Početna"
         if st.sidebar.button(
-            f"{'> ' if is_home else ''}Početna",
+            "Početna",
             key="_sb_Početna",
             type="primary" if is_home else "secondary",
             use_container_width=True,
@@ -227,7 +227,7 @@ if not _is_simple_mode:
                     continue
                 is_active = st.session_state._active_module == name
                 if st.sidebar.button(
-                    f"{'> ' if is_active else ''}{name}",
+                    name,
                     key=f"_sb_{name}",
                     type="primary" if is_active else "secondary",
                     use_container_width=True,
