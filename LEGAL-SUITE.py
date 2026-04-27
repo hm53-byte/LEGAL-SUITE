@@ -533,9 +533,10 @@ def _render_pocetna():
                 unsafe_allow_html=True,
             )
             if st.button(
-                f"Vidi tipove dokumenata",
+                f"Otvori pregled →",
                 key=f"_vk_{i}",
                 use_container_width=True,
+                type="primary",
             ):
                 st.session_state._vodic_odabir = kat["naslov"]
                 st.rerun()

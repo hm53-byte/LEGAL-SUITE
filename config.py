@@ -492,13 +492,13 @@ CSS_STILOVI = f"""
         opacity: 0;
         transition: opacity 0.25s ease;
     }}
+    /* Subtle hover: only border accent — kartica je info, ne button.
+       Click target je gumb ispod kartice (afford. mismatch fix). */
     .module-card:hover {{
-        border-color: rgba(22, 45, 80, 0.2);
-        box-shadow: 0 8px 30px rgba(22, 45, 80, 0.1), 0 2px 8px rgba(22, 45, 80, 0.06);
-        transform: translateY(-2px);
+        border-color: rgba(22, 45, 80, 0.18);
     }}
     .module-card:hover::before {{
-        opacity: 1;
+        opacity: 0.5;
     }}
 
     /* Hero — Large atmospheric gradient */
