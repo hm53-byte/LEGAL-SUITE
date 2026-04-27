@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 import streamlit as st
 from datetime import date
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, audit_kwargs
 from generatori.obvezno import (
     generiraj_darovanje,
     generiraj_cesiju,
@@ -95,7 +95,9 @@ def _render_darovanje():
         if predmet_tip == "nekretnina":
             podaci.update(podaci_nekretnina)
         doc = generiraj_darovanje(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_darovanju.docx", "Preuzmi dokument")
+        audit_input = {"darovatelj_html": s1, "obdarenik_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_darovanju.docx", "Preuzmi dokument",
+                         **audit_kwargs("darovanje", audit_input, "obvezno"))
 
 
 def _render_cesija():
@@ -148,7 +150,9 @@ def _render_cesija():
             'mjesto': mjesto,
         }
         doc = generiraj_cesiju(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_cesiji.docx", "Preuzmi dokument")
+        audit_input = {"cedent_html": s1, "cesionar_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_cesiji.docx", "Preuzmi dokument",
+                         **audit_kwargs("cesija", audit_input, "obvezno"))
 
 
 def _render_kompenzacija():
@@ -201,7 +205,9 @@ def _render_kompenzacija():
             'mjesto': mjesto,
         }
         doc = generiraj_kompenzaciju(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_kompenzaciji.docx", "Preuzmi dokument")
+        audit_input = {"strana_a_html": s1, "strana_b_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_kompenzaciji.docx", "Preuzmi dokument",
+                         **audit_kwargs("kompenzacija", audit_input, "obvezno"))
 
 
 def _render_jamstvo():
@@ -246,7 +252,9 @@ def _render_jamstvo():
             'mjesto': mjesto,
         }
         doc = generiraj_jamstvo(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_jamstvu.docx", "Preuzmi dokument")
+        audit_input = {"vjerovnik_html": s1, "jamac_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_jamstvu.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"jamstvo_{vrsta}", audit_input, "obvezno"))
 
 
 def _render_gradenje():
@@ -305,7 +313,9 @@ def _render_gradenje():
             'mjesto': mjesto,
         }
         doc = generiraj_ugovor_o_gradenju(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_gradenju.docx", "Preuzmi dokument")
+        audit_input = {"narucitelj_html": s1, "izvodac_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_gradenju.docx", "Preuzmi dokument",
+                         **audit_kwargs("ugovor_gradenje", audit_input, "obvezno"))
 
 
 def _render_licencija():
@@ -364,7 +374,9 @@ def _render_licencija():
             'mjesto': mjesto,
         }
         doc = generiraj_licenciju(s1, s2, podaci)
-        prikazi_dokument(doc, "Licencni_ugovor.docx", "Preuzmi dokument")
+        audit_input = {"davatelj_html": s1, "stjecatelj_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Licencni_ugovor.docx", "Preuzmi dokument",
+                         **audit_kwargs("licencija", audit_input, "obvezno"))
 
 
 def _render_posredovanje():
@@ -401,7 +413,9 @@ def _render_posredovanje():
             'mjesto': mjesto,
         }
         doc = generiraj_posredovanje(s1, s2, podaci)
-        prikazi_dokument(doc, "Ugovor_o_posredovanju.docx", "Preuzmi dokument")
+        audit_input = {"posrednik_html": s1, "nalogodavac_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_posredovanju.docx", "Preuzmi dokument",
+                         **audit_kwargs("posredovanje", audit_input, "obvezno"))
 
 
 def _render_sporazumni_raskid():
@@ -453,7 +467,9 @@ def _render_sporazumni_raskid():
             'mjesto': mjesto,
         }
         doc = generiraj_sporazumni_raskid(s1, s2, podaci)
-        prikazi_dokument(doc, "Sporazumni_raskid.docx", "Preuzmi dokument")
+        audit_input = {"strana1_html": s1, "strana2_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Sporazumni_raskid.docx", "Preuzmi dokument",
+                         **audit_kwargs("sporazumni_raskid", audit_input, "obvezno"))
 
 
 def render_obvezno():
