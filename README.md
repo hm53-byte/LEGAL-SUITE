@@ -495,22 +495,37 @@ Razvojni ciklusi se vode kao **Kandidati K1, K2, K3, ...** Svaki kandidat je arh
 
 **LOC**: net -2 (uklonjen rokovi UI block + reframe stringovi). 159/159 testova nakon refaktora pass (0 regresija).
 
-#### K3 — Cloud-native monetizacija (u tijeku, 2026-04-27)
+#### K3 — Cloud-native monetizacija (cloud kod gotov, čeka korisnikov setup)
 
 **Što**: Stripe Checkout + Supabase entitlements + Cloudflare Worker webhook + per-doc forensic watermark. PC korisnika može biti isključen — sve cloud komponente rade 24/7 u free tier-u.
 
-**Trenutni status**: cloud kod napisan i testiran lokalno (179/179 pytest pass). Korisnički setup (Supabase + Stripe + Cloudflare accounts) ostaje — vidi `cloud/SETUP.md`.
+**Trenutni status**: cloud kod napisan i testiran lokalno (194/194 pytest pass). ToS + Privacy Policy nacrti dodani u `stranice/`. Korisnički setup (Supabase + Stripe + Cloudflare accounts) ostaje — vidi `cloud/SETUP.md`.
 
 **LOC**: 480 src + 60 test = 540 (Python entitlements + watermark + TypeScript Cloudflare Worker + SQL schema).
+
+#### K1 — Janusov audit lanac (forensic reproducibility, 2026-04-27)
+
+**Što**: SHA256 hash chain nad `download_log` retcima + RFC 8785 JCS canonical input form + generator bytecode versioning registry. Svaki generirani docx producira `(input_canonical_hash, output_sha256, parent_hash, current_hash, generator_version_hash, input_schema_version)` — bit-by-bit reproducibility 6+ mjeseci kasnije iz `git checkout <commit>` + pohranjenog inputa.
+
+**Status**: BRZ_MOZAK P2 hibrid ciklus zatvoren 7/7 USPJEH (vidi `GLAVNI_INZINJER/IDEJE/CIKLUS_K1_2026-04-27.md`). Implementirano: `audit_chain.py` (RFC 8785 JCS + chain link build/verify), `cloud/0007_audit_chain.sql` (idempotent ALTER), `entitlements.py` proširen, `scripts/build_generators_registry.py`, `scripts/replay_docx.py`, `tests/test_audit_chain.py` (15 testova).
+
+**LOC**: 305 (225 src + 80 test).
+
+#### K1.5 — UI ožičenje audit chain-a (2026-04-27)
+
+**Što**: K1 audit chain je opt-in preko `pripremi_za_docx(input_dict, generator_module_path, doc_type)`. K1.5 prosljeđuje te parametre kroz svih 16 `stranice/*.py` fajlova × 88 call-sitea. Centralni helper `audit_kwargs()` u `pomocne.py` sažima logiku — call-site postaje 1-line `prikazi_dokument(..., **audit_kwargs("ugovor_kupoprodaja", podaci, "ugovori"))`.
+
+**Status**: ZATVORENO. 13 granularnih commit-ova (1 helper + 1 baseline + 11 stranica + 1 jednostavno). Slugovi flat snake_case — npr. `tuzba`, `opomena_pred_tuzbu`, `ovrha_vjerodostojna`, `f"otkaz_{vrsta}"`, `jednostavno_kupnja_auta`. 194/194 pytest pass.
+
+**LOC**: 160 (helper + 88 call-site izmjena).
 
 ### Roadmap
 
 Po dogovorenom prioritetu:
 
-- **K3 dio II — UI integracija** (sljedeće): integracija watermark-a u `docx_export.py`, "Pretplati se" gumb u sidebar-u, ToS + Privacy Policy draft (blocker za live mode).
-- **K1 — Forensic audit trail per-output**: SHA256 hash chain za svaki generirani docx, reproducibility (može li se docx 6 mjeseci kasnije reproducirati bit-by-bit iz inputa + generator verzije).
-- **K2 — PWA + Service Worker + IndexedDB**: client-side docx generacija (offline rad), CDN nepotrebne. Smanjuje server trošak, daje offline UX.
-- **K4 — Generator versioning registry**: sve generatore u JSON registry s `generator_id`, `version`, `schema_in`, `schema_out`. Lakša compliance argumentacija ("ovo nije AI, ovo je registry verzije X").
+- **K2 — PWA + Service Worker + IndexedDB** (sljedeće, BRZ_MOZAK P2 hibrid ciklus): offline-first arhitektura. Mora biti kompatibilna s K1 audit lancem (offline → online sync ne smije razbiti hash chain).
+- **K4 — Generator versioning registry**: već dijelom realizirano kroz K1 (`generators_registry.json`); preostaje JSON Schema validation per-generator (`schema_in`, `schema_out` polja).
+- **K1 faza 2 — Merkle root javno** (BACKLOG): aktivira se kad korporativni klijent zatraži external auditability.
 
 ### Auth migracija (planirano, blocker za K3 produkciju)
 
