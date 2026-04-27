@@ -495,6 +495,14 @@ Razvojni ciklusi se vode kao **Kandidati K1, K2, K3, ...** Svaki kandidat je arh
 
 **LOC**: net -2 (uklonjen rokovi UI block + reframe stringovi). 159/159 testova nakon refaktora pass (0 regresija).
 
+#### K5.2 — Refaktor Jednostavnog moda u objektivni katalog (2026-04-27)
+
+**Što**: K5 je dirao samo Početnu (`LEGAL-SUITE.py`); Jednostavni mod (`stranice/jednostavno.py`) imao je istu problematiku. 21 situacijska kartica u 1. licu ("Netko mi duguje novac", "Osnivam tvrtku") + `aia` polja s prescriptive savjetima ("Bez X dogodit će se Y") + Pravna Kata flow ("Korak-po-korak vodič za naplatu duga"). Sve refaktorirano: naslovi → objektivni nazivi dokumenata ("Opomena pred tužbu / ovrhu", "Društveni ugovor d.o.o."), `aia` polja uklonjena (zadržan samo `aia_zakoni` zakonski članak kao referenca), Kata flow uklonjen (`_KATA_DUGOVANJE` + `_prikazi_kata` funkcija obrisana), VODIC oznaka uklonjena.
+
+**LOC**: -317 (1543 → 1245 redaka u jednostavno.py). 194/194 testovi pass (0 regresija).
+
+**Razlog**: K5 logic primijenjen konzistentno na cijelu aplikaciju (Početna + Jednostavni mod). Out-of-scope AI Act 2026 Annex III pt. 8 + ZO čl. 72 nadripisarstvo pozicija očuvana u svim tračnicama UX-a.
+
 #### K3 — Cloud-native monetizacija (cloud kod gotov, čeka korisnikov setup)
 
 **Što**: Stripe Checkout + Supabase entitlements + Cloudflare Worker webhook + per-doc forensic watermark. PC korisnika može biti isključen — sve cloud komponente rade 24/7 u free tier-u.

@@ -128,299 +128,148 @@ _IKONE = {
 _SITUACIJE = [
     {
         "id": "kupnja_auta",
-        "naslov": "Kupujem ili prodajem auto",
-        "opis": "Trebate pisani ugovor za kupoprodaju vozila",
-        "aia": (
-            "Ugovor se može sklopiti i usmeno (čl. 286. st. 1. ZOO), ali bez pisanog "
-            "dokumenta ne možete dokazati dogovorenu cijenu ni uvjete prodaje.|"
-            "Prodavatelj odgovara za skrivene nedostatke 2 godine od predaje "
-            "(čl. 404. st. 2. ZOO). Bez ugovora, teško ćete ostvariti to pravo.|"
-            "U slučaju spora, pisani ugovor je ključni dokaz pred sudom."
-        ),
+        "naslov": "Ugovor o kupoprodaji vozila",
+        "opis": "Pisani ugovor s podacima o vozilu, prodavatelju i kupcu",
         "aia_zakoni": "čl. 286. st. 1., čl. 400.-410., čl. 404. st. 2. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "najam_stana",
-        "naslov": "Iznajmljujem stan",
-        "opis": "Ugovor o najmu za najmodavca ili najmoprimca",
-        "aia": (
-            "Tražbina najamnine zastarijeva za 3 godine (čl. 229. ZOO). "
-            "Bez pisanog ugovora, teško ćete dokazati dogovorenu najamninu.|"
-            "Bez ugovora, najmoprimac nema dokaz o pravu korištenja stana — "
-            "najmodavac može tvrditi da je neovlašteno useljenje.|"
-            "Usmeni najam ne štiti od jednostranog povećanja cijene."
-        ),
+        "naslov": "Ugovor o najmu stana",
+        "opis": "Pisani ugovor o najmu (najamnina, trajanje, obveze stranaka)",
         "aia_zakoni": "čl. 229., čl. 286. st. 1. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "posudba_novca",
-        "naslov": "Posuđujem novac nekome",
-        "opis": "Pisani ugovor o zajmu — zaštita za obje strane",
-        "aia": (
-            "Tražbine zastarijevaju za 5 godina (čl. 225. ZOO). "
-            "Bez pisanog dokaza o posudbi, sud ne može utvrditi da je posudba postojala.|"
-            "Bez ugovora, ne možete pokrenuti ovrhu za povrat novca — "
-            "preostaje samo tužba s neizvjesnim ishodom.|"
-            "Pisani ugovor štiti i dužnika od tvrdnji da je posuđeno više nego što jest."
-        ),
+        "naslov": "Ugovor o zajmu novca",
+        "opis": "Pisani ugovor o zajmu (glavnica, kamata, rok povrata)",
         "aia_zakoni": "čl. 225., čl. 286. st. 1. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "reklamacija",
-        "naslov": "Kupljeni proizvod ne valja",
-        "opis": "Pisani prigovor trgovcu za neispravan proizvod",
-        "aia": (
-            "Skrivene nedostatke morate prijaviti u roku od 2 mjeseca "
-            "od otkrivanja (čl. 404. st. 1. ZOO).|"
-            "Prodavatelj ne odgovara za nedostatke nakon 2 godine od predaje "
-            "(čl. 404. st. 2. ZOO).|"
-            "Trgovac je dužan odgovoriti na pisani prigovor u roku od 15 dana "
-            "(čl. 10. st. 3. Zakona o zaštiti potrošača)."
-        ),
+        "naslov": "Reklamacija proizvoda",
+        "opis": "Pisani prigovor trgovcu za nedostatak na proizvodu",
         "aia_zakoni": "čl. 400.-410. ZOO, čl. 10. ZZP",
         "modul_pro": "Zaštita potrošača",
     },
     {
         "id": "online_raskid",
-        "naslov": "Vraćam online kupnju",
-        "opis": "Imate 14 dana za raskid bez navođenja razloga",
-        "aia": (
-            "Imate pravo na jednostrani raskid online kupnje u roku od 14 dana "
-            "od primitka robe, bez navođenja razloga (čl. 79. ZZP).|"
-            "Nakon 14 dana, gubite to pravo bez obzira na razlog.|"
-            "Obrazac za raskid morate poslati PISANIM putem (email ili pošta)."
-        ),
+        "naslov": "Raskid ugovora sklopljenog na daljinu",
+        "opis": "Obrazac za jednostrani raskid online kupnje (rok 14 dana)",
         "aia_zakoni": "čl. 79. Zakona o zaštiti potrošača",
         "modul_pro": "Zaštita potrošača",
     },
     {
         "id": "punomoc",
-        "naslov": "Trebam dati nekome punomoć",
-        "opis": "Ovlastite drugu osobu da vas zastupa",
-        "aia": (
-            "Bez pisane punomoći, treća osoba ne može pravno valjano zastupati "
-            "vaše interese pred institucijama.|"
-            "Usmena punomoć je pravno valjana među strankama, "
-            "ali je treće osobe (banka, sud, ured) neće prihvatiti.|"
-            "Jasna pisana punomoć štiti vas od prekoračenja ovlasti."
-        ),
+        "naslov": "Punomoć za zastupanje",
+        "opis": "Opća ili posebna punomoć (vlastodavac, punomoćnik, opseg)",
         "aia_zakoni": "čl. 313.-321. ZOO",
         "modul_pro": "Punomoć",
     },
     {
         "id": "dugovanje",
-        "naslov": "Netko mi duguje novac",
-        "opis": "Korak-po-korak vodič za naplatu duga",
-        "kata": True,
-        "aia": (
-            "Svaka odgoda povećava rizik zastare potraživanja — "
-            "opći rok je 5 godina (čl. 225. ZOO).|"
-            "Svjedoci zaboravljaju, poruke se brišu, dokazi nestaju.|"
-            "Dužnik može rasprodati imovinu prije nego pokrenete naplatu."
-        ),
+        "naslov": "Opomena pred tužbu / ovrhu",
+        "opis": "Pisana opomena dužniku s rokom za ispunjenje obveze",
         "aia_zakoni": "čl. 225.-232. ZOO",
         "modul_pro": "Opomena",
     },
     {
         "id": "osnivanje_tvrtke",
-        "naslov": "Osnivam tvrtku (d.o.o.)",
-        "opis": "Društveni ugovor za osnivanje trgovačkog društva",
-        "aia": (
-            "Društveni ugovor je zakonski obavezan za osnivanje d.o.o. "
-            "(čl. 387. Zakona o trgovačkim društvima).|"
-            "Bez ispravnog društvenog ugovora, Trgovački sud neće upisati "
-            "društvo u sudski registar.|"
-            "Nejasan ugovor može dovesti do sporova među osnivačima."
-        ),
+        "naslov": "Društveni ugovor d.o.o.",
+        "opis": "Osnivački akt trgovačkog društva (osnivači, kapital, djelatnost)",
         "aia_zakoni": "čl. 387. ZTD",
         "modul_pro": "Trgovačko pravo",
     },
     {
         "id": "zaposlavanje",
-        "naslov": "Zapošljavam nekoga",
-        "opis": "Ugovor o radu za poslodavca i radnika",
-        "aia": (
-            "Ugovor o radu mora biti sklopljen u pisanom obliku "
-            "(čl. 14. st. 1. Zakona o radu).|"
-            "Bez pisanog ugovora, smatra se da je radnik zaposlen "
-            "na neodređeno s punim radnim vremenom (čl. 14. st. 3. ZR).|"
-            "Poslodavac bez ugovora krši zakon i podložan je inspekcijskom nadzoru."
-        ),
+        "naslov": "Ugovor o radu",
+        "opis": "Pisani ugovor o radu (poslodavac, radnik, plaća, radno mjesto)",
         "aia_zakoni": "čl. 14. Zakona o radu",
         "modul_pro": "Ugovori",
     },
     {
         "id": "bracni_ugovor",
-        "naslov": "Želim bračni ugovor",
-        "opis": "Reguliranje imovinskih odnosa bračnih drugova",
-        "aia": (
-            "Bez bračnog ugovora, primjenjuje se zakonski režim — "
-            "sva imovina stečena u braku je bračna stečevina (čl. 36. Obiteljskog zakona).|"
-            "U slučaju razvoda, podjela bračne stečevine može biti duga i skupa.|"
-            "Bračni ugovor mora biti u pisanom obliku i ovjeren kod javnog bilježnika."
-        ),
+        "naslov": "Bračni ugovor",
+        "opis": "Pisani ugovor o imovinskim odnosima bračnih drugova (uz JB ovjeru)",
         "aia_zakoni": "čl. 36., čl. 40. Obiteljskog zakona",
         "modul_pro": "Obiteljsko pravo",
     },
     {
         "id": "sporazumni_razvod",
         "naslov": "Sporazumni razvod braka",
-        "opis": "Kad se obje strane slažu oko razvoda",
-        "aia": (
-            "Sporazumni razvod je brži i jeftiniji od tužbe za razvod.|"
-            "Sporazum mora urediti: djecu (skrb, uzdržavanje, kontakte), "
-            "imovinu, i stan (tko ostaje).|"
-            "Bez sporazuma, sud sam odlučuje o svemu — "
-            "a to može trajati godinama."
-        ),
+        "opis": "Zajednički prijedlog supruga za razvod (sporazum o djeci i imovini)",
         "aia_zakoni": "čl. 50.-56. Obiteljskog zakona",
         "modul_pro": "Obiteljsko pravo",
     },
     {
         "id": "kupnja_motora",
-        "naslov": "Kupujem ili prodajem motocikl",
-        "opis": "Ugovor za kupoprodaju motocikla, skutera ili mopeda",
-        "aia": (
-            "Bez pisanog ugovora ne možete dokazati dogovorenu cijenu "
-            "niti stanje vozila u trenutku prodaje.|"
-            "Prodavatelj odgovara za skrivene nedostatke 2 godine od predaje "
-            "(čl. 404. st. 2. ZOO).|"
-            "Motocikli imaju specifične podatke (kubikaza, tip motora) "
-            "koje treba upisati u ugovor za pravnu zaštitu."
-        ),
+        "naslov": "Ugovor o kupoprodaji motocikla",
+        "opis": "Pisani ugovor s podacima o vozilu (kubikaza, tip motora, VIN)",
         "aia_zakoni": "čl. 286. st. 1., čl. 400.-410. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "primopredajni",
-        "naslov": "Primopredaja stana",
-        "opis": "Zapisnik o stanju stana pri useljenju ili iseljenju",
-        "aia": (
-            "Bez zapisnika ne možete dokazati u kakvom ste stanju "
-            "primili stan — najmodavac može tvrditi da ste vi uzrokovali oštećenja.|"
-            "Zapisnik mora sadržavati stanja brojila (struja, voda, plin) — "
-            "inače plaćate tuđe račune.|"
-            "Fotografije uz zapisnik su dodatni dokaz, ali pisani zapisnik "
-            "je pravno jači temelj."
-        ),
-        "aia_zakoni": "čl. 557. ZOO (obveze najmoprimca pri povratu)",
+        "naslov": "Primopredajni zapisnik (najam)",
+        "opis": "Zapisnik o stanju stana i brojilima pri useljenju ili iseljenju",
+        "aia_zakoni": "čl. 557. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "raskid_najma",
         "naslov": "Sporazumni raskid najma",
-        "opis": "Kad se najmodavac i najmoprimac dogovore o prekidu najma",
-        "aia": (
-            "Bez pisanog raskida, najam formalno i dalje traje — "
-            "najmodavac može tražiti najamninu za mjesece nakon iseljenja.|"
-            "Raskid mora urediti: povrat jamčevine, stanje stana, "
-            "zadnji dan najma i podmirenje režija.|"
-            "Usmeni dogovor o raskidu ne vrijedi kao dokaz pred sudom."
-        ),
+        "opis": "Pisani prijevremeni raskid ugovora o najmu (jamčevina, režije)",
         "aia_zakoni": "čl. 286., čl. 550.-557. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "potvrda_povrata",
         "naslov": "Potvrda o povratu duga",
-        "opis": "Dužnik vratio novac — potvrda da je dug podmiren",
-        "aia": (
-            "Bez pisane potvrde, vjerovnik može ponovo tražiti isti novac — "
-            "nećete imati dokaz da ste platili.|"
-            "Potvrda mora navesti TOČAN iznos, datum povrata i "
-            "osnovu duga (koji zajam/račun).|"
-            "Čuvajte potvrdu minimalno 5 godina (opći rok zastare, čl. 225. ZOO)."
-        ),
-        "aia_zakoni": "čl. 225., čl. 168.-170. ZOO (namirenje obveze)",
+        "opis": "Pisana potvrda o namirenju obveze (iznos, datum, osnova duga)",
+        "aia_zakoni": "čl. 225., čl. 168.-170. ZOO",
         "modul_pro": "Obvezno pravo",
     },
     {
         "id": "predugovor_kapara",
-        "naslov": "Predugovor s kaparom (nekretnina)",
-        "opis": "Prvi korak pri kupnji stana — kapara i rok za glavni ugovor",
-        "aia": (
-            "Kapara je novac koji GUBITE ako vi odustanete od kupnje. "
-            "Ako prodavatelj odustane, mora vam vratiti DVOSTRUKU kaparu (čl. 303. ZOO).|"
-            "Bez pisanog predugovora, kapara je samo 'dani novac' — "
-            "ne možete dokazati uvjete dogovora.|"
-            "Predugovor MORA sadržavati rok za sklapanje glavnog ugovora, "
-            "inače nema pravni učinak."
-        ),
-        "aia_zakoni": "čl. 268. (predugovor), čl. 303. (kapara) ZOO",
+        "naslov": "Predugovor s kaparom za nekretninu",
+        "opis": "Predugovor s kaparom prije glavnog ugovora o kupoprodaji",
+        "aia_zakoni": "čl. 268., čl. 303. ZOO",
         "modul_pro": "Obvezno pravo",
     },
     {
         "id": "kupoprodaja_nekretnine",
-        "naslov": "Kupoprodaja nekretnine",
-        "opis": "Glavni ugovor za kupnju/prodaju stana, kuće ili zemljišta",
-        "aia": (
-            "Ugovor o kupoprodaji nekretnine MORA biti u pisanom obliku i "
-            "ovjeren kod javnog bilježnika — usmeni dogovor je ništavan (čl. 9. ZV).|"
-            "Bez clausule intabulandi (izjave o dozvoli upisa), kupac se "
-            "NE MOŽE upisati kao vlasnik u zemljišne knjige.|"
-            "Porez na promet nekretnina iznosi 3% — plaća ga kupac."
-        ),
+        "naslov": "Ugovor o kupoprodaji nekretnine",
+        "opis": "Glavni ugovor s clausula intabulandi (uz JB ovjeru)",
         "aia_zakoni": "čl. 9. Zakona o vlasništvu, čl. 376. ZOO, čl. 52. ZZK",
         "modul_pro": "Ugovori",
     },
     {
         "id": "ugovor_o_djelu",
-        "naslov": "Ugovor o djelu (majstor)",
-        "opis": "Dogovor s majstorom za renovaciju, popravak ili ugradnju",
-        "aia": (
-            "Bez pisanog ugovora, ne možete dokazati dogovorenu cijenu "
-            "niti rok završetka radova.|"
-            "Izvođač odgovara za nedostatke rada 2 godine od završetka "
-            "(čl. 633. ZOO). Bez ugovora, teško ćete to dokazati.|"
-            "Ugovor mora navesti: opis posla, cijenu, rok, tko nabavlja materijal "
-            "i što se događa ako radovi kasne."
-        ),
+        "naslov": "Ugovor o djelu",
+        "opis": "Pisani ugovor o djelu (renovacija, popravak, ugradnja)",
         "aia_zakoni": "čl. 590.-619., čl. 633. ZOO",
         "modul_pro": "Obvezno pravo",
     },
     {
         "id": "kupoprodaja_stvari",
-        "naslov": "Kupoprodaja stvari",
-        "opis": "Prodaješ/kupuješ namještaj, elektroniku, opremu između dvoje ljudi",
-        "aia": (
-            "Za stvari veće vrijednosti (>500 EUR) pisani ugovor je bitna zaštita — "
-            "dokazuje cijenu, stanje stvari i identitet kupca/prodavatelja.|"
-            "Prodavatelj odgovara za skrivene nedostatke "
-            "(čl. 400. ZOO) čak i kod rabljenih stvari.|"
-            "Bez ugovora, kupac ne može dokazati da je stvar kupljena, "
-            "a ne pokradena."
-        ),
+        "naslov": "Ugovor o kupoprodaji pokretnine",
+        "opis": "Pisani ugovor o kupoprodaji (namještaj, elektronika, oprema)",
         "aia_zakoni": "čl. 376.-437. ZOO",
         "modul_pro": "Ugovori",
     },
     {
         "id": "suglasnost_stana",
-        "naslov": "Suglasnost za korištenje stana",
-        "opis": "Vlasnik stana daje suglasnost za prijavu prebivališta",
-        "aia": (
-            "MUP zahtijeva pisanu suglasnost vlasnika za prijavu prebivališta "
-            "na tuđoj adresi (čl. 5. Zakona o prebivalištu).|"
-            "Bez suglasnosti ne možete prijaviti prebivalište, "
-            "što blokira osobnu iskaznicu, zdravstveno i ostala prava.|"
-            "Suglasnost mora sadržavati potpis vlasnika i podatke o nekretnini."
-        ),
+        "naslov": "Suglasnost za prijavu prebivališta",
+        "opis": "Pisana suglasnost vlasnika nekretnine za MUP prijavu",
         "aia_zakoni": "čl. 5. Zakona o prebivalištu (NN 144/12)",
         "modul_pro": "Ugovori",
     },
     {
         "id": "kupoprodaja_plovila",
-        "naslov": "Kupoprodaja plovila",
-        "opis": "Ugovor za čamac, gumenjak, jet-ski ili brodicu",
-        "aia": (
-            "Plovila registrirana u Lučkoj kapetaniji zahtijevaju pisani ugovor "
-            "za prijenos vlasništva.|"
-            "Prodavatelj odgovara za skrivene nedostatke 2 godine "
-            "(čl. 404. st. 2. ZOO) — motor, trup, oprema.|"
-            "Bez ugovora s brojem trupa (HIN), ne možete obaviti prijenos registracije."
-        ),
+        "naslov": "Ugovor o kupoprodaji plovila",
+        "opis": "Pisani ugovor s HIN brojem trupa (čamac, brodica, jet-ski)",
         "aia_zakoni": "čl. 286., čl. 400.-410. ZOO, Pomorski zakonik",
         "modul_pro": "Ugovori",
     },
@@ -1185,48 +1034,6 @@ _BLANK_GENERATORI = {
 
 
 # =============================================================================
-# KATA TOK — koraci za "Netko mi duguje novac"
-# =============================================================================
-
-_KATA_DUGOVANJE = [
-    {
-        "broj": 1,
-        "naslov": "Pošaljite pisanu opomenu",
-        "opis": (
-            "Dužniku pošaljite pisanu opomenu s rokom od 8 dana. "
-            "Ovo je prvi i najvažniji korak — mnogi dugovi se naplate već ovdje."
-        ),
-        "savjet": "Pošaljite PREPORUČENOM POŠTOM s povratnicom — to je vaš dokaz da je dužnik primio opomenu.",
-        "dokument": "dugovanje",
-    },
-    {
-        "broj": 2,
-        "naslov": "Sačekajte 8 dana",
-        "opis": (
-            "Rok počinje od dana kad dužnik PRIMI opomenu "
-            "(datum na povratnici). Sačuvajte povratnicu!"
-        ),
-        "savjet": None,
-        "dokument": None,
-    },
-    {
-        "broj": 3,
-        "naslov": "Ako nije platio — odlučite o sljedećem koraku",
-        "opis": (
-            "Ako imate pisani ugovor, račun ili drugu ovršnu ispravu — "
-            "možete pokrenuti OVRHU (brže i jeftinije). "
-            "Ako nemate — morate tužiti na sudu."
-        ),
-        "savjet": (
-            "Za ovrhu i tužbu preporučamo da se prebacite na napredni mod "
-            "ili konzultirate odvjetnika."
-        ),
-        "dokument": None,
-    },
-]
-
-
-# =============================================================================
 # GLAVNA RENDER FUNKCIJA
 # =============================================================================
 
@@ -1240,10 +1047,10 @@ def render_jednostavno(navigate_fn=None):
         "font-weight:600;color:rgba(255,255,255,0.5);margin-bottom:0.6rem !important;"
         "position:relative;z-index:1;'>Jednostavni mod</p>"
         "<h2 style='font-size:1.9rem !important;margin-bottom:0.5rem !important;"
-        "line-height:1.2 !important;'>Brzi pravni dokumenti</h2>"
+        "line-height:1.2 !important;'>Katalog blank obrazaca</h2>"
         "<p style='font-size:1rem !important;line-height:1.6 !important;'>"
-        "Bez pravnog znanja. Odaberite situaciju, "
-        "isprintajte dokument, ispunite rucno.</p>"
+        "Odaberite tip dokumenta iz kataloga, preuzmite blank obrazac "
+        "i ispunite ga prema vlastitoj situaciji.</p>"
         "</div>",
         unsafe_allow_html=True,
     )
@@ -1306,7 +1113,7 @@ _SIT_PO_ID = {s["id"]: s for s in _SITUACIJE}
 
 def _prikazi_situacije():
     """Prikaz kartica sa situacijama, grupirano po kategorijama."""
-    st.markdown("##### Što vam treba?")
+    st.markdown("##### Tipovi dokumenata po kategoriji")
 
     btn_idx = 0
     for kat_naslov, kat_ids in _KATEGORIJE:
@@ -1322,13 +1129,6 @@ def _prikazi_situacije():
         cols = st.columns(2)
         for j, sit in enumerate(situacije):
             with cols[j % 2]:
-                kata_oznaka = (
-                    "<span style='background:#7C3AED;color:white;padding:2px 8px;"
-                    "border-radius:4px;font-size:0.55rem;font-weight:700;"
-                    "letter-spacing:0.05em;text-transform:uppercase;"
-                    "margin-left:6px;'>VODIC</span>"
-                    if sit.get("kata") else ""
-                )
                 st.markdown(
                     f"<div class='module-card'>"
                     f"<div style='display:flex;align-items:center;gap:0.75rem;'>"
@@ -1339,7 +1139,6 @@ def _prikazi_situacije():
                     f"<div>"
                     f"<b style='color:#162D50;font-size:0.95rem;letter-spacing:-0.01em;'>"
                     f"{sit['naslov']}</b>"
-                    f"{kata_oznaka}"
                     f"<br><span style='color:#3D4A5C;font-size:0.82rem;line-height:1.5;'>"
                     f"{sit['opis']}</span>"
                     f"</div></div></div>",
@@ -1352,45 +1151,30 @@ def _prikazi_situacije():
 
 
 def _prikazi_detalje(situacija, navigate_fn):
-    """Prikaz detalja situacije: AIA + blank DOCX + opcija za Pro."""
+    """Prikaz detalja: pravna referenca + blank DOCX + opcija za napredni mod."""
 
     # Scroll na vrh kad se otvore detalji
     _scroll_to_top()
 
     # Gumb za nazad
-    if st.button("← Natrag na sve situacije", key="_jed_nazad"):
+    if st.button("← Natrag na sve dokumente", key="_jed_nazad"):
         st.session_state._jed_odabir = None
         st.rerun()
 
     st.markdown(f"### {situacija['naslov']}")
 
-    # ─── AIA BOX ───────────────────────────────────────────────────────
-    aia_tocke = situacija["aia"].split("|")
-    aia_html = "".join(
-        f"<li style='margin-bottom:0.4rem;'>{t.strip()}</li>"
-        for t in aia_tocke
-    )
+    # ─── Pravna referenca (objektivni zakonski članci) ─────────────────
     st.markdown(
-        f"<div style='background:linear-gradient(135deg,#FEF2F2,#FFF1F2);"
-        f"border:1px solid #FECACA;border-left:4px solid #DC2626;border-radius:8px;"
-        f"padding:1rem 1.2rem;margin:0.8rem 0 1.2rem;'>"
-        f"<div style='color:#991B1B;font-weight:700;font-size:0.9rem;"
-        f"margin-bottom:0.5rem;'>Bez ovog dokumenta riskirate:</div>"
-        f"<ul style='color:#7F1D1D;font-size:0.85rem;margin:0;padding-left:1.2rem;"
-        f"line-height:1.6;'>{aia_html}</ul>"
-        f"<div style='margin-top:0.6rem;padding-top:0.5rem;border-top:1px solid #FECACA;"
-        f"color:#9CA3AF;font-size:0.7rem;'>"
-        f"Pravni temelj: {situacija['aia_zakoni']}</div>"
+        f"<div style='background:#F8FAFC;border:1px solid #E2E8F0;"
+        f"border-left:3px solid #475569;border-radius:8px;"
+        f"padding:0.7rem 1rem;margin:0.6rem 0 1.2rem;font-size:0.78rem;"
+        f"color:#475569;line-height:1.5;'>"
+        f"<b style='color:#162D50;'>Pravni temelj:</b> {situacija['aia_zakoni']}"
         f"</div>",
         unsafe_allow_html=True,
     )
 
-    # ─── KATA TOK (za multi-step situacije) ────────────────────────────
-    if situacija.get("kata"):
-        _prikazi_kata(situacija, navigate_fn)
-        return
-
-    # ─── SINGLE-STEP: Blank DOCX + Pro opcija ─────────────────────────
+    # ─── Blank DOCX + napredni mod opcija ─────────────────────────────
     st.markdown("##### Kako želite nastaviti?")
 
     col1, col2 = st.columns(2)
@@ -1459,104 +1243,3 @@ def _prikazi_detalje(situacija, navigate_fn):
             st.markdown(f"<div class='legal-doc'>{doc_html}</div>", unsafe_allow_html=True)
 
 
-def _prikazi_kata(situacija, navigate_fn):
-    """Prikaz korak-po-korak vodića za multi-step situacije."""
-
-    st.markdown("##### Koraci za naplatu duga")
-
-    for korak in _KATA_DUGOVANJE:
-        # Broj i naslov koraka
-        boja_broja = "#162D50"
-        st.markdown(
-            f"<div style='background:white;border:1px solid #DDD8D0;border-radius:14px;"
-            f"padding:1.1rem 1.3rem;margin-bottom:0.8rem;"
-            f"border-left:4px solid {boja_broja};"
-            f"box-shadow:0 2px 8px rgba(22,45,80,0.05);'>"
-            f"<div style='display:flex;align-items:flex-start;gap:0.8rem;'>"
-            f"<div style='background:{boja_broja};color:white;min-width:2rem;height:2rem;"
-            f"border-radius:50%;display:flex;align-items:center;justify-content:center;"
-            f"font-weight:700;font-size:0.9rem;'>{korak['broj']}</div>"
-            f"<div>"
-            f"<div style='font-weight:700;color:#162D50;font-size:0.95rem;"
-            f"margin-bottom:0.3rem;'>{korak['naslov']}</div>"
-            f"<div style='color:#3D4A5C;font-size:0.85rem;line-height:1.5;'>{korak['opis']}</div>"
-            + (
-                f"<div style='background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;"
-                f"padding:0.5rem 0.7rem;margin-top:0.5rem;font-size:0.8rem;color:#92400E;'>"
-                f"<b>Savjet:</b> {korak['savjet']}</div>"
-                if korak.get("savjet") else ""
-            )
-            + f"</div></div></div>",
-            unsafe_allow_html=True,
-        )
-
-        # Gumb za blank download na koraku 1
-        if korak.get("dokument"):
-            blank_info = _BLANK_GENERATORI.get(korak["dokument"])
-            if blank_info:
-                naziv, gen_fn = blank_info
-                doc_html = gen_fn()
-                docx_bytes = pripremi_za_docx(
-                    doc_html,
-                    watermark=None,
-                    naslov_dokumenta="Opomena pred tužbu",
-                    **audit_kwargs(
-                        f"jednostavno_kata_{korak['dokument']}",
-                        {"korak": korak["broj"], "dokument": korak["dokument"], "naziv": naziv},
-                        "stranice/jednostavno",
-                    ),
-                )
-                col_dl, col_pro = st.columns(2)
-                with col_dl:
-                    st.download_button(
-                        f"Preuzmi prazan obrazac",
-                        docx_bytes,
-                        naziv,
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        use_container_width=True,
-                        key=f"_kata_dl_{korak['broj']}",
-                    )
-                with col_pro:
-                    if navigate_fn:
-                        if st.button(
-                            "Ispuni na računalu →",
-                            use_container_width=True,
-                            type="primary",
-                            key=f"_kata_pro_{korak['broj']}",
-                        ):
-                            st.session_state._app_mode = "napredno"
-                            navigate_fn("Opomena")
-                            st.rerun()
-
-    # Info o sljedećem koraku
-    st.markdown(
-        "<div style='background:#F5F3FF;border:1px solid #DDD6FE;border-radius:8px;"
-        "padding:0.8rem 1rem;margin-top:0.5rem;'>"
-        "<div style='color:#5B21B6;font-weight:600;font-size:0.85rem;'>"
-        "Ako dužnik ni nakon opomene ne plati:</div>"
-        "<div style='color:#6D28D9;font-size:0.82rem;margin-top:0.3rem;line-height:1.5;'>"
-        "Za ovrhu ili tužbu preporučamo napredni mod aplikacije ili konzultaciju s odvjetnikom. "
-        "Ti postupci zahtijevaju precizno popunjavanje podataka.</div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
-    if navigate_fn:
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button(
-                "Otvori modul: Ovrhe →",
-                use_container_width=True,
-                key="_kata_ovrha",
-            ):
-                st.session_state._app_mode = "napredno"
-                navigate_fn("Ovršno pravo")
-                st.rerun()
-        with c2:
-            if st.button(
-                "Otvori modul: Tužbe →",
-                use_container_width=True,
-                key="_kata_tuzba",
-            ):
-                st.session_state._app_mode = "napredno"
-                navigate_fn("Tužbe")
-                st.rerun()
