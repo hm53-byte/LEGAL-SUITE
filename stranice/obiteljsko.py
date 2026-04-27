@@ -4,7 +4,7 @@
 # Ugovor o uzdrzavanju
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, napuni_primjerom
+from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, napuni_primjerom, audit_kwargs
 from generatori.obiteljsko import (
     generiraj_sporazum_razvod,
     generiraj_tuzbu_razvod,
@@ -116,20 +116,23 @@ def _render_sporazum_razvod():
 
     st.markdown("---")
     if st.button("Generiraj prijedlog za sporazumni razvod", type="primary"):
-        doc = generiraj_sporazum_razvod(
-            predlagatelj1,
-            predlagatelj2,
-            {
-                "mjesto": sud,
-                "datum_braka": datum_braka.strftime('%d.%m.%Y.'),
-                "mjesto_braka": mjesto_braka,
-                "djeca": djeca_data,
-                "ima_savjetovanje": ima_savjetovanje,
-                "plan_roditeljske_skrbi": plan_roditeljske_skrbi,
-                "petitum": petitum,
-            },
-        )
-        prikazi_dokument(doc, "Sporazumni_razvod.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": sud,
+            "datum_braka": datum_braka.strftime('%d.%m.%Y.'),
+            "mjesto_braka": mjesto_braka,
+            "djeca": djeca_data,
+            "ima_savjetovanje": ima_savjetovanje,
+            "plan_roditeljske_skrbi": plan_roditeljske_skrbi,
+            "petitum": petitum,
+        }
+        doc = generiraj_sporazum_razvod(predlagatelj1, predlagatelj2, podaci)
+        audit_input = {
+            "predlagatelj1_html": predlagatelj1,
+            "predlagatelj2_html": predlagatelj2,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Sporazumni_razvod.docx", "Preuzmi dokument",
+                         **audit_kwargs("sporazum_razvod", audit_input, "obiteljsko"))
 
 
 # ---- 2. Tuzba za razvod braka ----
@@ -209,22 +212,25 @@ def _render_tuzba_razvod():
 
     st.markdown("---")
     if st.button("Generiraj tužbu za razvod braka", type="primary"):
-        doc = generiraj_tuzbu_razvod(
-            tuzitelj,
-            tuzenik,
-            {
-                "mjesto": sud,
-                "sud": sud,
-                "datum_braka": datum_braka.strftime('%d.%m.%Y.'),
-                "mjesto_braka": mjesto_braka,
-                "djeca": djeca_data,
-                "razlog": razlog,
-                "ima_savjetovanje": ima_savjetovanje,
-                "zahtjev_djeca": zahtjev_djeca,
-                "vps": vps,
-            },
-        )
-        prikazi_dokument(doc, "Tuzba_razvod_braka.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": sud,
+            "sud": sud,
+            "datum_braka": datum_braka.strftime('%d.%m.%Y.'),
+            "mjesto_braka": mjesto_braka,
+            "djeca": djeca_data,
+            "razlog": razlog,
+            "ima_savjetovanje": ima_savjetovanje,
+            "zahtjev_djeca": zahtjev_djeca,
+            "vps": vps,
+        }
+        doc = generiraj_tuzbu_razvod(tuzitelj, tuzenik, podaci)
+        audit_input = {
+            "tuzitelj_html": tuzitelj,
+            "tuzenik_html": tuzenik,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Tuzba_razvod_braka.docx", "Preuzmi dokument",
+                         **audit_kwargs("tuzba_razvod", audit_input, "obiteljsko"))
 
 
 # ---- 3. Bracni / predbracni ugovor ----
@@ -322,17 +328,20 @@ def _render_bracni_ugovor():
 
     st.markdown("---")
     if st.button("Generiraj bračni ugovor", type="primary"):
-        doc = generiraj_bracni_ugovor(
-            strana1,
-            strana2,
-            {
-                "mjesto": mjesto,
-                "vrsta": vrsta,
-                "imovina_items": imovina_data,
-                "clausula_intabulandi": clausula,
-            },
-        )
-        prikazi_dokument(doc, "Bracni_ugovor.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": mjesto,
+            "vrsta": vrsta,
+            "imovina_items": imovina_data,
+            "clausula_intabulandi": clausula,
+        }
+        doc = generiraj_bracni_ugovor(strana1, strana2, podaci)
+        audit_input = {
+            "strana1_html": strana1,
+            "strana2_html": strana2,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Bracni_ugovor.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"{vrsta}_ugovor", audit_input, "obiteljsko"))
 
 
 # ---- 4. Sporazum o roditeljskoj skrbi ----
@@ -438,24 +447,27 @@ def _render_roditeljska_skrb():
 
     st.markdown("---")
     if st.button("Generiraj sporazum o roditeljskoj skrbi", type="primary"):
-        doc = generiraj_roditeljsku_skrb(
-            roditelj1,
-            roditelj2,
-            {
-                "mjesto": mjesto,
-                "djeca": djeca_data,
-                "stanovanje_kod": stanovanje_kod,
-                "adresa_djeteta": adresa_djeteta,
-                "raspored_kontakta": raspored_kontakta,
-                "praznici": praznici,
-                "ljetni_odmor": ljetni_odmor,
-                "alimentacija_iznos": alimentacija_iznos,
-                "alimentacija_datum_dospijeca": alimentacija_datum,
-                "alimentacija_iban": alimentacija_iban,
-                "posebne_odredbe": posebne_odredbe,
-            },
-        )
-        prikazi_dokument(doc, "Roditeljska_skrb.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": mjesto,
+            "djeca": djeca_data,
+            "stanovanje_kod": stanovanje_kod,
+            "adresa_djeteta": adresa_djeteta,
+            "raspored_kontakta": raspored_kontakta,
+            "praznici": praznici,
+            "ljetni_odmor": ljetni_odmor,
+            "alimentacija_iznos": alimentacija_iznos,
+            "alimentacija_datum_dospijeca": alimentacija_datum,
+            "alimentacija_iban": alimentacija_iban,
+            "posebne_odredbe": posebne_odredbe,
+        }
+        doc = generiraj_roditeljsku_skrb(roditelj1, roditelj2, podaci)
+        audit_input = {
+            "roditelj1_html": roditelj1,
+            "roditelj2_html": roditelj2,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Roditeljska_skrb.docx", "Preuzmi dokument",
+                         **audit_kwargs("roditeljska_skrb", audit_input, "obiteljsko"))
 
 
 # ---- 5. Ugovor o uzdrzavanju ----
@@ -517,18 +529,21 @@ def _render_ugovor_uzdrzavanje():
 
     st.markdown("---")
     if st.button("Generiraj ugovor o uzdržavanju", type="primary"):
-        doc = generiraj_ugovor_uzdrzavanje(
-            obveznik,
-            primatelj,
-            {
-                "mjesto": mjesto,
-                "iznos_mjesecno": iznos,
-                "datum_dospijeca": datum_dospijeca,
-                "iban": iban,
-                "dijete_ime": dijete_ime,
-                "dijete_datum_rodjenja": dijete_datum,
-                "zakonski_zastupnik": zakonski_zastupnik,
-                "clausula_exequendi": clausula,
-            },
-        )
-        prikazi_dokument(doc, "Ugovor_uzdrzavanje.docx", "Preuzmi dokument")
+        podaci = {
+            "mjesto": mjesto,
+            "iznos_mjesecno": iznos,
+            "datum_dospijeca": datum_dospijeca,
+            "iban": iban,
+            "dijete_ime": dijete_ime,
+            "dijete_datum_rodjenja": dijete_datum,
+            "zakonski_zastupnik": zakonski_zastupnik,
+            "clausula_exequendi": clausula,
+        }
+        doc = generiraj_ugovor_uzdrzavanje(obveznik, primatelj, podaci)
+        audit_input = {
+            "obveznik_html": obveznik,
+            "primatelj_html": primatelj,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Ugovor_uzdrzavanje.docx", "Preuzmi dokument",
+                         **audit_kwargs("ugovor_uzdrzavanje", audit_input, "obiteljsko"))
