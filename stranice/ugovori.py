@@ -10,7 +10,23 @@ from pomocne import (
     _rimski_broj,
     doc_selectbox,
     napuni_primjerom,
+    audit_kwargs,
 )
+
+
+# Mape za K1 doc_type slugove
+_GP_SLUG = {
+    "Kupoprodaja": "kupoprodaja",
+    "Najam/Zakup": "najam_zakup",
+    "Ugovor o djelu (Usluga)": "djelo_usluga",
+    "Zajam": "zajam",
+}
+_OTKAZ_SLUG = {
+    "Poslovno uvjetovani": "poslovno_uvjetovani",
+    "Osobno uvjetovani": "osobno_uvjetovani",
+    "Skrivljeno ponašanje": "skrivljeno_ponasanje",
+    "Izvanredni otkaz": "izvanredni",
+}
 from klauzule import KATEGORIJE, dohvati_klauzule, dohvati_klauzulu_po_nazivu
 from generatori.ugovori import (
     generiraj_prilagodeni_ugovor,
@@ -123,7 +139,18 @@ def _render_slobodna_forma():
             naslov_ugovora, mjesto, datum, rok_vazenja,
             s1_data, s2_data, urbroj, st.session_state.custom_contract,
         )
-        prikazi_dokument(doc, "Ugovor.docx", "Preuzmi dokument")
+        audit_input = {
+            "naslov": naslov_ugovora,
+            "mjesto": mjesto,
+            "datum": datum,
+            "rok_vazenja": rok_vazenja,
+            "s1": s1_data,
+            "s2": s2_data,
+            "urbroj": urbroj,
+            "sadrzaj": st.session_state.custom_contract,
+        }
+        prikazi_dokument(doc, "Ugovor.docx", "Preuzmi dokument",
+                         **audit_kwargs("slobodna_forma_ugovor", audit_input, "ugovori"))
 
 
 def _render_gradjansko_pravo():
@@ -180,7 +207,17 @@ def _render_gradjansko_pravo():
 
     if st.button("Generiraj ugovor", type="primary", key="btn_gp"):
         doc = generiraj_ugovor_standard(tip, s1, s2, data, opcije, troskovi)
-        prikazi_dokument(doc, f"{tip}.docx", "Preuzmi dokument")
+        slug = _GP_SLUG.get(tip, "gp_ugovor")
+        audit_input = {
+            "tip": tip,
+            "strana1_html": s1,
+            "strana2_html": s2,
+            "data": data,
+            "opcije": opcije,
+            "troskovi": troskovi,
+        }
+        prikazi_dokument(doc, f"{tip}.docx", "Preuzmi dokument",
+                         **audit_kwargs(slug, audit_input, "ugovori"))
 
 
 def _render_radno_pravo():
@@ -248,7 +285,9 @@ def _render_ugovor_o_radu():
 
     if st.button("Generiraj ugovor o radu", type="primary"):
         doc = generiraj_ugovor_o_radu(p, r, podaci)
-        prikazi_dokument(doc, "Ugovor_o_radu.docx", "Preuzmi dokument")
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_o_radu.docx", "Preuzmi dokument",
+                         **audit_kwargs("ugovor_o_radu", audit_input, "ugovori"))
 
 
 def _render_otkaz():
@@ -267,7 +306,10 @@ def _render_otkaz():
     }
     if st.button("Generiraj otkaz", type="primary"):
         doc = generiraj_otkaz(p, r, podaci)
-        prikazi_dokument(doc, "Otkaz.docx", "Preuzmi dokument")
+        slug = f"otkaz_{_OTKAZ_SLUG.get(vrsta, 'opcenito')}"
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Otkaz.docx", "Preuzmi dokument",
+                         **audit_kwargs(slug, audit_input, "ugovori"))
 
 
 def _render_aneks():
@@ -301,14 +343,17 @@ def _render_aneks():
         st.rerun()
 
     if st.button("Generiraj aneks", type="primary"):
-        doc = generiraj_aneks_ugovora_o_radu(p, r, {
+        podaci = {
             'mjesto': mjesto,
             'datum_osnovnog_ugovora': datum_osnovnog.strftime('%d.%m.%Y.'),
             'datum_primjene': datum_primjene.strftime('%d.%m.%Y.'),
             'razlog': razlog,
             'promjene': [pr for pr in st.session_state.aneks_promjene if pr.strip()],
-        })
-        prikazi_dokument(doc, "Aneks_ugovor_o_radu.docx", "Preuzmi dokument")
+        }
+        doc = generiraj_aneks_ugovora_o_radu(p, r, podaci)
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Aneks_ugovor_o_radu.docx", "Preuzmi dokument",
+                         **audit_kwargs("aneks_ugovora_o_radu", audit_input, "ugovori"))
 
 
 def _render_upozorenje():
@@ -329,13 +374,16 @@ def _render_upozorenje():
     rok = st.number_input("Rok za očitovanje (dana)", min_value=1, value=8)
 
     if st.button("Generiraj upozorenje", type="primary"):
-        doc = generiraj_upozorenje_radniku(p, r, {
+        podaci = {
             'mjesto': mjesto,
             'datum_povrede': datum_povrede.strftime('%d.%m.%Y.'),
             'opis_povrede': opis_povrede,
             'rok_ocitovanja': rok,
-        })
-        prikazi_dokument(doc, "Upozorenje_radniku.docx", "Preuzmi dokument")
+        }
+        doc = generiraj_upozorenje_radniku(p, r, podaci)
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Upozorenje_radniku.docx", "Preuzmi dokument",
+                         **audit_kwargs("upozorenje_radniku", audit_input, "ugovori"))
 
 
 def _render_rad_na_daljinu():
@@ -376,7 +424,9 @@ def _render_rad_na_daljinu():
 
     if st.button("Generiraj ugovor", type="primary", key="rd_btn"):
         doc = generiraj_ugovor_rad_na_daljinu(p, r, podaci)
-        prikazi_dokument(doc, "Ugovor_rad_na_daljinu.docx", "Preuzmi dokument")
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Ugovor_rad_na_daljinu.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"rad_{vrsta_rada}", audit_input, "ugovori"))
 
 
 def _render_sporazumni_prestanak():
@@ -409,7 +459,9 @@ def _render_sporazumni_prestanak():
 
     if st.button("Generiraj sporazumni prestanak", type="primary", key="sp_btn"):
         doc = generiraj_sporazumni_prestanak(p, r, podaci)
-        prikazi_dokument(doc, "Sporazumni_prestanak.docx", "Preuzmi dokument")
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Sporazumni_prestanak.docx", "Preuzmi dokument",
+                         **audit_kwargs("sporazumni_prestanak_rada", audit_input, "ugovori"))
 
 
 def _render_zabrana_natjecanja():
@@ -440,7 +492,9 @@ def _render_zabrana_natjecanja():
 
     if st.button("Generiraj zabranu natjecanja", type="primary", key="zn_btn"):
         doc = generiraj_zabranu_natjecanja(p, r, podaci)
-        prikazi_dokument(doc, "Zabrana_natjecanja.docx", "Preuzmi dokument")
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Zabrana_natjecanja.docx", "Preuzmi dokument",
+                         **audit_kwargs("zabrana_natjecanja", audit_input, "ugovori"))
 
 
 def _render_potvrda_o_zaposlenju():
@@ -466,7 +520,9 @@ def _render_potvrda_o_zaposlenju():
 
     if st.button("Generiraj potvrdu", type="primary", key="pz_btn"):
         doc = generiraj_potvrdu_o_zaposlenju(p, r, podaci)
-        prikazi_dokument(doc, "Potvrda_o_zaposlenju.docx", "Preuzmi dokument")
+        audit_input = {"poslodavac_html": p, "radnik_html": r, "podaci": podaci}
+        prikazi_dokument(doc, "Potvrda_o_zaposlenju.docx", "Preuzmi dokument",
+                         **audit_kwargs("potvrda_o_zaposlenju", audit_input, "ugovori"))
 
 
 def render_ugovori():
