@@ -1,151 +1,86 @@
-# LegalTech Suite Pro - Prijedlozi za daljnji razvoj
+ideje za uzet u obzir
 
-## PRIORITET 1 - Najtrazeniji dokumenti (nedostaju u aplikaciji)
+Neuromorphyx razvija ultra-low-power edge AI sustave koji spajaju event-based viziju, audio detekciju (MEMS) i embedded inferenciju u realnim uvjetima (industrija, sigurnost, nadzor, automatizacija).
+Što ćeš raditi:
+Trenirati i iterirati vision i audio modele (detekcija/klasifikacija; keyword spotting i akustična detekcija).
+Raditi NAS (Neural Architecture Search) i/ili trenirati supernetove (one-shot NAS) te optimizirati multi-objective (accuracy/latency/energy).
+Optimizirati modele za edge: quantization, pruning, distillation, memory/latency tuning.
+Eksperimentirati s event-stream podacima, neuromorfnim pristupima i hardverskim ograničenjima (power budget).
+Postaviti reproducibilan R&D workflow: eksperimenti, metrike, tracking, i dokumentaciju.
+Što tražimo:
+PyTorch (poželjno) / TF, razumijevanje treninga i evaluacije.
+Iskustvo ili interes za NAS/supernet, kompresiju i edge deploy.
+“Engineering” pristup: čist kod, reproducibilnost, metrički mindset.
+Što nudimo:
+R&D koji spaja ML + hardware (pravi edge, ne samo cloud).
+- Dokumentirati potrebe klijenata i prevoditi ih u strukturirane inženjerske specifikacije 
+- Izrađivati i testirati konverzacijske AI tokove koristeći programiranje, prompt inženjering i alate platforme 
+- Pomoći pri integraciji konverzacijskih AI mogućnosti u postojeća tehnološka okruženja korisnika 
+- Sudjelovati u rješavanju problema i otklanjanju grešaka u implementiranim AI sustavima 
+- Surađivati s timovima za konverzacijski dizajn, proizvod, inženjering, prodaju i implementaciju na isporuci rješenja 
+- Graditi znanje o Infobipovom portfelju proizvoda, ekosustavu konverzacijske umjetne inteligencije i trendovima u industriji 
+- Doprinositi poboljšanju proizvoda kroz uvide iz korisničkih slučajeva i obrazaca implementacije 
+- Podržavati pravovremeno izvršavanje dodijeljenih zadataka, projektnih zadataka i internih aktivnosti razmjene znanja
+code softverskih rješenja i automatizaciji poslovnih procesa. No-code alati su platforme koje omogućuju izradu aplikacija, automatizaciju procesa i integraciju sustava bez tradicionalnog programiranja, umjesto koda koristi se grafičko sučelje s elementima "povuci i ispusti" (drag-and-drop).
+●       Učenje i rad s no-code platformama poput ClickUp-a, SmartSuite-a, Hubspot-a, Zapier-a, Make-a, Airtable-a i sl.
+●       Konfiguracija i prilagodba alata prema potrebama klijenata
+●       Integracija različitih alata kako bi se postigla optimalna funkcionalnost
+●       Prepoznavanje mogućnosti za automatizaciju unutar poslovnih procesa
+●       Izrada automatiziranih tijekova rada koji poboljšavaju učinkovitost
+●       Testiranje i optimizacija automatizacija
+●       Sudjelovanje u internim treninzima i radionicama
+●       Praćenje trendova i novosti u no-code tehnologijama
+●       Suradnja s iskusnim mentorima koji će te voditi kroz projekte
 
-### 0. svaki navodnici su automatski pretvoreni u americke, tekst izmedu navodnika je automatski u italicu.
+Osnove barem jednog programskog jezika (Python, JavaScript, PHP, C# ili slično). Osnovno razumijevanje baza podataka (MySQL, PostgreSQL ili slično). Git (osnove verzioniranja koda). Rad s AI/chatbot alatima (npr. ChatGPT API, ManyChat ili slično). Osnove rada s API integracijama
+Rad s frameworkovima (Django, React, Laravel ili slično). Osnove frontenda (HTML, CSS, JavaScript). Iskustvo u razvoju chatbotova i automatizacija. Razumijevanje UX-a u kontekstu AI komunikacije. Osnove umjetne inteligencije i NLP-a.
+WordPress projekata
 
-### 1. Opomena pred tuzbu / ovrhu
-Najcesci pravni dokument u praksi. Gotovo svaka tuzba ili ovrha prethodi opomenom.
-- Upozorenje duznika na dospjelu obvezu
-- Rok za ispunjenje (obicno 8 dana)
-- Najava pokretanja postupka
-- **Pravni temelj:** ZOO, Ovrsni zakon
+• Iskustvo s različitim tipovima stranica, npr.: e-commerce (WooCommerce), e-learning / LMS platforme, poslovne i prezentacijske stranice, landing stranice
 
-### 2. Punomoc (opca i posebna)
-Potrebna za svaki odvjetnicki angazman. Aplikacija vec referira "po punomocniku" ali ne generira sam dokument.
-- Opca punomoc (za sve pravne radnje)
-- Posebna punomoc (za tocno odredeni postupak)
-- **Pravni temelj:** ZPP cl. 89-98, ZOO cl. 308-331
+• Odlično poznavanje WordPressa (instalacija, konfiguracija, prilagodba tema i pluginova)
 
-### 3. Prigovor protiv rjesenja o ovrsi JB
-Prirodni nastavak postojeceg modula ovrhe - odgovor duznika kad primi rjesenje.
-- Rok: 8 dana od dostave
-- Pretvara postupak u parnicu
-- **Pravni temelj:** Ovrsni zakon cl. 41-42
+• Dobro poznavanje HTML, CSS i osnovnog JavaScripta
 
-### 4. Aneks ugovora o radu
-Najcesci dokument u radnom pravu nakon pocetnog ugovora.
-- Za svaku promjenu place, pozicije, radnog vremena
-- **Pravni temelj:** Zakon o radu cl. 12
+• Potpuna samostalnost u radu
 
-### 5. Upozorenje radniku prije otkaza
-Zakonski obvezan preduvjet za otkaz zbog skrivljenog ponasanja.
-- Bez njega, otkaz je nezakonit
-- **Pravni temelj:** Zakon o radu cl. 119
 
----
+Glavne Odgovornosti
 
-## PRIORITET 2 - Trgovacko pravo
+• Rad s cPanelom
 
-### 6. Drustveni ugovor d.o.o.
-Potreban za svako osnivanje drustva. Jedan od najcescih pravnih dokumenata.
-- Osnivaci, temeljni kapital, predmet poslovanja
-- Organi drustva, zastupanje
-- **Pravni temelj:** ZTD cl. 387+
+• Upravljanje hostingom i domenama
 
-### 7. Odluka skupstine / jednog clana drustva
-Potrebna za svaku korporativnu radnju.
-- Imenovanje direktora, odobrenje zavrsnog racuna
-- Raspodjela dobiti, promjene kapitala
-- **Pravni temelj:** ZTD cl. 441+
+• Izrada i vraćanje backupova
 
-### 8. Ugovor o prijenosu poslovnog udjela
-Za prodaju/prijenos udjela u d.o.o. Mora biti javnobiljeznicki ovjeren.
-- **Pravni temelj:** ZTD cl. 412
+• Migracije WordPress stranica
 
-### 9. Ugovor o tajnosti (NDA)
-Sve cesci u poslovnim odnosima, M&A transakcijama.
+• Rješavanje tehničkih problema na serveru
 
-### 10. Zapisnik sjednice uprave
-Korporativna dokumentacija za svako d.o.o. i d.d.
 
----
+Benefiti
 
-## PRIORITET 3 - Prosirenje postojecih modula
+• Fleksibilno radno vrijeme
 
-### Ugovorno / Obvezno pravo
-- **Ugovor o darovanju** - cest za obiteljske prijenose nekretnina
-- **Ugovor o cesiji** - prijenos trazbina
-- **Ugovor o kompenzaciji** - prijeboj uzajamnih dugovanja
-- **Ugovor o jamstvu** - garancija za duznikove obveze
-- **Ugovor o gradenju** - specificna pravila ZOO cl. 620+
-- **Ugovor o licenciji** - za intelektualno vlasnistvo
-- **Ugovor o posredovanju** - obvezan za posrednike u prometu nekretninama
-- **Sporazumni raskid ugovora** - za formalno okoncanje ugovornog odnosa
+• 100% remote rad
 
-### Radno pravo
-- **Ugovor o radu na daljinu** - novo od 2023. (izmjene ZoR)
-- **Sporazumni prestanak ugovora o radu** - razlicit od jednostranog otkaza
-- **Ugovor o zabrani natjecanja** - zahtijeva naknadu (cl. 101-105 ZoR)
-- **Potvrda o zaposlenju** - poslodavac ju je duzan izdati na zahtjev
+• Mogućnost dugoročne suradnje
 
-### Ovrsno pravo
-- **Prijedlog za ovrhu na temelju ovrsne isprave** - na temelju presude (ne JB)
-- **Prijedlog za ovrhu na nekretnini** - prisilna prodaja
-- **Prijedlog za ovrhu na placi** - zapljena
-- **Prijedlog za obustavu ovrhe** - kad je dug namiren
-- **Prijedlog za privremenu mjeru** - osiguranje trazbine
+• Rad na različitim web projektima
 
-### Zemljisnoknjizno pravo
-- **Prijedlog za zabiljezbu** - razlicito od uknjizbe (biljeska cinjenica)
-- **Prijedlog za predbilijezbu** - uvjetni upis vlasnistva
-- **Prijedlog za upis hipoteke** - za svaki kredit osiguran nekretninom
-- **Prijedlog za brisanje hipoteke** - kad je kredit otplacen
-- **Prijedlog za upis sluznosti** - pravo prolaza, komunalni vodovi
+• Rad u mladom i ambicioznom timu
 
----
+Razvijamo online fitness coaching platformu i tražimo studenta/icu koji će nam pomoći u razvoju i održavanju PWA web aplikacije koja je već u produkciji s realnim korisnicima. Riječ je o stvarnom projektu za stvarne korisnike.
 
-## PRIORITET 4 - Nova pravna podrucja
+Trenutno imamo funkcionalan MVP-PWA kalorijski tracker na produkcijskom serveru. Aplikacija je napisana u čistom HTML/CSS/JavaScript (single-file arhitektura, bez frameworka), s Supabase backendom za pohranu podataka u cloudu. Korisnici se prijavljuju putem pristupnih kodova te postoji admin panel za upravljanje korisnicima.
 
-### Obiteljsko pravo
-- **Sporazum o razvodu braka** - sporazumni razvod
-- **Tuzba za razvod braka** - sporni razvod
-- **Bracni ugovor** - ugovor o imovinskim odnosima (mora biti javnobiljeznicki)
-- **Sporazum o roditeljskoj skrbi** - skrbnistvo, kontakti, uzdrzavanje
-- **Ugovor o uzdrzavanju** - sporazum o alimentaciji
 
-### Upravno pravo
-- **Zalba u upravnom postupku (ZUP)** - protiv prvostupanjskih upravnih rjesenja
-- **Tuzba u upravnom sporu (ZUS)** - tuzba Upravnom sudu
-- **Zahtjev za pristup informacijama** - pravo gradana prema javnim tijelima
-- **Prigovor / Predstavka** - formalna prituzba na postupanje tijela
+Tražimo: studenta/icu viših godina informatike ili srodnog smjera sa solidnim poznavanjem JavaScript/HTML/CSS, iskustvom s REST API integracijama te aktivnim korištenjem AI alata (Claude, Cursor, ChatGPT).
 
-### Kazneno pravo
-- **Kaznena prijava** - prijava kaznenog djela
-- **Privatna tuzba** - za djela koja se gone po privatnoj tuzbi (kleveta, uvreda)
-- **Zalba na kaznenu presudu** - razliciti razlozi od gradanske zalbe (ZKP cl. 464+)
+Osim stručnih uvjeta, tražimo osobu koja može raditi samostalno i držati se dogovorenih rokova i uvjeta.
 
-### Stecajno pravo
-- **Prijedlog za otvaranje stecajnog postupka** - insolventnost
-- **Prijava trazbine** - vjerovnicki zahtjev u stecaju
-- **Prijedlog za stecaj potrosaca** - osobni bankrot
 
-### Zastita potrosaca
-- **Reklamacija / Prigovor trgovcu** - prvi korak prije suda
-- **Jednostrani raskid ugovora na daljinu** - pravo odustanka 14 dana (EU)
-- **Prijava trzisnoj inspekciji** - krsenje potrosackih prava
+Tvoji zadaci: dodavanje novih funkcionalnosti (npr. omiljeni obroci, statistike, push notifikacije), razvoj admin dashboarda za praćenje korisnika, priprema i prilagodba aplikacije za Google Play (TWA/PWABuilder) i App Store (Capacitor/Cordova), optimizacija i održavanje.
 
----
 
-## TEHNICKA POBOLJSANJA
-
-### Kratkorocno
-1. **PDF preskociti jer je poanta docx da bude lakse urediti dokument!!
-2. **Predlosci sudova** - baza podataka svih sudova u RH (naziv, adresa)
-3. **OIB kontrola sume** - ISO 7064 mod-11-10 validacija (ne samo 11 znamenki)
-4. **Podrska za vise stranaka** - neke tuzbe imaju vise tuzitelja/tuzenika
-5. **Predlosci claanaka** - biblioteka standardnih ugovornih odredbi
-
-### Srednjorocno
-6. **Baza propisa** - integracija s zakon.hr ili nn.hr za dohvat aktualnih zakonskih tekstova
-7. **Kalkulator sudskih pristojbi** - automatski izracun prema Zakonu o sudskim pristojbama
-8. **e-Komunikacija** - priprema dokumenata za elektronicko podnosenje sudu
-9. **Vodic za korisnike** - objasnjenje svakog polja i pravnog konteksta
-10. **Visekorisnicka podrska** - prijava, spremanje dokumenata, povijest
-
-### Dugorocno
-11. **AI asistent** - integracija s Claude API za pomoc u pisanju cinjenicnih navoda
-12. **OCR uvoz** - skeniranje postojecih dokumenata i automatsko popunjavanje polja
-13. **Rokovno upravljanje** - pracenje rokova za zalbe, prigovore, ovrhe
-14. **Kolaboracija** - dijeljenje dokumenata medu korisnicima
-15. **Mobile app** - nativna mobilna aplikacija (React Native / Flutter)
+Uvjeti rada: remote, fleksibilno radno vrijeme.

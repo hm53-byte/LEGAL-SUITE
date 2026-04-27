@@ -1,0 +1,19 @@
+{
+    "name": "lts-stripe-webhook",
+    "version": "0.1.0",
+    "description": "Cloudflare Worker za K3 Stripe webhook + checkout (LegalTechSuite Pro)",
+    "main": "cf_worker_stripe.ts",
+    "scripts": {
+        "deploy": "wrangler deploy",
+        "dev": "wrangler dev",
+        "tail": "wrangler tail"
+    },
+    "dependencies": {
+        "stripe": "^17.4.0"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20250109.0",
+        "wrangler": "^3.99.0",
+        "typescript": "^5.7.0"
+    }
+}

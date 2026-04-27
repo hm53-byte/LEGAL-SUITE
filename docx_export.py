@@ -493,13 +493,35 @@ def _dodaj_header_naslov(section, naslov):
     pPr.append(pBdr)
 
 
-def html_u_docx(html_sadrzaj, watermark=None, naslov_dokumenta=None):
+def html_u_docx(
+    html_sadrzaj,
+    watermark=None,
+    naslov_dokumenta=None,
+    user_id=None,
+    doc_type=None,
+    plan=None,
+    input_dict=None,
+    generator_module_path=None,
+):
     """
     Pretvara HTML iz generatora u pravi .docx Word dokument.
     Vraca bytes spremne za download.
 
-    watermark: tekst watermark-a (npr. "NACRT", "DRAFT") ili None
-    naslov_dokumenta: naziv dokumenta za header ili None
+    Args:
+        html_sadrzaj: HTML string iz generator/* funkcije
+        watermark: tekst watermark-a (npr. "NACRT", "DRAFT") ili None — sredisnji vodeni zig
+        naslov_dokumenta: naziv dokumenta za header ili None
+        user_id: K3 forenzicki audit — Supabase user_id (UUID); None za guest
+        doc_type: K3 forenzicki audit — npr. 'tuzba', 'ovrha' (sluzi u download_log)
+        plan: 'free' ili 'pro'; ako None, citamo iz entitlements (graceful degrade ako Supabase nije konfiguriran)
+
+    K3 watermark integracija (per-doc forensic serial):
+        - Generira jedinstveni 'NN-NNNN-NNNNNN' broj
+        - Visible footer: "Generirano iz LegalTechSuite Pro - ID: NN-NNNN-NNNNNN" (free)
+                          ili "ID: NN-NNNN-NNNNNN" (pro, cleaner)
+        - Invisible XML metadata: dc:identifier (forenzicki alati to vide)
+        - Tihi fail: ako watermark/entitlements moduli nisu dostupni (npr. testovi
+          koji ne importiraju watermark.py), docx se generira bez K3 sloja.
     """
     doc = Document()
 
@@ -511,7 +533,7 @@ def html_u_docx(html_sadrzaj, watermark=None, naslov_dokumenta=None):
         section.right_margin = Cm(MARGIN_CM)
         # Dodaj broj stranice u footer
         _dodaj_broj_stranice(section)
-        # Watermark
+        # Watermark (sredisnji "NACRT" tekst, neovisan o K3 forensic serial)
         if watermark:
             _dodaj_watermark(section, watermark)
         # Header s nazivom dokumenta
@@ -527,6 +549,35 @@ def html_u_docx(html_sadrzaj, watermark=None, naslov_dokumenta=None):
     pf.line_spacing = LINE_SPACING
     pf.space_after = Pt(2)
 
+    # ─── K3: per-doc forensic serial broj (apply_watermark) ───────────────────
+    # Generira serial PRIJE parsing-a tako da footer HTML moze biti dodan u
+    # rendered HTML; XML metadata se utiska u doc objekt direktno.
+    serial = None
+    serial_h = None
+    effective_plan = plan or "free"
+    try:
+        import watermark as _wm
+        # Ako plan nije eksplicitno proslijeden, ucitaj iz entitlements (graceful)
+        if plan is None:
+            try:
+                import entitlements as _ent
+                effective_plan = "pro" if _ent.is_pro(user_id=user_id) else "free"
+            except Exception:
+                effective_plan = "free"
+        # Generiraj serial + utiskiraj XML metadata (dc:identifier)
+        if doc_type:
+            serial, serial_h = _wm.apply_watermark(
+                doc=doc,
+                user_id=user_id or "guest",
+                doc_type=doc_type,
+                plan=effective_plan,
+            )
+            # Dodaj visible footer u HTML PRIJE parsiranja
+            html_sadrzaj = html_sadrzaj + _wm.footer_html(serial, plan=effective_plan)
+    except ImportError:
+        # watermark modul nije dostupan (npr. minimalni test env) - tihi fall-through
+        pass
+
     # Parsiraj HTML
     parser = _HtmlToDocxParser(doc)
     # Ocisti HTML prije parsiranja
@@ -538,16 +589,71 @@ def html_u_docx(html_sadrzaj, watermark=None, naslov_dokumenta=None):
     buffer = io.BytesIO()
     doc.save(buffer)
     buffer.seek(0)
-    return buffer.getvalue()
+    output_bytes = buffer.getvalue()
+
+    # ─── K1: audit chain + K3 record download (tihi fail) ───────────────────
+    if serial_h and doc_type:
+        try:
+            import entitlements as _ent
+            audit_payload = None
+            # K1 audit chain: aktivira se SAMO ako pozivatelj proslijedi
+            # input_dict + generator_module_path (backwards compat: postojeci
+            # generatori koji ne proslijede ostaju bez audit chain-a, samo K3 watermark)
+            if input_dict is not None and generator_module_path is not None:
+                try:
+                    import audit_chain as _ac
+                    parent = _ent.get_last_chain_hash(user_id=user_id)
+                    audit_payload = _ac.compute_full_audit(
+                        input_dict=input_dict,
+                        output_bytes=output_bytes,
+                        generator_module_path=generator_module_path,
+                        parent_hash=parent,
+                    )
+                except Exception:
+                    audit_payload = None  # tihi fall-through, K3 watermark ostaje
+            _ent.record_download(
+                doc_type=doc_type,
+                doc_subtype=naslov_dokumenta or doc_type,
+                serial_hash=serial_h,
+                plan=effective_plan,
+                user_id=user_id,
+                audit=audit_payload,
+            )
+        except Exception:
+            pass
+
+    return output_bytes
 
 
-def pripremi_za_docx(html_sadrzaj, watermark=None, naslov_dokumenta=None):
+def pripremi_za_docx(
+    html_sadrzaj,
+    watermark=None,
+    naslov_dokumenta=None,
+    user_id=None,
+    doc_type=None,
+    plan=None,
+    input_dict=None,
+    generator_module_path=None,
+):
     """
     Glavna funkcija za export - zamjena za stari pripremi_za_word().
     Vraca bytes.
 
-    watermark: tekst watermark-a (npr. "NACRT") ili None
-    naslov_dokumenta: naziv dokumenta za header ili None
+    K3 forensic watermark se aktivira automatski ako je `doc_type` proslijeden.
+    K1 audit chain se aktivira ako su `input_dict` i `generator_module_path`
+    proslijedjeni — racuna se input_canonical_hash, output_sha256,
+    generator_version_hash i hash chain link, upisuje u download_log.
+    user_id, plan se citaju iz entitlements ako nisu eksplicitno postavljeni.
+    Backwards-compat: stari call `pripremi_za_docx(html, "NACRT", "Tuzba")` radi
+    bez izmjene — K3 i K1 su no-op kad opcijski parametri nisu proslijedjeni.
     """
-    docx_bytes = html_u_docx(html_sadrzaj, watermark=watermark, naslov_dokumenta=naslov_dokumenta)
-    return docx_bytes
+    return html_u_docx(
+        html_sadrzaj,
+        watermark=watermark,
+        naslov_dokumenta=naslov_dokumenta,
+        user_id=user_id,
+        doc_type=doc_type,
+        plan=plan,
+        input_dict=input_dict,
+        generator_module_path=generator_module_path,
+    )

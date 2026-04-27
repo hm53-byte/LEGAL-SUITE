@@ -1,0 +1,67 @@
+{
+  "version": "v1",
+  "git_commit": "aa1721edd43e757db932620171790f58631650ab",
+  "generated_at": "2026-04-27T12:21:19.231535+00:00",
+  "generators": {
+    "kazneno": {
+      "module": "generatori/kazneno.py",
+      "hash": "1cbbeb76f32559bc822716146f5f485f405cdca973c7e693b73e23380345a548"
+    },
+    "obiteljsko": {
+      "module": "generatori/obiteljsko.py",
+      "hash": "bbe5f41474cab7a0e5bdd7fc03981cd8879de1b064d8ab8bda180393c94bbf52"
+    },
+    "obvezno": {
+      "module": "generatori/obvezno.py",
+      "hash": "59b85dddcab357e30bc90c2f714f3e3cbbc706815b3475030ba6d9f49f16c300"
+    },
+    "opomene": {
+      "module": "generatori/opomene.py",
+      "hash": "96e1885125d61cdc37ce8034b374de0b98bfb49676d7b5dd97834db61290ec42"
+    },
+    "ovrhe": {
+      "module": "generatori/ovrhe.py",
+      "hash": "be7eb98a6a9b7c4ca6fadccb3047d2a9579f52718db0b6a4b2c1d093ea6500aa"
+    },
+    "posrednik_najam": {
+      "module": "generatori/posrednik_najam.py",
+      "hash": "21fcc9806faa21cd1b5e3f34382ab9347fb2ffc5001ee9f1cacf2f0b2ffa9ff7"
+    },
+    "potrosaci": {
+      "module": "generatori/potrosaci.py",
+      "hash": "686c58c3ba3183bfaa337710f58a8b18e956a0f579faeed2965d3b2efda5033c"
+    },
+    "punomoci": {
+      "module": "generatori/punomoci.py",
+      "hash": "ab13fff7531307f955c1272f2ad4d7d114ae15c83f9b564d7eac3ec6a4f77589"
+    },
+    "stecajno": {
+      "module": "generatori/stecajno.py",
+      "hash": "b128f14d238c74280f61c56f2b5c65a9a611d503b27f9d3fe50b65f74a595f00"
+    },
+    "trgovacko": {
+      "module": "generatori/trgovacko.py",
+      "hash": "5d1344a21d7653f58e6eef54be040d08dc91fd27f43ad5863a45f71bb6ab961e"
+    },
+    "tuzbe": {
+      "module": "generatori/tuzbe.py",
+      "hash": "e5ab53a5503a56d3a8bf2e400ccceabc3d6ca35c1616d70bb9efc01cb1cbec1e"
+    },
+    "ugovori": {
+      "module": "generatori/ugovori.py",
+      "hash": "4fa093fb32cc06693dc4b7946fdabff13240d2ac1f9d71fb5999fecc22e21c6c"
+    },
+    "upravno": {
+      "module": "generatori/upravno.py",
+      "hash": "b16f524dcb887be7c72d73a4b850d61e288f816972ebf842a55cc803e582eaf5"
+    },
+    "zalbe": {
+      "module": "generatori/zalbe.py",
+      "hash": "15799506ab7061eb4ce79ed513c99eff0b70462ee4bfc800206e8f0180009f9b"
+    },
+    "zemljisne": {
+      "module": "generatori/zemljisne.py",
+      "hash": "e8564292b2a8686654e004acdabd5de894b60bf37672b46b527eb378dfdf03d9"
+    }
+  }
+}

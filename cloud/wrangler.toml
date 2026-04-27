@@ -1,0 +1,14 @@
+# wrangler.toml — Cloudflare Workers config za K3 Stripe webhook
+#
+# Deploy: cd cloud && wrangler deploy
+# Secrets: vidi cf_worker_stripe.ts header za listu (wrangler secret put ...)
+
+name = "lts-stripe-webhook"
+main = "cf_worker_stripe.ts"
+compatibility_date = "2026-01-15"
+compatibility_flags = ["nodejs_compat"]  # za stripe sdk crypto
+
+[observability]
+enabled = true
+
+# Free tier: 100k zahtjeva/dan, 10ms CPU/zahtjev. Webhook + checkout su <5ms svaki.

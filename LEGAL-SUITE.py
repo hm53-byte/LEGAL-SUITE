@@ -29,6 +29,7 @@ from stranice import (
     render_nn_pretraga,
     render_jednostavno,
     render_posrednik_najam,
+    render_pravila,
 )
 from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
 
@@ -117,6 +118,7 @@ _MODULI = {
     "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Ročišta, rokovi, podsjetnici"},
     "Kamate":            {"render": render_kamate,      "grupa": "Alati",  "docx": False, "opis": "Kalkulator zakonskih zateznih kamata"},
     "Pristojbe":         {"render": render_pristojbe,   "grupa": "Alati",  "docx": False, "opis": "Kalkulator sudskih pristojbi"},
+    "Pravila i privatnost": {"render": render_pravila,  "grupa": "Alati",  "docx": False, "opis": "Uvjeti korištenja, GDPR, watermark"},
 }
 
 # Grupe za sidebar
@@ -234,6 +236,18 @@ if not _is_simple_mode:
                     st.rerun()
 
 st.sidebar.markdown("---")
+
+# K3 monetizacija (2026-04-27): "Pretplati se na PRO" CTA u sidebar.
+# Gumb se prikazuje SAMO ako su Streamlit secrets postavljeni (Supabase + CF Worker URL)
+# I ako je korisnik logiran I NIJE vec PRO. Inace je no-op (sidebar tih).
+try:
+    import entitlements as _ent
+    with st.sidebar:
+        _ent.render_subscribe_cta(label="Pretplati se na PRO", key="_pro_cta_sidebar")
+except Exception:
+    # entitlements modul nije dostupan ili Supabase ne odgovara — sidebar nastavlja bez CTA
+    pass
+
 st.sidebar.markdown(
     "<div style='text-align:center;font-size:0.65rem;color:#64748B !important;"
     "font-family:Inter,sans-serif;padding:0.3rem 0;'>"
@@ -285,155 +299,176 @@ def _navigate_to(module_name):
 # POČETNA STRANICA
 # =============================================================================
 
-_VODIC_KATEGORIJE = [
+# Katalog pravnih područja (objektivna taksonomija po HR pravu).
+# Refactor 2026-04-27 K5: prijašnji "_VODIC_KATEGORIJE" je klasificirao korisnikov
+# problem u prirodnom jeziku ("Netko mi duguje novac" -> ovrha) — to je impliciran
+# klasifikator pravnog problema (rub nadripisarstva ZO čl. 72; AI Act 2026 Annex
+# III pt. 8 visoko-rizična zona). Preimenovan u _PODRUCJA_KATALOG s objektivnim
+# pravnim područjima — korisnik sam bira što treba, app ne klasificira.
+# Polja "tezina"/"vrijeme" ostaju kao **objektivna kompleksnost forme** (broj polja
+# za popunit), NE kao "kompliciranost vašeg slučaja". Stari naziv varijable ostavljen
+# kao alias da se ne lome eventualni vanjski importi.
+_PODRUCJA_KATALOG = [
     {
-        "naslov": "Netko mi duguje novac",
+        "naslov": "Ovršno pravo",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Opomena, ovrha ili tužba za naplatu duga",
-        "moduli": ["Opomena", "Ovršno pravo", "Tužbe"],
+        "opis": "Opomene, ovršni prijedlozi, prigovori",
+        "moduli": ["Opomena", "Ovršno pravo"],
     },
     {
-        "naslov": "Ne slažem se s presudom",
+        "naslov": "Tužbe i parnica",
         "tezina": "Složeno", "vrijeme": "~20 min",
-        "opis": "Žalba na presudu \u2014 rok je 15 dana!",
+        "opis": "Tužbe za isplatu, naknadu štete, utvrđenje",
+        "moduli": ["Tužbe"],
+    },
+    {
+        "naslov": "Žalbe (ZPP)",
+        "tezina": "Složeno", "vrijeme": "~20 min",
+        "opis": "Žalbe na presude i rješenja u parničnom postupku",
         "moduli": ["Žalbe"],
     },
     {
-        "naslov": "Problem s upravnim tijelom",
+        "naslov": "Upravno pravo",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Žalba na rješenje, tužba upravnom sudu",
+        "opis": "Žalbe na rješenja, tužbe upravnom sudu, ZPPI zahtjevi",
         "moduli": ["Upravno pravo"],
     },
     {
-        "naslov": "Trebam ugovor",
+        "naslov": "Ugovori",
         "tezina": "Jednostavno", "vrijeme": "~10 min",
-        "opis": "Kupoprodaja, najam, rad, NDA, raskid...",
+        "opis": "Kupoprodaja, najam, ugovor o radu, NDA, raskid",
         "moduli": ["Ugovori", "Obvezno pravo"],
     },
     {
-        "naslov": "Žrtva sam kaznenog djela",
+        "naslov": "Kazneno pravo",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Kaznena prijava ili privatna tužba",
+        "opis": "Kaznene prijave, privatne tužbe",
         "moduli": ["Kazneno pravo"],
     },
     {
-        "naslov": "Problem s nekretninom",
+        "naslov": "Zemljišne knjige",
         "tezina": "Srednje", "vrijeme": "~10 min",
-        "opis": "Uknjižba, hipoteka, služnost, brisovna tužba",
+        "opis": "Uknjižba, hipoteka, služnost, brisovne tužbe",
         "moduli": ["Zemljišne knjige"],
     },
     {
-        "naslov": "Problem kao potrošač",
+        "naslov": "Zaštita potrošača",
         "tezina": "Jednostavno", "vrijeme": "~5 min",
-        "opis": "Reklamacija, raskid online kupnje",
+        "opis": "Reklamacije, raskid online kupnje, prigovori",
         "moduli": ["Zaštita potrošača"],
     },
     {
-        "naslov": "Tvrtka / poslovni spor",
+        "naslov": "Trgovačko pravo",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Društveni ugovor, prijenos udjela, NDA",
+        "opis": "Društveni ugovori, prijenosi udjela, NDA",
         "moduli": ["Trgovačko pravo"],
     },
     {
-        "naslov": "Obiteljski spor",
+        "naslov": "Obiteljsko pravo",
         "tezina": "Srednje", "vrijeme": "~15 min",
-        "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
+        "opis": "Razvodi, bračni ugovori, skrb, uzdržavanje",
         "moduli": ["Obiteljsko pravo"],
     },
     {
-        "naslov": "Financijske poteškoće",
+        "naslov": "Stečajno pravo",
         "tezina": "Složeno", "vrijeme": "~20 min",
-        "opis": "Osobni stečaj, prijedlog, prijava tražbine",
+        "opis": "Osobni stečaj, prijedlozi, prijave tražbina",
         "moduli": ["Stečajno pravo"],
     },
 ]
-
+# Backwards-compatibility alias za eventualne vanjske importe.
+_VODIC_KATEGORIJE = _PODRUCJA_KATALOG
 _TEZINA_BOJA = {
     "Jednostavno": "#059669",
     "Srednje": "#D97706",
     "Složeno": "#DC2626",
 }
 
-_VODIC_DETALJI = {
-    "Netko mi duguje novac": {
-        "upute": [
-            ("1. Opomena pred tužbu", "Pošaljite dužniku pisanu opomenu s rokom od 8 dana. Ovo je obavezni preduvjet za ovrhu."),
-            ("2. Ovrha ili Tužba", "Ovrha je brži put ako imate račun/ugovor. Tužba ako dužnik osporava dug."),
-            ("3. Kalkulator kamata", "Izračunajte zakonske zatezne kamate na dugovanje."),
+# Faktički katalog dokumenata po pravnom području.
+# Refactor 2026-04-27 K5: prijašnji "_VODIC_DETALJI" je sadržavao savjetodavne upute
+# tipa "rok je 15 dana — žuri se!" što je rub nadripisarstva (ZO čl. 72) i ulazi
+# u AI Act 2026 Annex III pt. 8 zonu ("AI in administration of justice"). Refaktoriran
+# u faktičku enumeraciju dokumenata bez vremenskih push-ova ili procesualnih savjeta.
+# Zakonski rokovi se ne prikazuju ovdje — oni su dio konkretnog dokumenta i provjeravaju
+# se u zakonu ili kod odvjetnika; app ih ne sugerira u UI-u.
+_PODRUCJA_DETALJI = {
+    "Ovršno pravo": {
+        "dokumenti": [
+            ("Opomena pred tužbu", "Pisana opomena dužniku."),
+            ("Ovršni prijedlog", "Prijedlog za ovrhu na temelju vjerodostojne ili ovršne isprave."),
+            ("Kalkulator kamata", "Izračun zakonskih zateznih kamata (informativni alat, ne pravni savjet)."),
         ],
-        "rokovi": "Opći rok zastare: 5 godina (čl. 225. ZOO). Roba/usluge: 3 godine (čl. 228. ZOO — samo za trgovačke ugovore).",
     },
-    "Ne slažem se s presudom": {
-        "upute": [
-            ("Rok za žalbu: 15 dana!", "Od dana dostave presude (čl. 348. ZPP). Podnosi se prvostupanjskom sudu."),
-            ("Žalbeni razlozi", "Bitna povreda postupka, pogrešno činjenično stanje, pogrešna primjena prava."),
+    "Tužbe i parnica": {
+        "dokumenti": [
+            ("Tužba za isplatu", "Tužbeni zahtjev za novčanu obvezu."),
+            ("Tužba za naknadu štete", "Tužbeni zahtjev za materijalnu/nematerijalnu štetu."),
         ],
-        "rokovi": "Rok za žalbu na presudu: 15 dana. Na rješenje: 8 dana.",
     },
-    "Problem s upravnim tijelom": {
-        "upute": [
-            ("Žalba na rješenje (ZUP)", "Rok 15 dana od dostave rješenja."),
-            ("Tužba upravnom sudu (ZUS)", "Rok 30 dana od dostave drugostupanjskog rješenja."),
-            ("Pristup informacijama (ZPPI)", "Tijelo mora odgovoriti u 15 dana."),
+    "Žalbe (ZPP)": {
+        "dokumenti": [
+            ("Žalba na presudu", "Pravni lijek protiv prvostupanjske presude (ZPP)."),
+            ("Žalba na rješenje", "Pravni lijek protiv prvostupanjskog rješenja (ZPP)."),
         ],
-        "rokovi": "ZUP žalba: 15 dana. ZUS tužba: 30 dana.",
     },
-    "Trebam ugovor": {
-        "upute": [
-            ("Građansko pravo", "Kupoprodaja, najam, djelo, zajam, NDA."),
-            ("Radno pravo", "Ugovor o radu, aneks, rad na daljinu."),
+    "Upravno pravo": {
+        "dokumenti": [
+            ("Žalba na rješenje (ZUP)", "Pravni lijek protiv prvostupanjskog upravnog rješenja."),
+            ("Tužba upravnom sudu (ZUS)", "Tužba protiv drugostupanjskog upravnog rješenja."),
+            ("Zahtjev za pristup informacijama (ZPPI)", "Zahtjev tijelu javne vlasti."),
+        ],
+    },
+    "Ugovori": {
+        "dokumenti": [
+            ("Građanski ugovori", "Kupoprodaja, najam, djelo, zajam, NDA."),
+            ("Radni ugovori", "Ugovor o radu, aneks, rad na daljinu."),
             ("Obvezno pravo", "Darovanje, cesija, kompenzacija, jamstvo."),
         ],
-        "rokovi": None,
     },
-    "Žrtva sam kaznenog djela": {
-        "upute": [
-            ("Kaznena prijava", "Državnom odvjetništvu, nema strogog roka."),
-            ("Privatna tužba", "Rok 3 mjeseca od saznanja (čl. 60. KZ). Npr. laka tjelesna ozljeda, kleveta."),
+    "Kazneno pravo": {
+        "dokumenti": [
+            ("Kaznena prijava", "Prijava državnom odvjetništvu."),
+            ("Privatna tužba", "Privatna tužba u kaznenom postupku."),
         ],
-        "rokovi": "Privatna tužba: 3 mjeseca od saznanja.",
     },
-    "Problem s nekretninom": {
-        "upute": [
+    "Zemljišne knjige": {
+        "dokumenti": [
             ("Uknjižba vlasništva", "Tabularna isprava za upis vlasništva."),
             ("Hipoteka", "Upis ili brisanje hipoteke."),
-            ("Brisovna tužba", "Pobijanje nevaljanog upisa u zemljišne knjige."),
+            ("Brisovna tužba", "Tužba radi brisanja upisa u zemljišne knjige."),
         ],
-        "rokovi": None,
     },
-    "Problem kao potrošač": {
-        "upute": [
-            ("Reklamacija", "Pisani prigovor trgovcu. Rok odgovora: 15 dana."),
-            ("Jednostrani raskid", "Online kupnja \u2014 14 dana bez razloga."),
-            ("Prijava inspekciji", "Kad trgovac ne poštuje prava potrošača."),
+    "Zaštita potrošača": {
+        "dokumenti": [
+            ("Reklamacija", "Pisani prigovor trgovcu."),
+            ("Jednostrani raskid online kupnje", "Obavijest o raskidu ugovora sklopljenog na daljinu."),
+            ("Prijava inspekciji", "Prijava nadležnoj inspekciji."),
         ],
-        "rokovi": "Reklamacija: rok 2 godine. Online raskid: 14 dana.",
     },
-    "Tvrtka / poslovni spor": {
-        "upute": [
-            ("Društveni ugovor", "Osnivanje d.o.o."),
-            ("Prijenos udjela", "Prodaja ili darovanje udjela."),
+    "Trgovačko pravo": {
+        "dokumenti": [
+            ("Društveni ugovor", "Osnivački akt d.o.o."),
+            ("Prijenos udjela", "Ugovor o prodaji ili darovanju udjela."),
             ("NDA", "Ugovor o povjerljivosti."),
         ],
-        "rokovi": None,
     },
-    "Obiteljski spor": {
-        "upute": [
-            ("Sporazumni razvod", "Kad se oba supružnika slažu."),
-            ("Tužba za razvod", "Kad nema sporazuma."),
-            ("Bračni ugovor / Skrb / Uzdržavanje", "Reguliranje imovine i brige o djeci."),
+    "Obiteljsko pravo": {
+        "dokumenti": [
+            ("Sporazumni razvod", "Sporazumni prijedlog za razvod braka."),
+            ("Tužba za razvod", "Tužbeni zahtjev za razvod braka."),
+            ("Bračni ugovor / skrb / uzdržavanje", "Reguliranje imovinskih odnosa, skrbi i uzdržavanja."),
         ],
-        "rokovi": None,
     },
-    "Financijske poteškoće": {
-        "upute": [
-            ("Osobni stečaj", "Dug >= 3.981,68 EUR, blokada >= 90 dana."),
-            ("Prijedlog za stečaj", "Tvrtke u blokadi > 60 dana."),
-            ("Prijava tražbine", "Ako ste vjerovnik u stečaju."),
+    "Stečajno pravo": {
+        "dokumenti": [
+            ("Osobni stečaj", "Prijedlog za otvaranje postupka osobnog stečaja."),
+            ("Prijedlog za stečaj (pravne osobe)", "Prijedlog za otvaranje stečajnog postupka."),
+            ("Prijava tražbine", "Prijava vjerovnika u stečajnom postupku."),
         ],
-        "rokovi": "Rok za prijavu tražbine: 60 dana od objave.",
     },
 }
+# Backwards-compatibility alias.
+_VODIC_DETALJI = _PODRUCJA_DETALJI
 
 
 def _render_pocetna():
@@ -449,14 +484,27 @@ def _render_pocetna():
         "line-height:1.2 !important;'>Generirajte pravne dokumente<br>"
         "u par klikova</h2>"
         "<p style='font-size:1.05rem !important;line-height:1.6 !important;'>"
-        "60+ hrvatskih pravnih dokumenata. Odaberite situaciju ispod "
-        "ili modul iz izbornika.</p>"
+        "60+ hrvatskih pravnih dokumenata. Odaberite modul iz kataloga "
+        "ispod ili iz bočnog izbornika. Aplikacija ne pruža pravne savjete.</p>"
         "</div>",
         unsafe_allow_html=True,
     )
 
-    # --- Vodic kartice ---
-    st.markdown("##### Sto vam treba?")
+    # --- Disclaimer (K5 refactor 2026-04-27, anti-nadripisarstvo + AI Act 2026 Annex III pt. 8 out-of-scope) ---
+    st.markdown(
+        "<div style='background:#FEF3C7;border-left:3px solid #D97706;"
+        "padding:0.7rem 1rem;margin:0.4rem 0 1rem 0;border-radius:6px;font-size:0.82rem;"
+        "color:#451A03;line-height:1.5;'>"
+        "<b>Napomena:</b> aplikacija ne pruža pravne savjete niti analizira vašu situaciju. "
+        "Generira deterministički ispunjene .docx dokumente iz polja koje sami unesete. "
+        "Ako niste sigurni što vam treba, posavjetujte se s odvjetnikom "
+        "(<a href='https://www.hok-cba.hr' target='_blank'>HOK Imenik</a>)."
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    # --- Katalog kartice ---
+    st.markdown("##### Pregled po pravnom području")
 
     cols = st.columns(2)
     for i, kat in enumerate(_VODIC_KATEGORIJE):
@@ -485,7 +533,7 @@ def _render_pocetna():
                 unsafe_allow_html=True,
             )
             if st.button(
-                f"Pokazi korake",
+                f"Vidi tipove dokumenata",
                 key=f"_vk_{i}",
                 use_container_width=True,
             ):
@@ -498,9 +546,9 @@ def _render_pocetna():
         st.markdown("---")
         st.markdown("<div class='vodic-scroll-target'></div>", unsafe_allow_html=True)
         detalji = _VODIC_DETALJI[odabir]
-        st.markdown(f"### {odabir}")
+        st.markdown(f"### Tipovi dokumenata: {odabir}")
 
-        for naslov, opis in detalji["upute"]:
+        for naslov, opis in detalji["dokumenti"]:
             st.markdown(
                 f"<div style='background:white;padding:1rem 1.2rem;border-radius:12px;"
                 f"border-left:3px solid #162D50;margin-bottom:0.6rem;"
@@ -510,9 +558,6 @@ def _render_pocetna():
                 f"</div>",
                 unsafe_allow_html=True,
             )
-
-        if detalji.get("rokovi"):
-            st.info(f"Rokovi: {detalji['rokovi']}")
 
         # Gumbi za navigaciju
         kat_data = next((k for k in _VODIC_KATEGORIJE if k["naslov"] == odabir), None)
