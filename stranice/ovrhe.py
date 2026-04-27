@@ -2,7 +2,7 @@
 # STRANICA: Ovrsno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, napuni_primjerom, doc_selectbox
+from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, napuni_primjerom, doc_selectbox, audit_kwargs
 from pristojbe import pristojba_ovrha_jb, pristojba_ovrha_ovrsna_isprava
 from generatori.ovrhe import (
     generiraj_ovrhu_pro,
@@ -109,22 +109,29 @@ def _render_prijedlog_ovrhe():
     trosak_pdv = (trosak_odvjetnik + trosak_jb_nagrada) * 0.25 if ct3.checkbox("Obračunaj PDV?") else 0.0
 
     if st.button("Generiraj ovršni prijedlog", type="primary"):
-        doc = generiraj_ovrhu_pro(
-            jb, o1, o2,
-            {
-                'glavnica': glavnica,
-                'datum_racuna': dat_racuna_str,
-                'dospjece': dospjece_str,
-            },
-            opis_isprave,
-            {
-                'stavka': trosak_odvjetnik,
-                'materijalni': trosak_jb_nagrada,
-                'pdv': trosak_pdv,
-                'pristojba': predlozena_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Ovrha.docx", "Preuzmi dokument")
+        trazbina = {
+            'glavnica': glavnica,
+            'datum_racuna': dat_racuna_str,
+            'dospjece': dospjece_str,
+        }
+        troskovnik = {
+            'stavka': trosak_odvjetnik,
+            'materijalni': trosak_jb_nagrada,
+            'pdv': trosak_pdv,
+            'pristojba': predlozena_pristojba,
+        }
+        doc = generiraj_ovrhu_pro(jb, o1, o2, trazbina, opis_isprave, troskovnik)
+        audit_input = {
+            "javni_biljeznik": jb,
+            "ovrhovoditelj_html": o1,
+            "ovrsenik_html": o2,
+            "trazbina": trazbina,
+            "opis_isprave": opis_isprave,
+            "isprave_detail": isprave_tekst,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Ovrha.docx", "Preuzmi dokument",
+                         **audit_kwargs("ovrha_vjerodostojna", audit_input, "ovrhe"))
 
 
 def _render_prigovor():
@@ -195,18 +202,23 @@ def _render_prigovor():
         troskovi['pristojba'] = c2.number_input("Sudska pristojba (EUR)", 0.0)
 
     if st.button("Generiraj prigovor", type="primary"):
-        doc = generiraj_prigovor_ovrhe(
-            sud, ovrsenik, ovrhovoditelj,
-            {
-                'poslovni_broj': poslovni_broj,
-                'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
-                'javni_bilježnik': jb,
-                'razlozi': razlozi,
-                'mjesto': mjesto,
-            },
-            troskovi,
-        )
-        prikazi_dokument(doc, "Prigovor_ovrha.docx", "Preuzmi dokument")
+        podaci = {
+            'poslovni_broj': poslovni_broj,
+            'datum_rjesenja': datum_rjesenja.strftime('%d.%m.%Y.'),
+            'javni_bilježnik': jb,
+            'razlozi': razlozi,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_prigovor_ovrhe(sud, ovrsenik, ovrhovoditelj, podaci, troskovi)
+        audit_input = {
+            "sud": sud,
+            "ovrsenik_html": ovrsenik,
+            "ovrhovoditelj_html": ovrhovoditelj,
+            "podaci": podaci,
+            "troskovnik": troskovi,
+        }
+        prikazi_dokument(doc, "Prigovor_ovrha.docx", "Preuzmi dokument",
+                         **audit_kwargs("prigovor_ovrhe", audit_input, "ovrhe"))
 
 
 def _render_ovrha_ovrsna_isprava():
@@ -267,24 +279,30 @@ def _render_ovrha_ovrsna_isprava():
     mjesto = st.text_input("Mjesto", "Zagreb", key="ooi_mjesto")
 
     if st.button("Generiraj prijedlog za ovrhu", type="primary", key="ooi_btn"):
-        doc = generiraj_ovrhu_ovrsna_isprava(
-            sud, o1, o2,
-            {
-                'ovrsna_isprava': ovrsna_isprava,
-                'poslovni_broj_isprave': poslovni_broj_isprave,
-                'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
-                'glavnica': glavnica,
-                'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
-                'sredstvo_ovrhe': sredstvo_za_gen,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Ovrha_ovrsna_isprava.docx", "Preuzmi dokument")
+        podaci = {
+            'ovrsna_isprava': ovrsna_isprava,
+            'poslovni_broj_isprave': poslovni_broj_isprave,
+            'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
+            'glavnica': glavnica,
+            'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
+            'sredstvo_ovrhe': sredstvo_za_gen,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_ovrhu_ovrsna_isprava(sud, o1, o2, podaci, troskovnik)
+        audit_input = {
+            "sud": sud,
+            "ovrhovoditelj_html": o1,
+            "ovrsenik_html": o2,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Ovrha_ovrsna_isprava.docx", "Preuzmi dokument",
+                         **audit_kwargs("ovrha_ovrsna_isprava", audit_input, "ovrhe"))
 
 
 def _render_ovrha_nekretnina():
@@ -325,27 +343,33 @@ def _render_ovrha_nekretnina():
     mjesto = st.text_input("Mjesto", "Zagreb", key="on_mjesto")
 
     if st.button("Generiraj prijedlog za ovrhu na nekretnini", type="primary", key="on_btn"):
-        doc = generiraj_ovrhu_na_nekretnini(
-            sud, o1, o2,
-            {
-                'ovrsna_isprava': ovrsna_isprava,
-                'poslovni_broj_isprave': poslovni_broj_isprave,
-                'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
-                'glavnica': glavnica,
-                'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
-                'ko': ko,
-                'ulozak': ulozak,
-                'cestica': cestica,
-                'opis_nekretnine': opis_nekretnine,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Ovrha_nekretnina.docx", "Preuzmi dokument")
+        podaci = {
+            'ovrsna_isprava': ovrsna_isprava,
+            'poslovni_broj_isprave': poslovni_broj_isprave,
+            'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
+            'glavnica': glavnica,
+            'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
+            'ko': ko,
+            'ulozak': ulozak,
+            'cestica': cestica,
+            'opis_nekretnine': opis_nekretnine,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_ovrhu_na_nekretnini(sud, o1, o2, podaci, troskovnik)
+        audit_input = {
+            "sud": sud,
+            "ovrhovoditelj_html": o1,
+            "ovrsenik_html": o2,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Ovrha_nekretnina.docx", "Preuzmi dokument",
+                         **audit_kwargs("ovrha_nekretnina", audit_input, "ovrhe"))
 
 
 def _render_ovrha_placa():
@@ -380,24 +404,30 @@ def _render_ovrha_placa():
     mjesto = st.text_input("Mjesto", "Zagreb", key="op_mjesto")
 
     if st.button("Generiraj prijedlog za ovrhu na plaći", type="primary", key="op_btn"):
-        doc = generiraj_ovrhu_na_placi(
-            sud, o1, o2,
-            {
-                'ovrsna_isprava': ovrsna_isprava,
-                'poslovni_broj_isprave': poslovni_broj_isprave,
-                'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
-                'glavnica': glavnica,
-                'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
-                'poslodavac_ovrs': poslodavac_ovrs,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Ovrha_placa.docx", "Preuzmi dokument")
+        podaci = {
+            'ovrsna_isprava': ovrsna_isprava,
+            'poslovni_broj_isprave': poslovni_broj_isprave,
+            'datum_isprave': datum_isprave.strftime('%d.%m.%Y.'),
+            'glavnica': glavnica,
+            'kamate_od': kamate_od.strftime('%d.%m.%Y.'),
+            'poslodavac_ovrs': poslodavac_ovrs,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_ovrhu_na_placi(sud, o1, o2, podaci, troskovnik)
+        audit_input = {
+            "sud": sud,
+            "ovrhovoditelj_html": o1,
+            "ovrsenik_html": o2,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Ovrha_placa.docx", "Preuzmi dokument",
+                         **audit_kwargs("ovrha_placa", audit_input, "ovrhe"))
 
 
 def _render_obustava_ovrhe():
@@ -426,19 +456,19 @@ def _render_obustava_ovrhe():
     mjesto = st.text_input("Mjesto", "Zagreb", key="ob_mjesto")
 
     if st.button("Generiraj prijedlog za obustavu", type="primary", key="ob_btn"):
-        doc = generiraj_obustavu_ovrhe(
-            sud,
-            {
-                'poslovni_broj_spisa': poslovni_broj_spisa,
-                'ovrhovoditelj': ovrhovoditelj_tekst,
-                'ovrsenik': ovrsenik_tekst,
-                'razlog': razlog,
-                'razlog_tekst': razlog_tekst,
-                'ima_zabilježbu': ima_zabilježbu,
-                'mjesto': mjesto,
-            },
-        )
-        prikazi_dokument(doc, "Obustava_ovrhe.docx", "Preuzmi dokument")
+        podaci = {
+            'poslovni_broj_spisa': poslovni_broj_spisa,
+            'ovrhovoditelj': ovrhovoditelj_tekst,
+            'ovrsenik': ovrsenik_tekst,
+            'razlog': razlog,
+            'razlog_tekst': razlog_tekst,
+            'ima_zabilježbu': ima_zabilježbu,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_obustavu_ovrhe(sud, podaci)
+        audit_input = {"sud": sud, "podaci": podaci}
+        prikazi_dokument(doc, "Obustava_ovrhe.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"obustava_ovrhe_{razlog}", audit_input, "ovrhe"))
 
 
 def _render_privremena_mjera():
@@ -493,23 +523,29 @@ def _render_privremena_mjera():
     mjesto = st.text_input("Mjesto", "Zagreb", key="pm_mjesto")
 
     if st.button("Generiraj prijedlog za privremenu mjeru", type="primary", key="pm_btn"):
-        doc = generiraj_privremenu_mjeru(
-            sud, pred, prot,
-            {
-                'vrsta_trazbine': vrsta_trazbine,
-                'fumus_boni_iuris': fumus_boni_iuris,
-                'periculum_in_mora': periculum_in_mora,
-                'mjera': mjera[0],
-                'poslovni_broj_parnice': poslovni_broj_parnice,
-                'mjesto': mjesto,
-            },
-            {
-                'stavka': trosak_stavka,
-                'pdv': trosak_pdv,
-                'pristojba': trosak_pristojba,
-            },
-        )
-        prikazi_dokument(doc, "Privremena_mjera.docx", "Preuzmi dokument")
+        podaci = {
+            'vrsta_trazbine': vrsta_trazbine,
+            'fumus_boni_iuris': fumus_boni_iuris,
+            'periculum_in_mora': periculum_in_mora,
+            'mjera': mjera[0],
+            'poslovni_broj_parnice': poslovni_broj_parnice,
+            'mjesto': mjesto,
+        }
+        troskovnik = {
+            'stavka': trosak_stavka,
+            'pdv': trosak_pdv,
+            'pristojba': trosak_pristojba,
+        }
+        doc = generiraj_privremenu_mjeru(sud, pred, prot, podaci, troskovnik)
+        audit_input = {
+            "sud": sud,
+            "predlagatelj_html": pred,
+            "protivnik_html": prot,
+            "podaci": podaci,
+            "troskovnik": troskovnik,
+        }
+        prikazi_dokument(doc, "Privremena_mjera.docx", "Preuzmi dokument",
+                         **audit_kwargs("privremena_mjera", audit_input, "ovrhe"))
 
 
 def render_ovrhe():
