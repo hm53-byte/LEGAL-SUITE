@@ -7,6 +7,7 @@ import streamlit.components.v1 as components
 import time
 from datetime import date
 from docx_export import pripremi_za_docx
+from pomocne import audit_kwargs
 
 
 def _scroll_to_top():
@@ -1410,7 +1411,16 @@ def _prikazi_detalje(situacija, navigate_fn):
         if blank_info:
             naziv, gen_fn = blank_info
             doc_html = gen_fn()
-            docx_bytes = pripremi_za_docx(doc_html, watermark=None, naslov_dokumenta=naziv.replace('.docx', ''))
+            docx_bytes = pripremi_za_docx(
+                doc_html,
+                watermark=None,
+                naslov_dokumenta=naziv.replace('.docx', ''),
+                **audit_kwargs(
+                    f"jednostavno_{situacija['id']}",
+                    {"situacija_id": situacija["id"], "naziv": naziv},
+                    "stranice/jednostavno",
+                ),
+            )
             st.download_button(
                 f"Preuzmi ({naziv})",
                 docx_bytes,
@@ -1486,7 +1496,16 @@ def _prikazi_kata(situacija, navigate_fn):
             if blank_info:
                 naziv, gen_fn = blank_info
                 doc_html = gen_fn()
-                docx_bytes = pripremi_za_docx(doc_html, watermark=None, naslov_dokumenta="Opomena pred tužbu")
+                docx_bytes = pripremi_za_docx(
+                    doc_html,
+                    watermark=None,
+                    naslov_dokumenta="Opomena pred tužbu",
+                    **audit_kwargs(
+                        f"jednostavno_kata_{korak['dokument']}",
+                        {"korak": korak["broj"], "dokument": korak["dokument"], "naziv": naziv},
+                        "stranice/jednostavno",
+                    ),
+                )
                 col_dl, col_pro = st.columns(2)
                 with col_dl:
                     st.download_button(
