@@ -9,6 +9,7 @@ from pomocne import (
     odabir_suda,
     unos_tocaka,
     doc_selectbox,
+    audit_kwargs,
 )
 from generatori.zemljisne import (
     generiraj_tabularnu_doc,
@@ -42,8 +43,15 @@ def render_zemljisne():
         opis = st.text_area("Opis u naravi", help="Opis nekretnine (npr. 'kuća i dvorište', 'oranica').")
         dat = st.date_input("Datum ugovora")
         if st.button("Generiraj tabularnu ispravu", type="primary"):
-            doc = generiraj_tabularnu_doc(prod, kup, ko, cest, ul, opis, dat.strftime('%d.%m.%Y.'))
-            prikazi_dokument(doc, "Tabularna.docx", "Preuzmi dokument")
+            datum_str = dat.strftime('%d.%m.%Y.')
+            doc = generiraj_tabularnu_doc(prod, kup, ko, cest, ul, opis, datum_str)
+            audit_input = {
+                "prodavatelj_html": prod, "kupac_html": kup,
+                "ko": ko, "cestica": cest, "ulozak": ul,
+                "opis": opis, "datum": datum_str,
+            }
+            prikazi_dokument(doc, "Tabularna.docx", "Preuzmi dokument",
+                             **audit_kwargs("tabularna_isprava", audit_input, "zemljisne"))
 
     elif zk_usluga == "ZK Prijedlog (Uknjižba)":
         st.warning(
@@ -68,13 +76,20 @@ def render_zemljisne():
         st.info(f"ZK pristojba (Tbr. 20): **{pristojba_zk_prijedlog():,.2f} EUR**")
         pristojba = st.number_input("ZK pristojba", value=pristojba_zk_prijedlog())
         if st.button("Generiraj prijedlog", type="primary"):
-            doc = generiraj_zk_prijedlog(
-                sud, pred, prot,
-                {'ko': ko, 'ulozak': ulozak, 'cestica': cestica, 'opis': opis},
-                {'ugovor': ug, 'tabularna': tab},
-                {'pristojba': pristojba},
-            )
-            prikazi_dokument(doc, "ZK_Prijedlog.docx", "Preuzmi dokument")
+            nekretnina = {'ko': ko, 'ulozak': ulozak, 'cestica': cestica, 'opis': opis}
+            isprave = {'ugovor': ug, 'tabularna': tab}
+            troskovi = {'pristojba': pristojba}
+            doc = generiraj_zk_prijedlog(sud, pred, prot, nekretnina, isprave, troskovi)
+            audit_input = {
+                "sud": sud,
+                "predlagatelj_html": pred,
+                "protustranka_html": prot,
+                "nekretnina": nekretnina,
+                "isprave": isprave,
+                "troskovi": troskovi,
+            }
+            prikazi_dokument(doc, "ZK_Prijedlog.docx", "Preuzmi dokument",
+                             **audit_kwargs("zk_prijedlog", audit_input, "zemljisne"))
 
     elif zk_usluga == "Brisovna tužba":
         zastupanje = zaglavlje_sastavljaca()
@@ -126,22 +141,31 @@ def render_zemljisne():
         pdv = sastav * 0.25
         pristojba = st.number_input("Pristojba", 0.0)
         if st.button("Generiraj brisovnu tužbu", type="primary"):
-            doc = generiraj_brisovnu_tuzbu(
-                sud, zastupanje, tuzitelj, tuzenik,
-                {'ko': ko, 'ulozak': ulozak, 'cestica': cestica, 'opis': opis},
-                {
-                    'vps': vps,
-                    'z_broj': z_broj,
-                    'datum_uknjizbe': dat_uknj.strftime('%d.%m.%Y.'),
-                    'isprava': "Ugovor",
-                    'datum_isprave': "...",
-                    'razlog_nevaljanosti': razlog,
-                    'tuzenik_znao': "DA" in tuzenik_znao,
-                    'mjesto': "Zagreb",
-                },
-                {'stavka': sastav, 'pdv': pdv, 'pristojba': pristojba},
-            )
-            prikazi_dokument(doc, "Brisovna.docx", "Preuzmi dokument")
+            nekretnina = {'ko': ko, 'ulozak': ulozak, 'cestica': cestica, 'opis': opis}
+            podaci = {
+                'vps': vps,
+                'z_broj': z_broj,
+                'datum_uknjizbe': dat_uknj.strftime('%d.%m.%Y.'),
+                'isprava': "Ugovor",
+                'datum_isprave': "...",
+                'razlog_nevaljanosti': razlog,
+                'tuzenik_znao': "DA" in tuzenik_znao,
+                'mjesto': "Zagreb",
+            }
+            troskovnik = {'stavka': sastav, 'pdv': pdv, 'pristojba': pristojba}
+            doc = generiraj_brisovnu_tuzbu(sud, zastupanje, tuzitelj, tuzenik,
+                                            nekretnina, podaci, troskovnik)
+            audit_input = {
+                "sud": sud,
+                "zastupanje": zastupanje,
+                "tuzitelj_html": tuzitelj,
+                "tuzenik_html": tuzenik,
+                "nekretnina": nekretnina,
+                "podaci": podaci,
+                "troskovnik": troskovnik,
+            }
+            prikazi_dokument(doc, "Brisovna.docx", "Preuzmi dokument",
+                             **audit_kwargs("brisovna_tuzba", audit_input, "zemljisne"))
 
     elif zk_usluga == "Zabilježba":
         sud = odabir_suda("Sud", vrsta="opcinski", key="zab_sud")
@@ -167,7 +191,9 @@ def render_zemljisne():
                 'mjesto': mjesto,
             }
             doc = generiraj_zabilježbu(sud, pred, podaci)
-            prikazi_dokument(doc, "Zabilježba.docx", "Preuzmi dokument")
+            audit_input = {"sud": sud, "predlagatelj_html": pred, "podaci": podaci}
+            prikazi_dokument(doc, "Zabilježba.docx", "Preuzmi dokument",
+                             **audit_kwargs(f"zabiljezba_{vrsta_zabilježbe}", audit_input, "zemljisne"))
 
     elif zk_usluga == "Predbilježba":
         sud = odabir_suda("Sud", vrsta="opcinski", key="pred_sud")
@@ -194,7 +220,14 @@ def render_zemljisne():
                 'mjesto': mjesto,
             }
             doc = generiraj_predbiježbu(sud, pred, prot, podaci)
-            prikazi_dokument(doc, "Predbilježba.docx", "Preuzmi dokument")
+            audit_input = {
+                "sud": sud,
+                "predlagatelj_html": pred,
+                "protustranka_html": prot,
+                "podaci": podaci,
+            }
+            prikazi_dokument(doc, "Predbilježba.docx", "Preuzmi dokument",
+                             **audit_kwargs("predbiljezba", audit_input, "zemljisne"))
 
     elif zk_usluga == "Upis hipoteke":
         sud = odabir_suda("Sud", vrsta="opcinski", key="hip_sud")
@@ -221,7 +254,15 @@ def render_zemljisne():
             }
             troskovi = {'pristojba': pristojba}
             doc = generiraj_upis_hipoteke(sud, vjerovnik, zalozni_duznik, podaci, troskovi)
-            prikazi_dokument(doc, "Upis_hipoteke.docx", "Preuzmi dokument")
+            audit_input = {
+                "sud": sud,
+                "vjerovnik_html": vjerovnik,
+                "zalozni_duznik_html": zalozni_duznik,
+                "podaci": podaci,
+                "troskovi": troskovi,
+            }
+            prikazi_dokument(doc, "Upis_hipoteke.docx", "Preuzmi dokument",
+                             **audit_kwargs("upis_hipoteke", audit_input, "zemljisne"))
 
     elif zk_usluga == "Brisanje hipoteke":
         sud = odabir_suda("Sud", vrsta="opcinski", key="bh_sud")
@@ -268,7 +309,9 @@ def render_zemljisne():
                 'mjesto': mjesto,
             }
             doc = generiraj_brisanje_hipoteke(sud, vlasnik, podaci)
-            prikazi_dokument(doc, "Brisanje_hipoteke.docx", "Preuzmi dokument")
+            audit_input = {"sud": sud, "vlasnik_html": vlasnik, "podaci": podaci}
+            prikazi_dokument(doc, "Brisanje_hipoteke.docx", "Preuzmi dokument",
+                             **audit_kwargs(f"brisanje_hipoteke_{razlog_brisanja[0]}", audit_input, "zemljisne"))
 
     elif zk_usluga == "Upis služnosti":
         sud = odabir_suda("Sud", vrsta="opcinski", key="sluz_sud")
@@ -304,4 +347,11 @@ def render_zemljisne():
             }
             troskovi = {'pristojba': pristojba}
             doc = generiraj_upis_sluznosti(sud, pred, podaci, troskovi)
-            prikazi_dokument(doc, "Upis_sluznosti.docx", "Preuzmi dokument")
+            audit_input = {
+                "sud": sud,
+                "predlagatelj_html": pred,
+                "podaci": podaci,
+                "troskovi": troskovi,
+            }
+            prikazi_dokument(doc, "Upis_sluznosti.docx", "Preuzmi dokument",
+                             **audit_kwargs(f"upis_sluznosti_{vrsta_sluznosti}", audit_input, "zemljisne"))
