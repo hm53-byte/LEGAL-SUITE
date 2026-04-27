@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox, audit_kwargs
 from generatori.trgovacko import (
     generiraj_drustveni_ugovor,
     generiraj_odluku_skupstine,
@@ -95,20 +95,20 @@ def _render_drustveni_ugovor():
 
     st.markdown("---")
     if st.button("Generiraj društveni ugovor", type="primary"):
-        doc = generiraj_drustveni_ugovor(
-            osnivaci_data,
-            {
-                "tvrtka": tvrtka,
-                "skracena_tvrtka": skracena,
-                "sjediste": sjediste,
-                "temeljni_kapital": temeljni_kapital,
-                "djelatnosti": djelatnosti,
-                "trajanje": trajanje,
-                "zastupanje": zastupanje,
-                "mjesto": mjesto,
-            },
-        )
-        prikazi_dokument(doc, "Drustveni_ugovor.docx", "Preuzmi dokument")
+        podaci = {
+            "tvrtka": tvrtka,
+            "skracena_tvrtka": skracena,
+            "sjediste": sjediste,
+            "temeljni_kapital": temeljni_kapital,
+            "djelatnosti": djelatnosti,
+            "trajanje": trajanje,
+            "zastupanje": zastupanje,
+            "mjesto": mjesto,
+        }
+        doc = generiraj_drustveni_ugovor(osnivaci_data, podaci)
+        audit_input = {"osnivaci": osnivaci_data, "podaci": podaci}
+        prikazi_dokument(doc, "Drustveni_ugovor.docx", "Preuzmi dokument",
+                         **audit_kwargs("drustveni_ugovor", audit_input, "trgovacko"))
 
 
 def _render_odluka_skupstine():
@@ -152,18 +152,19 @@ def _render_odluka_skupstine():
 
     st.markdown("---")
     if st.button("Generiraj odluku", type="primary"):
-        doc = generiraj_odluku_skupstine(
-            {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste},
-            {
-                "vrsta": vrsta,
-                "donositelj": donositelj,
-                "izreka": izreka,
-                "obrazlozenje": obrazlozenje,
-                "pravni_temelj_clanak": pravni_temelj,
-                "mjesto": mjesto,
-            },
-        )
-        prikazi_dokument(doc, "Odluka_skupstine.docx", "Preuzmi dokument")
+        drustvo = {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste}
+        podaci = {
+            "vrsta": vrsta,
+            "donositelj": donositelj,
+            "izreka": izreka,
+            "obrazlozenje": obrazlozenje,
+            "pravni_temelj_clanak": pravni_temelj,
+            "mjesto": mjesto,
+        }
+        doc = generiraj_odluku_skupstine(drustvo, podaci)
+        audit_input = {"drustvo": drustvo, "podaci": podaci}
+        prikazi_dokument(doc, "Odluka_skupstine.docx", "Preuzmi dokument",
+                         **audit_kwargs("odluka_skupstine", audit_input, "trgovacko"))
 
 
 def _render_prijenos_udjela():
@@ -199,18 +200,22 @@ def _render_prijenos_udjela():
 
     st.markdown("---")
     if st.button("Generiraj ugovor o prijenosu", type="primary"):
-        doc = generiraj_prijenos_udjela(
-            prenositelj,
-            stjecatelj,
-            {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste},
-            {
-                "nominalni_iznos": nominalni,
-                "cijena": cijena,
-                "nacin_placanja": nacin_placanja,
-                "mjesto": mjesto,
-            },
-        )
-        prikazi_dokument(doc, "Prijenos_udjela.docx", "Preuzmi dokument")
+        drustvo = {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste}
+        podaci = {
+            "nominalni_iznos": nominalni,
+            "cijena": cijena,
+            "nacin_placanja": nacin_placanja,
+            "mjesto": mjesto,
+        }
+        doc = generiraj_prijenos_udjela(prenositelj, stjecatelj, drustvo, podaci)
+        audit_input = {
+            "prenositelj_html": prenositelj,
+            "stjecatelj_html": stjecatelj,
+            "drustvo": drustvo,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "Prijenos_udjela.docx", "Preuzmi dokument",
+                         **audit_kwargs("prijenos_udjela", audit_input, "trgovacko"))
 
 
 def _render_nda():
@@ -248,19 +253,22 @@ def _render_nda():
 
     st.markdown("---")
     if st.button("Generiraj NDA", type="primary"):
-        doc = generiraj_nda(
-            strana_a,
-            strana_b,
-            {
-                "vrsta": vrsta,
-                "opis_informacija": opis,
-                "trajanje_razmjene": trajanje_razmjene,
-                "trajanje_obveze": trajanje_obveze,
-                "ugovorna_kazna": ugovorna_kazna,
-                "mjesto": mjesto,
-            },
-        )
-        prikazi_dokument(doc, "NDA.docx", "Preuzmi dokument")
+        podaci = {
+            "vrsta": vrsta,
+            "opis_informacija": opis,
+            "trajanje_razmjene": trajanje_razmjene,
+            "trajanje_obveze": trajanje_obveze,
+            "ugovorna_kazna": ugovorna_kazna,
+            "mjesto": mjesto,
+        }
+        doc = generiraj_nda(strana_a, strana_b, podaci)
+        audit_input = {
+            "strana_a_html": strana_a,
+            "strana_b_html": strana_b,
+            "podaci": podaci,
+        }
+        prikazi_dokument(doc, "NDA.docx", "Preuzmi dokument",
+                         **audit_kwargs(f"nda_{vrsta}", audit_input, "trgovacko"))
 
 
 def _render_prodaja_poduzeca():
@@ -439,51 +447,57 @@ def _render_prodaja_poduzeca():
 
     st.markdown("---")
     if st.button("Generiraj ugovor o prodaji poduzeća", type="primary"):
+        podaci = {
+            "mjesto": mjesto,
+            "sud_mjesto": sud_mjesto,
+            "djelatnost": djelatnost,
+            "kupoprodajna_cijena": kupoprodajna_cijena,
+            "rok_placanja": rok_placanja,
+            "prijeboj_iznos": prijeboj_iznos,
+            "prijeboj_opis": prijeboj_opis,
+            "ima_nekretninu": ima_nekretninu,
+            "nekretnina_opis": nekretnina_opis,
+            "ima_hipoteku": ima_hipoteku,
+            "hipoteka_iznos": hipoteka_iznos,
+            "hipoteka_banka": hipoteka_banka,
+            "ima_trabinu": ima_trabinu,
+            "trabina_opis": trabina_opis,
+            "ima_mjenice": ima_mjenice,
+            "mjenice_opis": mjenice_opis,
+            "ima_poslovnih_udjela": ima_poslovnih_udjela,
+            "poslovni_udjeli_opis": poslovni_udjeli_opis,
+            "ima_pokretnine": ima_pokretnine,
+            "pokretnine_opis": pokretnine_opis,
+            "ima_vrijednosnih_papira": ima_vrijednosnih_papira,
+            "vrijednosni_papiri_opis": vrijednosni_papiri_opis,
+            "prenosi_novac": prenosi_novac,
+            "novcana_sredstva": novcana_sredstva,
+            "preuzete_obveze": preuzete_obveze,
+            "broj_zaposlenika": broj_zaposlenika,
+            "tekuci_ugovori": tekuci_ugovori,
+            "zabrana_natjecanja": zabrana_natjecanja,
+            "zabrana_trajanje": zabrana_trajanje,
+            "zabrana_kazna": zabrana_kazna,
+            "ima_prezivjelih_jamstava": ima_prezivjelih_jamstava,
+            "cap_odgovornosti_posto": cap_odgovornosti_posto,
+            "survival_period_godina": survival_period,
+            "ugovorna_kazna": ugovorna_kazna,
+            "rok_primopredaje": rok_primopredaje,
+            "rok_povjerljivosti": rok_povjerljivosti,
+            "broj_primjeraka": broj_primjeraka,
+        }
         doc = generiraj_prodaju_poduzeca(
-            prodavatelj,
-            kupac,
-            {
-                "mjesto": mjesto,
-                "sud_mjesto": sud_mjesto,
-                "djelatnost": djelatnost,
-                "kupoprodajna_cijena": kupoprodajna_cijena,
-                "rok_placanja": rok_placanja,
-                "prijeboj_iznos": prijeboj_iznos,
-                "prijeboj_opis": prijeboj_opis,
-                "ima_nekretninu": ima_nekretninu,
-                "nekretnina_opis": nekretnina_opis,
-                "ima_hipoteku": ima_hipoteku,
-                "hipoteka_iznos": hipoteka_iznos,
-                "hipoteka_banka": hipoteka_banka,
-                "ima_trabinu": ima_trabinu,
-                "trabina_opis": trabina_opis,
-                "ima_mjenice": ima_mjenice,
-                "mjenice_opis": mjenice_opis,
-                "ima_poslovnih_udjela": ima_poslovnih_udjela,
-                "poslovni_udjeli_opis": poslovni_udjeli_opis,
-                "ima_pokretnine": ima_pokretnine,
-                "pokretnine_opis": pokretnine_opis,
-                "ima_vrijednosnih_papira": ima_vrijednosnih_papira,
-                "vrijednosni_papiri_opis": vrijednosni_papiri_opis,
-                "prenosi_novac": prenosi_novac,
-                "novcana_sredstva": novcana_sredstva,
-                "preuzete_obveze": preuzete_obveze,
-                "broj_zaposlenika": broj_zaposlenika,
-                "tekuci_ugovori": tekuci_ugovori,
-                "zabrana_natjecanja": zabrana_natjecanja,
-                "zabrana_trajanje": zabrana_trajanje,
-                "zabrana_kazna": zabrana_kazna,
-                "ima_prezivjelih_jamstava": ima_prezivjelih_jamstava,
-                "cap_odgovornosti_posto": cap_odgovornosti_posto,
-                "survival_period_godina": survival_period,
-                "ugovorna_kazna": ugovorna_kazna,
-                "rok_primopredaje": rok_primopredaje,
-                "rok_povjerljivosti": rok_povjerljivosti,
-                "broj_primjeraka": broj_primjeraka,
-            },
+            prodavatelj, kupac, podaci,
             sekcije_redoslijed=odabrane_sekcije,
         )
-        prikazi_dokument(doc, "Ugovor_o_prodaji_poduzeca.docx", "Preuzmi dokument")
+        audit_input = {
+            "prodavatelj_html": prodavatelj,
+            "kupac_html": kupac,
+            "podaci": podaci,
+            "sekcije_redoslijed": odabrane_sekcije,
+        }
+        prikazi_dokument(doc, "Ugovor_o_prodaji_poduzeca.docx", "Preuzmi dokument",
+                         **audit_kwargs("prodaja_poduzeca", audit_input, "trgovacko"))
 
 
 def _render_zapisnik_uprave():
@@ -540,17 +554,18 @@ def _render_zapisnik_uprave():
 
     st.markdown("---")
     if st.button("Generiraj zapisnik", type="primary"):
-        doc = generiraj_zapisnik_uprave(
-            {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste},
-            {
-                "mjesto": mjesto,
-                "vrijeme_pocetak": vrijeme_pocetak,
-                "vrijeme_kraj": vrijeme_kraj,
-                "prisutni": prisutni,
-                "odsutni": odsutni,
-                "predsjednik_uprave": predsjednik_uprave,
-                "zapisnicar": zapisnicar,
-                "dnevni_red": dnevni_red,
-            },
-        )
-        prikazi_dokument(doc, "Zapisnik_uprave.docx", "Preuzmi dokument")
+        drustvo = {"tvrtka": tvrtka, "oib": oib, "mbs": mbs, "sjediste": sjediste}
+        podaci = {
+            "mjesto": mjesto,
+            "vrijeme_pocetak": vrijeme_pocetak,
+            "vrijeme_kraj": vrijeme_kraj,
+            "prisutni": prisutni,
+            "odsutni": odsutni,
+            "predsjednik_uprave": predsjednik_uprave,
+            "zapisnicar": zapisnicar,
+            "dnevni_red": dnevni_red,
+        }
+        doc = generiraj_zapisnik_uprave(drustvo, podaci)
+        audit_input = {"drustvo": drustvo, "podaci": podaci}
+        prikazi_dokument(doc, "Zapisnik_uprave.docx", "Preuzmi dokument",
+                         **audit_kwargs("zapisnik_uprave", audit_input, "trgovacko"))
