@@ -2,7 +2,7 @@
 # STRANICA: Stecajno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, odabir_suda, unos_tocaka
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, odabir_suda, unos_tocaka, audit_kwargs
 from generatori.stecajno import (
     generiraj_prijedlog_stecaj,
     generiraj_prijavu_trazbine,
@@ -93,7 +93,14 @@ def _render_prijedlog_stecaj():
     st.markdown("---")
     if st.button("Generiraj prijedlog za stecaj", type="primary", key="ps_btn"):
         doc = generiraj_prijedlog_stecaj(predlagatelj, duznik, podaci, troskovi_dict)
-        prikazi_dokument(doc, "Prijedlog_stecaj.docx", "Preuzmi dokument")
+        audit_input = {
+            "predlagatelj_html": predlagatelj,
+            "duznik": duznik,
+            "podaci": podaci,
+            "troskovnik": troskovi_dict,
+        }
+        prikazi_dokument(doc, "Prijedlog_stecaj.docx", "Preuzmi dokument",
+                         **audit_kwargs("prijedlog_stecaj", audit_input, "stecajno"))
 
 
 def _render_prijava_trazbine():
@@ -149,7 +156,9 @@ def _render_prijava_trazbine():
     st.markdown("---")
     if st.button("Generiraj prijavu trazbine", type="primary", key="pt_stec_btn"):
         doc = generiraj_prijavu_trazbine(vjerovnik, podaci)
-        prikazi_dokument(doc, "Prijava_trazbine.docx", "Preuzmi dokument")
+        audit_input = {"vjerovnik_html": vjerovnik, "podaci": podaci}
+        prikazi_dokument(doc, "Prijava_trazbine.docx", "Preuzmi dokument",
+                         **audit_kwargs("prijava_trazbine_stecaj", audit_input, "stecajno"))
 
 
 def _render_stecaj_potrosaca():
@@ -234,7 +243,9 @@ def _render_stecaj_potrosaca():
     st.markdown("---")
     if st.button("Generiraj prijedlog za stecaj potrosaca", type="primary", key="sp_btn"):
         doc = generiraj_stecaj_potrosaca(podnositelj, podaci)
-        prikazi_dokument(doc, "Stecaj_potrosaca.docx", "Preuzmi dokument")
+        audit_input = {"podnositelj_html": podnositelj, "podaci": podaci}
+        prikazi_dokument(doc, "Stecaj_potrosaca.docx", "Preuzmi dokument",
+                         **audit_kwargs("stecaj_potrosaca", audit_input, "stecajno"))
 
 
 def render_stecajno():
