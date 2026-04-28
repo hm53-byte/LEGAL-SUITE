@@ -1265,6 +1265,12 @@ def generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci):
         ponuda_naknade = podaci.get('ponuda_naknade_eur', 0)
         ponuda_str = format_eur(ponuda_naknade) if ponuda_naknade else ''
 
+        ponuda_html = (
+            f"<div class='doc-body'>Naručitelj nudi Izvođaču naknadu u iznosu od <b>{ponuda_str}</b> "
+            f"kojom se podmiruje vrijednost izvršenog rada i razumno obeštećenje za izgubljenu zaradu "
+            f"sukladno ZOO čl. 633 st. 2.</div>"
+        ) if ponuda_str else ""
+
         return (
             f"<div class='party-info'><b>NARUČITELJ:</b><br>{narucitelj}</div>"
             f"<div class='party-info'><b>IZVOĐAČ:</b><br>{izvodac}</div><br>"
@@ -1277,7 +1283,7 @@ def generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci):
             f"<div class='doc-body'>{razlog if razlog else 'Naručitelj koristi pravo iz članka 633. ZOO da raskine Ugovor o djelu i prije njegovog izvršenja.'}</div>"
             f"<div class='section-title'>OBRAČUN IZVRŠENOG RADA</div>"
             f"<div class='doc-body'>{izvrseno_html if izvrseno_html else 'Izvođač nije do dana raskida izvršio značajan dio djela.'}</div>"
-            f"{f'<div class=\"doc-body\">Naručitelj nudi Izvođaču naknadu u iznosu od <b>{ponuda_str}</b> kojom se podmiruje vrijednost izvršenog rada i razumno obeštećenje za izgubljenu zaradu sukladno ZOO čl. 633 st. 2.</div>' if ponuda_str else ''}"
+            f"{ponuda_html}"
             f"<div class='doc-body'>Izvođač se obvezuje predati Naručitelju izvršeni dio djela, kao i sav "
             f"materijal koji mu je predan za izvedbu, najkasnije u roku od 8 dana od primitka ovog Raskida.</div>"
             f"<br>"
