@@ -28,6 +28,9 @@ from stranice import (
     render_nn_pretraga,
     render_jednostavno,
     render_posrednik_najam,
+    render_nautika,
+    render_apartmani,
+    render_pokretnine,
     render_pravila,
 )
 from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
@@ -95,28 +98,55 @@ else:
 # =============================================================================
 
 _MODULI = {
-    "Početna":           {"render": None,             "grupa": None,    "docx": False, "opis": "Početna stranica"},
-    "Ugovori":           {"render": render_ugovori,   "grupa": "Dokumenti", "docx": True,  "opis": "Kupoprodaja, najam, rad, NDA, raskid..."},
-    "Opomena":           {"render": render_opomene,    "grupa": "Dokumenti", "docx": True,  "opis": "Opomena pred tužbu"},
-    "Punomoć":           {"render": render_punomoci,   "grupa": "Dokumenti", "docx": True,  "opis": "Punomoć za zastupanje"},
-    "Obvezno pravo":     {"render": render_obvezno,    "grupa": "Dokumenti", "docx": True,  "opis": "Darovanje, cesija, kompenzacija, jamstvo..."},
-    "Trgovačko pravo":   {"render": render_trgovacko,  "grupa": "Dokumenti", "docx": True,  "opis": "Društveni ugovor, prijenos udjela, NDA..."},
-    "Obiteljsko pravo":  {"render": render_obiteljsko, "grupa": "Dokumenti", "docx": True,  "opis": "Razvod, bračni ugovor, skrb, uzdržavanje"},
-    "Posrednik u najmu": {"render": render_posrednik_najam, "grupa": "Dokumenti", "docx": True, "opis": "Korporativni smještaj: A-B najam + B-C upravljanje"},
-    "Tužbe":             {"render": render_tuzbe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Tužba za isplatu, naknada štete"},
-    "Ovršno pravo":      {"render": render_ovrhe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Ovrha putem JB, prigovor, obustava"},
-    "Žalbe":             {"render": render_zalbe,       "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba na presudu"},
-    "Zemljišne knjige":  {"render": render_zemljisne,   "grupa": "Sudski postupci", "docx": True,  "opis": "Uknjižba, hipoteka, služnost..."},
-    "Upravno pravo":     {"render": render_upravno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba ZUP, tužba ZUS, pristup info"},
-    "Kazneno pravo":     {"render": render_kazneno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Kaznena prijava, privatna tužba, žalba"},
-    "Stečajno pravo":    {"render": render_stecajno,    "grupa": "Sudski postupci", "docx": True,  "opis": "Osobni stečaj, prijedlog, prijava tražbine"},
-    "Zaštita potrošača": {"render": render_potrosaci,   "grupa": "Sudski postupci", "docx": True,  "opis": "Reklamacija, raskid online kupnje"},
-    "Sudske objave":     {"render": render_eoglasna,    "grupa": "Alati",  "docx": False, "opis": "e-Oglasna ploča sudova"},
-    "Propisi":           {"render": render_nn_pretraga, "grupa": "Alati",  "docx": False, "opis": "Narodne novine, baza zakona"},
-    "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Ročišta, rokovi, podsjetnici"},
-    "Kamate":            {"render": render_kamate,      "grupa": "Alati",  "docx": False, "opis": "Kalkulator zakonskih zateznih kamata"},
-    "Pristojbe":         {"render": render_pristojbe,   "grupa": "Alati",  "docx": False, "opis": "Kalkulator sudskih pristojbi"},
-    "Pravila i privatnost": {"render": render_pravila,  "grupa": "Alati",  "docx": False, "opis": "Uvjeti korištenja, GDPR, watermark"},
+    "Početna":           {"render": None,             "grupa": None,    "docx": False, "opis": "Početna stranica", "keywords": ""},
+    "Ugovori":           {"render": render_ugovori,   "grupa": "Dokumenti", "docx": True,  "opis": "Kupoprodaja, najam, rad, NDA, raskid...",
+                          "keywords": "kupoprodaja kupoprodajni najam rad radni odnos nda nedjelovanje aneks otkaz sporazumni prestanak rad na daljinu zabrana natjecanja potvrda zaposlenju upozorenje radniku predugovor"},
+    "Opomena":           {"render": render_opomene,    "grupa": "Dokumenti", "docx": True,  "opis": "Opomena pred tužbu",
+                          "keywords": "opomena pred tuzbu prigovor racunu hep a1 t-com voda telekom davatelj usluga"},
+    "Punomoć":           {"render": render_punomoci,   "grupa": "Dokumenti", "docx": True,  "opis": "Punomoć za zastupanje",
+                          "keywords": "punomoc opca posebna specijalna prodaja nekretnine brodice zastupanje opunomocenje vlastodavac"},
+    "Obvezno pravo":     {"render": render_obvezno,    "grupa": "Dokumenti", "docx": True,  "opis": "Darovanje, cesija, kompenzacija, jamstvo...",
+                          "keywords": "darovanje cesija kompenzacija jamstvo ugovor o gradenju licenca posredovanje sporazumni raskid raskid kupoprodaje predugovor"},
+    "Trgovačko pravo":   {"render": render_trgovacko,  "grupa": "Dokumenti", "docx": True,  "opis": "Društveni ugovor, prijenos udjela, NDA...",
+                          "keywords": "drustveni ugovor doo jdoo prijenos udjela nda zapisnik uprave odluka skupstine prodaja poduzeca zalog na udjelu"},
+    "Obiteljsko pravo":  {"render": render_obiteljsko, "grupa": "Dokumenti", "docx": True,  "opis": "Razvod, bračni ugovor, skrb, uzdržavanje",
+                          "keywords": "razvod sporazumni tuzba bracni ugovor roditeljska skrb uzdrzavanje alimentacija"},
+    "Posrednik u najmu": {"render": render_posrednik_najam, "grupa": "Dokumenti", "docx": True, "opis": "Korporativni smještaj: A-B najam + B-C upravljanje",
+                          "keywords": "posrednik najam upravljanje smjestaj korporativni apartman"},
+    "Nautika":           {"render": render_nautika, "grupa": "Dokumenti", "docx": True, "opis": "Brodice: kupoprodaja, tabularna, punomoć, zalog",
+                          "keywords": "nautika brodica jahta plovilo kupoprodaja brodice tabularna brodica clausula intabulandi upisnik brodica lucka kapetanija punomoc prodaja brodice zalog na brodici hrb pomorski zakonik"},
+    "Apartmani":         {"render": render_apartmani, "grupa": "Dokumenti", "docx": True, "opis": "Iznajmljivanje turistima: suglasnost, MTU, kategorizacija",
+                          "keywords": "apartman iznajmljivanje turisti suglasnost vlasnika obitelj suvlasnici mtu minimalni tehnicki uvjeti kategorizacija pravilnik 9/16 56/16 ugostiteljska djelatnost domacinstvo soba kuca za odmor"},
+    "Pokretnine":        {"render": render_pokretnine, "grupa": "Dokumenti", "docx": True, "opis": "Zalog na pokretnoj imovini (oprema, vozilo, FINA upisnik)",
+                          "keywords": "pokretnina zalog na pokretnini oprema strojevi zalihe vozilo automobil motorno vozilo fina upisnik zaloznih prava nn 121/05 vin sasija registracija"},
+    "Tužbe":             {"render": render_tuzbe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Tužba za isplatu, naknada štete",
+                          "keywords": "tuzba isplata duga naknada stete brisovna tuzba parnica"},
+    "Ovršno pravo":      {"render": render_ovrhe,      "grupa": "Sudski postupci", "docx": True,  "opis": "Ovrha putem JB, prigovor, obustava",
+                          "keywords": "ovrha javni biljeznik vjerodostojna isprava ovrsna isprava nekretnina placa prigovor obustava privremena mjera"},
+    "Žalbe":             {"render": render_zalbe,       "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba na presudu",
+                          "keywords": "zalba presuda zpp drugostupanjski rok"},
+    "Zemljišne knjige":  {"render": render_zemljisne,   "grupa": "Sudski postupci", "docx": True,  "opis": "Uknjižba, hipoteka, služnost...",
+                          "keywords": "tabularna izjava uknjizba zk prijedlog hipoteka zalozno pravo zalog sluznost stvarna osobna plodouzivanje uzufrukt zabiljezba predbiljezba brisanje hipoteke brisovno ocitovanje clausula intabulandi"},
+    "Upravno pravo":     {"render": render_upravno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Žalba ZUP, tužba ZUS, pristup info",
+                          "keywords": "zalba zup tuzba zus upravni sud pristup informacijama zppi prigovor predstavka ministarstvo mtu kategorizacija apartman"},
+    "Kazneno pravo":     {"render": render_kazneno,     "grupa": "Sudski postupci", "docx": True,  "opis": "Kaznena prijava, privatna tužba, žalba",
+                          "keywords": "kaznena prijava privatna tuzba zalba kaznena presuda dorh"},
+    "Stečajno pravo":    {"render": render_stecajno,    "grupa": "Sudski postupci", "docx": True,  "opis": "Osobni stečaj, prijedlog, prijava tražbine",
+                          "keywords": "stecaj osobni prijedlog prijava trazbine vjerovnik insolventnost"},
+    "Zaštita potrošača": {"render": render_potrosaci,   "grupa": "Sudski postupci", "docx": True,  "opis": "Reklamacija, raskid online kupnje",
+                          "keywords": "reklamacija jednostrani raskid online kupnja zzp inspekcija prigovor racun davatelj usluga"},
+    "Sudske objave":     {"render": render_eoglasna,    "grupa": "Alati",  "docx": False, "opis": "e-Oglasna ploča sudova",
+                          "keywords": "e-oglasna sudske objave ovrhe drazbe stecajni postupci"},
+    "Propisi":           {"render": render_nn_pretraga, "grupa": "Alati",  "docx": False, "opis": "Narodne novine, baza zakona",
+                          "keywords": "narodne novine nn zakoni propisi pretraga"},
+    "Kalendar":          {"render": render_kalendar,    "grupa": "Alati",  "docx": False, "opis": "Ročišta, rokovi, podsjetnici",
+                          "keywords": "kalendar rocista rokovi podsjetnici"},
+    "Kamate":            {"render": render_kamate,      "grupa": "Alati",  "docx": False, "opis": "Kalkulator zakonskih zateznih kamata",
+                          "keywords": "kamate zatezne zakonske kalkulator"},
+    "Pristojbe":         {"render": render_pristojbe,   "grupa": "Alati",  "docx": False, "opis": "Kalkulator sudskih pristojbi",
+                          "keywords": "pristojbe sudske kalkulator nn 118/18"},
+    "Pravila i privatnost": {"render": render_pravila,  "grupa": "Alati",  "docx": False, "opis": "Uvjeti korištenja, GDPR, watermark",
+                          "keywords": "pravila privatnost gdpr uvjeti koristenja tos watermark"},
 }
 
 # Grupe za sidebar
@@ -186,7 +216,11 @@ if not _is_simple_mode:
         _q = _search_query.lower()
         _filtered = {
             k: v for k, v in _MODULI.items()
-            if k != "Početna" and (_q in k.lower() or _q in v["opis"].lower())
+            if k != "Početna" and (
+                _q in k.lower()
+                or _q in v["opis"].lower()
+                or _q in v.get("keywords", "").lower()
+            )
         }
         if _filtered:
             for name in _filtered:

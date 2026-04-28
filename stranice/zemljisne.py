@@ -10,6 +10,7 @@ from pomocne import (
     unos_tocaka,
     doc_selectbox,
     audit_kwargs,
+    napuni_primjerom,
 )
 from generatori.zemljisne import (
     generiraj_tabularnu_doc,
@@ -19,6 +20,9 @@ from generatori.zemljisne import (
     generiraj_upis_hipoteke,
     generiraj_brisanje_hipoteke,
     generiraj_upis_sluznosti,
+    generiraj_brisovno_ocitovanje,
+    generiraj_upis_plodouzivanja,
+    generiraj_punomoc_prodaje_nekretnine,
 )
 from generatori.tuzbe import generiraj_brisovnu_tuzbu
 from pristojbe import pristojba_zk_prijedlog
@@ -29,7 +33,8 @@ def render_zemljisne():
     zk_usluga = doc_selectbox(
         "Odaberite ZK uslugu",
         ["Tabularna isprava", "ZK Prijedlog (Uknjižba)", "Brisovna tužba",
-         "Zabilježba", "Predbilježba", "Upis hipoteke", "Brisanje hipoteke", "Upis služnosti"],
+         "Zabilježba", "Predbilježba", "Upis hipoteke", "Brisanje hipoteke", "Upis služnosti",
+         "Brisovno očitovanje", "Upis plodouživanja (uzufrukt)", "Punomoć za prodaju nekretnine"],
     )
 
     if zk_usluga == "Tabularna isprava":
@@ -355,3 +360,137 @@ def render_zemljisne():
             }
             prikazi_dokument(doc, "Upis_sluznosti.docx", "Preuzmi dokument",
                              **audit_kwargs(f"upis_sluznosti_{vrsta_sluznosti}", audit_input, "zemljisne"))
+
+    elif zk_usluga == "Brisovno očitovanje":
+        st.caption("Vjerovnik izdaje (ovjereno kod JB) — vlasnik nekretnine s ovim očitovanjem podnosi prijedlog za brisanje hipoteke.")
+        napuni_primjerom('brisovno_ocitovanje', '')
+        c1, c2 = st.columns(2)
+        with c1:
+            vjerovnik, _, _ = unos_stranke("VJEROVNIK (banka / pojedinac)", "bo_vj")
+        with c2:
+            vlasnik, _, _ = unos_stranke("VLASNIK NEKRETNINE", "bo_vl")
+        st.subheader("Nekretnina")
+        c1, c2, c3 = st.columns(3)
+        ko_b = c1.text_input("K.O.", key="bo_ko")
+        ulozak_b = c2.text_input("ZK uložak", key="bo_ul")
+        cestica_b = c3.text_input("Čestica (k.č.br.)", key="bo_ces")
+        opis_b = st.text_input("Opis u naravi (opcionalno)", key="bo_op")
+        st.subheader("Upis koji se briše")
+        c1, c2, c3 = st.columns(3)
+        z_broj = c1.text_input("Broj upisa (Z)", key="bo_z", placeholder="npr. Z-1234/2018")
+        datum_upisa = c2.text_input("Datum upisa", key="bo_du", placeholder="dd.mm.yyyy.")
+        iznos = c3.text_input("Osigurana tražbina", key="bo_iz", placeholder="npr. 100.000,00 EUR")
+        razlog = st.selectbox(
+            "Razlog prestanka tražbine",
+            ["isplate cjelokupne tražbine", "kompenzacije s protutražbinom",
+             "nagodbe između stranaka", "zastare tražbine", "drugog razloga prestanka"],
+            key="bo_raz",
+        )
+        mjesto_b = st.text_input("Mjesto izdavanja", "Zagreb", key="bo_mj")
+        if st.button("Generiraj brisovno očitovanje", type="primary"):
+            podaci = {
+                'ko': ko_b, 'ulozak': ulozak_b, 'cestica': cestica_b,
+                'opis_nekretnine': opis_b, 'z_broj': z_broj, 'datum_upisa': datum_upisa,
+                'iznos_trazbine': iznos, 'razlog_prestanka': razlog, 'mjesto': mjesto_b,
+            }
+            doc = generiraj_brisovno_ocitovanje(vjerovnik, vlasnik, podaci)
+            audit_input = {"vjerovnik_html": vjerovnik, "vlasnik_html": vlasnik, "podaci": podaci}
+            prikazi_dokument(doc, "Brisovno_ocitovanje.docx", "Preuzmi očitovanje",
+                             **audit_kwargs("brisovno_ocitovanje", audit_input, "zemljisne"))
+
+    elif zk_usluga == "Upis plodouživanja (uzufrukt)":
+        st.caption("Pravni temelj: ZV čl. 199-213 (osobne služnosti). Pravo prestaje smrću plodouživatelja, neprenosivo.")
+        napuni_primjerom('upis_plodouzivanja', '')
+        sud_p = odabir_suda("Sud", vrsta="opcinski", key="plod_sud")
+        c1, c2 = st.columns(2)
+        with c1:
+            vlasnik_p, _, _ = unos_stranke("VLASNIK NEKRETNINE", "plod_vl")
+        with c2:
+            plodouz, _, _ = unos_stranke("PLODOUŽIVATELJ", "plod_pu")
+        st.subheader("Nekretnina")
+        c1, c2, c3 = st.columns(3)
+        ko_p = c1.text_input("K.O.", key="plod_ko")
+        ulozak_p = c2.text_input("ZK uložak", key="plod_ul")
+        cestica_p = c3.text_input("Čestica", key="plod_ces")
+        opis_p = st.text_input("Opis u naravi", key="plod_op")
+        st.subheader("Opseg i uvjeti")
+        c1, c2 = st.columns(2)
+        opseg_p = c1.selectbox(
+            "Opseg plodouživanja",
+            ["puno plodouživanje (uživanje stvari u cijelosti)",
+             "djelomično plodouživanje (samo dio nekretnine)",
+             "plodouživanje samo prihoda (najamnine, plodova)"],
+            key="plod_opseg",
+        )
+        trajanje_p = c2.selectbox(
+            "Trajanje",
+            ["doživotno (do smrti plodouživatelja)",
+             "na određeno vrijeme",
+             "do nastupa nekog uvjeta"],
+            key="plod_traj",
+        )
+        ogranicenja_p = st.text_area(
+            "Ograničenja / izuzeća (opcionalno)",
+            placeholder="npr. plodouživatelj ne smije bez suglasnosti vlasnika davati nekretninu u zakup",
+            height=80, key="plod_ogr",
+        )
+        naknada_p = st.text_input("Naknada", "bez naknade", key="plod_nak")
+        pravni_temelj_p = st.text_input(
+            "Pravni temelj",
+            placeholder="npr. Ugovor o osnivanju plodouživanja od 01.05.2026.",
+            key="plod_pt",
+        )
+        c1, c2 = st.columns(2)
+        pristojba_p = c1.number_input("Sudska pristojba", 0.0, key="plod_pri")
+        mjesto_p = c2.text_input("Mjesto", "Zagreb", key="plod_mj")
+        if st.button("Generiraj prijedlog uknjižbe", type="primary"):
+            podaci = {
+                'ko': ko_p, 'ulozak': ulozak_p, 'cestica': cestica_p, 'opis_nekretnine': opis_p,
+                'opseg': opseg_p, 'ogranicenja': ogranicenja_p, 'pravni_temelj': pravni_temelj_p,
+                'naknada': naknada_p, 'trajanje': trajanje_p, 'mjesto': mjesto_p,
+            }
+            troskovi = {'pristojba': pristojba_p}
+            doc = generiraj_upis_plodouzivanja(sud_p, vlasnik_p, plodouz, podaci, troskovi)
+            audit_input = {
+                "sud": sud_p, "vlasnik_html": vlasnik_p, "plodouzivatelj_html": plodouz,
+                "podaci": podaci, "troskovi": troskovi,
+            }
+            prikazi_dokument(doc, "Upis_plodouzivanja.docx", "Preuzmi prijedlog",
+                             **audit_kwargs("upis_plodouzivanja", audit_input, "zemljisne"))
+
+    elif zk_usluga == "Punomoć za prodaju nekretnine":
+        st.caption("Specijalna punomoć (ZOO čl. 308-331) sa autopopulacijom k.č.br./zk.ul. Potpis se ovjerava kod JB.")
+        napuni_primjerom('punomoc_prodaje_nekretnine', '')
+        c1, c2 = st.columns(2)
+        with c1:
+            vlastodavac, _, _ = unos_stranke("VLASTODAVAC (vlasnik)", "pun_vl")
+        with c2:
+            punomocnik_n, _, _ = unos_stranke("PUNOMOĆNIK", "pun_pu")
+        st.subheader("Nekretnina")
+        c1, c2, c3 = st.columns(3)
+        ko_n = c1.text_input("K.O.", key="pun_ko")
+        ulozak_n = c2.text_input("ZK uložak", key="pun_ul")
+        cestica_n = c3.text_input("Čestica", key="pun_ces")
+        opis_n = st.text_input("Opis u naravi", key="pun_op", placeholder="npr. stan, kuća s dvorištem")
+        c1, c2 = st.columns(2)
+        adresa_n = c1.text_input("Adresa", key="pun_adr", placeholder="npr. Ilica 100, 10000 Zagreb")
+        povrsina_n = c2.text_input("Površina (m²)", key="pun_pov", placeholder="opcionalno")
+        st.subheader("Uvjeti punomoći")
+        c1, c2 = st.columns(2)
+        min_cijena = c1.number_input(
+            "Minimalna prihvatljiva cijena (EUR, opcionalno)",
+            min_value=0.0, step=1000.0, key="pun_min",
+            help="Ako 0 — punomoćnik može pregovarati slobodno.",
+        )
+        rok_pun = c2.text_input("Rok važenja", "12 (dvanaest) mjeseci od datuma ovjere", key="pun_rok")
+        mjesto_n = st.text_input("Mjesto izdavanja", "Zagreb", key="pun_mj")
+        if st.button("Generiraj punomoć", type="primary"):
+            podaci = {
+                'ko': ko_n, 'ulozak': ulozak_n, 'cestica': cestica_n,
+                'opis_nekretnine': opis_n, 'adresa': adresa_n, 'povrsina_m2': povrsina_n,
+                'minimalna_cijena_eur': min_cijena, 'rok_vazenja': rok_pun, 'mjesto': mjesto_n,
+            }
+            doc = generiraj_punomoc_prodaje_nekretnine(vlastodavac, punomocnik_n, podaci)
+            audit_input = {"vlastodavac_html": vlastodavac, "punomocnik_html": punomocnik_n, "podaci": podaci}
+            prikazi_dokument(doc, "Punomoc_prodaja_nekretnine.docx", "Preuzmi punomoć",
+                             **audit_kwargs("punomoc_prodaja_nekretnine", audit_input, "zemljisne"))

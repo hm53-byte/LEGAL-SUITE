@@ -3,16 +3,20 @@
 # =============================================================================
 # Cita/upravlja entitlement state preko Supabase REST API (PostgREST).
 # NIKAD ne pisi entitlements direktno s klijenta — to radi Cloudflare Worker
-# (cloud/cf_worker_stripe.ts) preko Stripe webhook-a + service_role kljuca.
+# (cloud/cf_worker_polar.ts) preko Polar.sh webhook-a + service_role kljuca.
+#
+# Payment gateway: Polar.sh (Merchant of Record). Polar automatski rjesava EU
+# PDV za sve jurisdikcije bez registracije po zemlji.
 #
 # Streamlit klijent ima samo:
 #   - SUPABASE_URL  (public, OK u secrets.toml)
 #   - SUPABASE_ANON_KEY  (public, RLS stiti retke; OK u secrets.toml)
+#   - CHECKOUT_URL_BASE  (CF Worker base URL — public, samo endpoint adresa)
 #   - JWT u session_state["_supabase_jwt"] nakon auth (Supabase auth.signIn)
 #
 # Cloudflare Worker ima:
 #   - SUPABASE_SERVICE_ROLE_KEY  (secret, NIKAD u Streamlit-u — bypass-a RLS)
-#   - STRIPE_WEBHOOK_SECRET, STRIPE_API_KEY
+#   - POLAR_WEBHOOK_SECRET, POLAR_ACCESS_TOKEN, POLAR_PRODUCT_ID_PRO
 #
 # BRZ_MOZAK reference:
 #   - Pravilo 14B (tehnoloska sprancara): Supabase je infra-vendor (Postgres + auth + REST),
@@ -49,7 +53,10 @@ def _secret(key: str, default: str = "") -> str:
 
 SUPABASE_URL = _secret("SUPABASE_URL")           # https://xxx.supabase.co
 SUPABASE_ANON_KEY = _secret("SUPABASE_ANON_KEY") # public anon key (RLS-protected)
-STRIPE_CHECKOUT_URL_BASE = _secret("STRIPE_CHECKOUT_URL_BASE")  # CF Worker endpoint koji vraca Stripe Checkout URL
+# Payment-gateway-neutral: Streamlit klijent vidi samo CF Worker base URL.
+# Aktivni gateway iza Worker-a: Polar.sh (od 2026-04-28). Backward-compat:
+# ako stari secret STRIPE_CHECKOUT_URL_BASE postoji, koristimo ga kao fallback.
+CHECKOUT_URL_BASE = _secret("CHECKOUT_URL_BASE") or _secret("STRIPE_CHECKOUT_URL_BASE")
 
 
 def _is_configured() -> bool:
@@ -199,17 +206,18 @@ def is_pro(user_id: str | None = None) -> bool:
 
 
 def get_checkout_url(user_id: str | None = None, plan: str = "pro") -> str | None:
-    """Vraca Stripe Checkout URL za upgrade. Pravi POST na CF Worker koji generira
-    Stripe Checkout session s metadata={user_id, plan}. CF Worker vraca URL.
+    """Vraca payment Checkout URL za upgrade (Polar.sh hosted checkout).
+    Pravi POST na CF Worker (`/create-checkout-session`) koji generira Polar
+    Checkout session s metadata={user_id, plan}. CF Worker vraca URL.
 
     Vraca None ako nije konfigurirano ili user_id nedostaje (UI ce sakriti gumb).
     """
     user_id = user_id or current_user_id()
-    if not user_id or not STRIPE_CHECKOUT_URL_BASE:
+    if not user_id or not CHECKOUT_URL_BASE:
         return None
     try:
         r = requests.post(
-            f"{STRIPE_CHECKOUT_URL_BASE}/create-checkout-session",
+            f"{CHECKOUT_URL_BASE}/create-checkout-session",
             json={"user_id": user_id, "plan": plan},
             timeout=10.0,
         )
@@ -294,7 +302,7 @@ def render_subscribe_cta(label: str = "Pretplati se na PRO", key: str = "_pro_ct
     if st.button(label, key=key, type="primary"):
         url = get_checkout_url(user_id, plan="pro")
         if url:
-            st.markdown(f"[Otvori Stripe Checkout]({url})")
+            st.markdown(f"[Otvori Polar Checkout]({url})")
             st.info("Nakon uspjesne pretplate, vrati se u app i kliknite refresh.")
         else:
             st.error("Trenutno nije moguce pokrenuti pretplatu. Pokusajte kasnije.")

@@ -1,8 +1,10 @@
 # LegalTechSuite Pro
 
+> **Privatni podaci**: `{{PLACEHOLDER}}` tokeni → stvarne vrijednosti u `APLIKACIJA OBSIDIAN/APLIKACIJA_PRIVATNI_PODACI.md`
+
 **Generator hrvatskih pravnih dokumenata u par klikova.**
 
-Web aplikacija na koju korisnik dođe, popuni formu (npr. podatke o tužitelju i tuženiku, iznos, opis duga), klikne **Generiraj** i preuzme gotov `.docx` dokument koji može odštampati i odnijeti na sud ili pošaljati strani. Aplikacija pokriva 60+ tipova dokumenata u 15 pravnih područja: ugovori, tužbe, ovrhe, žalbe, zemljišne knjige, opomene, punomoći, trgovačko, obvezno, obiteljsko, upravno, kazneno, stečajno pravo te zaštita potrošača.
+Web aplikacija na koju korisnik dođe, popuni formu (npr. podatke o tužitelju i tuženiku, iznos, opis duga), klikne **Generiraj** i preuzme gotov `.docx` dokument koji može odštampati i odnijeti na sud ili pošaljati strani. Aplikacija pokriva **79+ tipova dokumenata u 17 pravnih područja**: ugovori, tužbe, ovrhe, žalbe, zemljišne knjige, opomene, punomoći, trgovačko, obvezno, obiteljsko, upravno, kazneno, stečajno pravo, zaštita potrošača, **nautika (brodice), apartmani (iznajmljivanje turistima) te zalog na pokretninama**.
 
 **Što aplikacija NE radi**: ne pruža pravne savjete, ne klasificira korisnikov slučaj, ne predviđa ishod postupka. To su poslovi odvjetnika. Aplikacija je determinističko popunjavanje obrazaca — radi isto kao Word kad otvoriš template i upisuješ u prazna polja, samo s 60+ već pripremljenih predložaka i hrvatskim sudskim formatiranjem (Times New Roman 12, marže 2,5 cm, datumi `dd.mm.yyyy.`).
 
@@ -184,7 +186,7 @@ Korisnik može u aplikaciji upisati broj predmeta i dobiti status iz ePredmeta, 
 | HTTP klijent | requests | Za vanjske registre (ePredmet, Sudreg) i Supabase REST API |
 | Hosting | Streamlit Community Cloud | Free tier, public repo, auto-deploy iz GitHub-a |
 | Baza podataka (monetizacija) | Supabase Postgres | Free tier 500 MB, 50k MAU, REST API + Row-Level Security |
-| Plaćanje | Stripe Checkout + Subscription | Industry standard, HR PDV preko Stripe Tax |
+| Plaćanje | **Polar.sh** (Merchant of Record) | EU PDV automatski za sve jurisdikcije, bez registracije za HR PDV po zemlji. (K3 cloud kod je napisan za Stripe i zakazan za refaktor.) |
 | Webhook handler | Cloudflare Workers | Free tier 100k zahtjeva/dan, stable URL, low latency edge |
 | Auth | Streamlit + lokalni `.users.json` (postojeći) → Supabase Auth (planirano) | Migracija u tijeku — vidi sekciju "Što ostaje" |
 
@@ -234,11 +236,11 @@ Otvori `http://localhost:8501` u browseru.
 
 Detaljne upute u [`upute.md`](upute.md). Sažeto:
 
-1. Push kod na GitHub repo `hm53-byte/LEGAL-SUITE`.
+1. Push kod na GitHub repo `{{GITHUB_KORISNIK}}/LEGAL-SUITE`.
 2. Idi na https://share.streamlit.io → **New app** → odaberi repo, branch `main`, file `LEGAL-SUITE.py`.
 3. Streamlit Cloud auto-deploya pri svakom git push-u.
 
-Trenutni live URL: `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app`
+Trenutni live URL: `https://{{STREAMLIT_APP_ID}}.streamlit.app`
 
 ---
 
@@ -268,7 +270,7 @@ STRIPE_CHECKOUT_URL_BASE = "https://lts-stripe-webhook.<sub>.workers.dev"
 
 ---
 
-## Generatori dokumenata (60+ tipova)
+## Generatori dokumenata (79+ tipova)
 
 Svaki generator je čista Python funkcija — `def generiraj_xxx(podaci: dict) -> str` koja vraća HTML niz. Sve dijaktolitičke specifičnosti hrvatskog jezika (vokativ, lokativ, padeži imena) idu kroz `pomocne._padez_ime()` i `pomocne.u_lokativu()`.
 
@@ -289,7 +291,18 @@ Pregled po modulima u `generatori/`:
 | `upravno.py` | 4 | Žalba ZUP, tužba upravnom sudu (ZUS), zahtjev ZPPI |
 | `kazneno.py` | 3 | Kaznena prijava, privatna tužba |
 | `stecajno.py` | 3 | Prijedlog za osobni stečaj, prijava tražbine |
-| `potrosaci.py` | 3 | Reklamacija, jednostrani raskid online kupnje, prijava inspekciji |
+| `potrosaci.py` | 4 | Reklamacija, jednostrani raskid online kupnje, prijava inspekciji, **prigovor računu davateljima usluga (telekom/HEP/voda)** |
+| `nautika.py` | 4 | **Kupoprodaja brodice, tabularna izjava za HRB, specijalna punomoć prodaje brodice, zalog na brodici** |
+| `apartmani.py` | 4 | **Suglasnost vlasnika obitelji za iznajmljivanje, suglasnost suvlasnika, zahtjev MTU (NN 9/16), zahtjev kategorizacija (NN 56/16)** |
+| `pokretnine.py` | 2 | **Zalog na općoj pokretnini (FINA upisnik NN 121/05), zalog na motornom vozilu** |
+
+**Faza 1-3 ekstenzije postojećih modula:**
+
+| Modul | Novi tipovi |
+|---|---|
+| `zemljisne.py` | + Brisovno očitovanje (samostalno), + Upis plodouživanja/uzufrukta (ZV 199-213), + Strukturirana punomoć prodaje nekretnine |
+| `obvezno.py` | + Predugovor (ZOO 268), + Raskid najma (ZOO 552-558), + Raskid ugovora o djelu (ZOO 633), + Raskid kupoprodaje zbog neispunjenja (ZOO 360-368) |
+| `trgovacko.py` | + Zalog na poslovnom udjelu d.o.o. (ZTD 412 + Sudski registar) |
 
 Svaki dokument prati hrvatske formalne konvencije: Times New Roman 12 pt, marže 2,5 cm, justified, datumi `dd.mm.yyyy.`.
 
@@ -326,9 +339,11 @@ PRO korisnici (vidi Monetizacija) dobivaju **cleaner footer** (samo ID, bez "Gen
 
 ## MONETIZACIJA
 
+> **Status payment gateway-a (2026-04-28):** odluka je donesena za **Polar.sh** kao Merchant of Record (MoR). Polar automatski rješava EU PDV za sve jurisdikcije bez registracije za HR PDV po zemlji, što je za jednog dev-a značajno manje friction-a od Stripe Tax + direct payments. K3 cloud kod (`cloud/cf_worker_*.ts`, `entitlements.py`) je napisan kao Stripe MVP i zakazan za refaktor na Polar API + webhook events (`order.created`, `subscription.active`, `subscription.canceled`, `subscription.revoked`).
+
 Aplikacija je **freemium**: core generiranje dokumenata je besplatno, **PRO pretplata** otključava neograničene download-e, čišći footer i prioritet kod budućih novih dokumenata.
 
-Cijela monetizacija je **cloud-native** — radi 24/7 čak i kad je razvojni PC isključen. Sve komponente su u free tier-u dok god je promet ispod limita; pri padu na live mode jedini fiksni trošak je **Stripe-ov 2,9 % + 0,30 EUR po transakciji**.
+Cijela monetizacija je **cloud-native** — radi 24/7 čak i kad je razvojni PC isključen. Sve komponente su u free tier-u dok god je promet ispod limita; pri padu na live mode trošak je **Polar.sh provizija** (transakcijska, varijabilna).
 
 ### Arhitektura monetizacije
 
@@ -393,7 +408,7 @@ Worker ima **service_role key** (admin bypass RLS) jer mora pisati u `entitlemen
 
 #### 4. Streamlit Cloud — već postoji
 
-Streamlit Community Cloud auto-deploya iz GitHub repo-a `hm53-byte/LEGAL-SUITE` na svaki push. Samo treba dodati 3 secrets (Settings → Secrets) za monetizaciju:
+Streamlit Community Cloud auto-deploya iz GitHub repo-a `{{GITHUB_KORISNIK}}/LEGAL-SUITE` na svaki push. Samo treba dodati 3 secrets (Settings → Secrets) za monetizaciju:
 
 ```toml
 SUPABASE_URL = "https://xxx.supabase.co"
@@ -555,13 +570,14 @@ Trenutno `auth.py` koristi lokalni `.users.json`. Streamlit Community Cloud disk
 python -m pytest tests/ -q
 ```
 
-Trenutno **179 testova** (~1 sekunda runtime). Pokriva:
+Trenutno **224 testa** (~1 sekunda runtime). Pokriva:
 
 - Validacije (OIB ISO 7064, IBAN, datumi)
 - Generatore (smoke testovi za svaki tip dokumenta — provjeri da vraća HTML, da uključuje obavezna polja, da pravilno formatira hrvatske iznose)
 - Pomoćne funkcije (padeži imena, sudovi lookup, pristojbe kalkulator)
 - HTML → DOCX konverziju
 - K3 monetizaciju: watermark serial generator (12 testova), entitlements TTL cache + graceful degradation (8 testova)
+- **Faza 1-3 (2026-04-28): 30 testova** za nove generatore (nautika, apartmani, pokretnine, zemljisne ext, obvezno ext, prigovor računu × 3 sektora, zalog udjela) + sidebar search keywords regression testovi
 
 ---
 
@@ -647,21 +663,25 @@ APLIKACIJA/
 ├── api_epredmet.py                 # Read ePredmet status
 ├── api_nn.py                       # Read Narodne novine
 ├── api_sudreg.py                   # Read Sudski registar
-├── generatori/                     # 60+ generatora dokumenata
+├── generatori/                     # 79+ generatora dokumenata
 │   ├── ugovori.py                  # 10 tipova
 │   ├── tuzbe.py                    # 2 tipa
 │   ├── ovrhe.py                    # 7 tipova
 │   ├── zalbe.py                    # 1 tip
-│   ├── zemljisne.py                # 7 tipova
+│   ├── zemljisne.py                # 10 tipova (+brisovno očitovanje, plodouživanje, punomoć prodaje nekretnine)
 │   ├── opomene.py                  # 1 tip
 │   ├── punomoci.py                 # 1 tip
-│   ├── trgovacko.py                # 5 tipova
-│   ├── obvezno.py                  # 8 tipova
+│   ├── trgovacko.py                # 7 tipova (+zalog udjela d.o.o., +prodaja poduzeća)
+│   ├── obvezno.py                  # 12 tipova (+predugovor, +raskid najma/djela/kupoprodaje)
 │   ├── obiteljsko.py               # 5 tipova
 │   ├── upravno.py                  # 4 tipa
 │   ├── kazneno.py                  # 3 tipa
 │   ├── stecajno.py                 # 3 tipa
-│   └── potrosaci.py                # 3 tipa
+│   ├── potrosaci.py                # 4 tipa (+prigovor računu × 3 sektora)
+│   ├── nautika.py                  # 4 tipa (kupoprodaja brodice, tabularna, punomoć, zalog) — NOVO
+│   ├── apartmani.py                # 4 tipa (suglasnosti, MTU, kategorizacija) — NOVO
+│   ├── pokretnine.py               # 2 tipa (FINA zalog, zalog vozila) — NOVO
+│   └── posrednik_najam.py          # 2 tipa (korporativni smještaj A-B + B-C)
 ├── stranice/                       # Streamlit forme za svaki modul
 ├── tests/                          # 179 pytest testova
 │   ├── test_watermark.py           # K3: serial generator + footer + XML metadata

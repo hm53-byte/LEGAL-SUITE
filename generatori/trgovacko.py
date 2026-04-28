@@ -1255,3 +1255,110 @@ def generiraj_zapisnik_uprave(drustvo, podaci):
         return "".join(parts)
     except Exception as e:
         return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_zalog_udjela(zalozni_vjerovnik, zalozni_duznik, drustvo, podaci):
+    """Sporazum o zasnivanju zaloznog prava na poslovnom udjelu d.o.o.
+    Pravni temelj: ZTD cl. 412 (zalog na udjelu), ZV cl. 297 i sl., upis u
+    Sudski registar pri Trgovackom sudu.
+
+    Forma: javnobiljeznicki akt ili privatna isprava s ovjerenim potpisima
+    (ZTD cl. 412 st. 2 — paralelizam formi s temeljnim aktom drustva).
+    """
+    try:
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+        oib_drustva = format_text(podaci.get('oib_drustva', ''))
+        mbs_drustva = format_text(podaci.get('mbs_drustva', ''))
+        sjediste_drustva = format_text(podaci.get('sjediste_drustva', ''))
+        nominalni_iznos = podaci.get('nominalni_iznos_eur', 0)
+        nominalni_str = format_eur(nominalni_iznos) if nominalni_iznos else ''
+        postotak_udjela = format_text(podaci.get('postotak_udjela', ''))
+        glavnica = podaci.get('iznos_trazbine_eur', 0)
+        glavnica_str = format_eur(glavnica) if glavnica else ''
+        glavnica_slovima = format_eur_s_rijecima(glavnica) if glavnica else ''
+        kamata = format_text(podaci.get('kamatna_stopa', 'zakonska zatezna kamata'))
+        rok_dospijeca = format_text(podaci.get('rok_dospijeca', ''))
+        osnova_trazbine = format_text(podaci.get('osnova_trazbine', ''))
+        glasacka_prava = podaci.get('glasacka_prava', 'duznik')  # duznik | vjerovnik
+        dividenda_kome = podaci.get('dividenda_kome', 'duznik')  # duznik | vjerovnik
+
+        slovima_html = f" (slovima: {glavnica_slovima})" if glavnica_slovima else ""
+
+        glasacka_klauzula = (
+            "Pravo glasa u glavnoj skupštini Društva u razdoblju trajanja zaloga ostaje Založnom dužniku "
+            "(članu Društva), sukladno općem pravilu ZTD-a."
+            if glasacka_prava == 'duznik' else
+            "Ugovorne strane su suglasne da pravo glasa u glavnoj skupštini Društva u razdoblju trajanja zaloga "
+            "izvršava Založni vjerovnik (uz odgovarajuću prijavu Sudskom registru)."
+        )
+
+        dividenda_klauzula = (
+            "Plodovi udjela (dividenda, dobit) ostaju Založnom dužniku."
+            if dividenda_kome == 'duznik' else
+            "Plodovi udjela (dividenda, dobit) u razdoblju zaloga pripadaju Založnom vjerovniku radi namirenja "
+            "kamata i glavnice."
+        )
+
+        return (
+            f"<div class='header-doc'>SPORAZUM O ZASNIVANJU ZALOŽNOG PRAVA<br>"
+            f"<span style='font-size: 12pt; font-weight: normal;'>na poslovnom udjelu u d.o.o. (ZTD čl. 412)</span></div>"
+            f"<div class='justified'>sklopljen u {u_lokativu(mjesto)} dana {datum} između:</div><br>"
+            f"<div class='party-info'><b>ZALOŽNI VJEROVNIK:</b><br>{zalozni_vjerovnik}</div>"
+            f"<div class='party-info'><b>ZALOŽNI DUŽNIK (član Društva):</b><br>{zalozni_duznik}</div><br>"
+            f"<div class='section-title'>Članak 1. — DRUŠTVO</div>"
+            f"<div class='doc-body'>"
+            f"<b>Naziv društva:</b> {drustvo}<br>"
+            f"{f'<b>OIB Društva:</b> {oib_drustva}<br>' if oib_drustva else ''}"
+            f"{f'<b>MBS:</b> {mbs_drustva}<br>' if mbs_drustva else ''}"
+            f"{f'<b>Sjedište:</b> {sjediste_drustva}<br>' if sjediste_drustva else ''}"
+            f"</div>"
+            f"<div class='section-title'>Članak 2. — PREDMET ZALOGA</div>"
+            f"<div class='doc-body'>"
+            f"Predmet zaloga je poslovni udjel Založnog dužnika u Društvu, kako slijedi:<br><br>"
+            f"{f'<b>Nominalni iznos udjela:</b> {nominalni_str}<br>' if nominalni_str else ''}"
+            f"{f'<b>Postotak (udio u temeljnom kapitalu):</b> {postotak_udjela}<br>' if postotak_udjela else ''}"
+            f"</div>"
+            f"<div class='section-title'>Članak 3. — TRAŽBINA KOJA SE OSIGURAVA</div>"
+            f"<div class='doc-body'>Založnim pravom osigurava se tražbina Založnog vjerovnika prema Založnom "
+            f"dužniku u iznosu od <b>{glavnica_str}</b>{slovima_html}, "
+            f"s pripadajućim {kamata}, te eventualnim troškovima naplate.<br><br>"
+            f"<b>Osnova tražbine:</b> {osnova_trazbine}<br>"
+            f"<b>Rok dospijeća:</b> {rok_dospijeca}</div>"
+            f"<div class='section-title'>Članak 4. — UPIS U SUDSKI REGISTAR</div>"
+            f"<div class='doc-body'>Založni dužnik suglasan je i izričito dopušta da se na temelju ovog Sporazuma "
+            f"pri Trgovačkom sudu (Sudski registar) provede <b>upis založnog prava na poslovnom udjelu</b> u "
+            f"korist Založnog vjerovnika, sukladno članku 412. Zakona o trgovačkim društvima. "
+            f"Trošak upisa snosi Založni dužnik.</div>"
+            f"<div class='section-title'>Članak 5. — PRAVO GLASA I PLODOVI</div>"
+            f"<div class='doc-body'>{glasacka_klauzula}<br><br>{dividenda_klauzula}</div>"
+            f"<div class='section-title'>Članak 6. — OVLASTI VJEROVNIKA U SLUČAJU NEISPUNJENJA</div>"
+            f"<div class='doc-body'>Ako Založni dužnik ne ispuni osiguranu tražbinu o dospijeću, Založni vjerovnik "
+            f"je ovlašten zahtijevati prodaju udjela radi namirenja, sukladno odredbama Ovršnog zakona i ZTD. "
+            f"Prodaja udjela vrši se putem javnog bilježnika ili u sudskom postupku, uz poštivanje eventualnih "
+            f"ograničenja prijenosa udjela iz društvenog ugovora.</div>"
+            f"<div class='section-title'>Članak 7. — OBVEZE ZALOŽNOG DUŽNIKA</div>"
+            f"<div class='doc-body'>Založni dužnik se obvezuje:<br><br>"
+            f"a) bez pisane suglasnosti Založnog vjerovnika ne prenositi udjel niti ga dodatno opterećivati "
+            f"založnim pravima ili drugim teretima;<br>"
+            f"b) pravodobno obavještavati Založnog vjerovnika o svim važnim odlukama Glavne skupštine "
+            f"(promjena temeljnog akta, povećanje/smanjenje temeljnog kapitala, statusne promjene, likvidacija);<br>"
+            f"c) Založnom vjerovniku omogućiti uvid u financijska izvješća Društva u razdoblju trajanja zaloga.</div>"
+            f"<div class='section-title'>Članak 8. — PRESTANAK ZALOŽNOG PRAVA</div>"
+            f"<div class='doc-body'>Založno pravo prestaje ispunjenjem osigurane tražbine u cijelosti. "
+            f"Po ispunjenju, Založni vjerovnik se obvezuje izdati pisanu izjavu o prestanku založnog prava "
+            f"s ovjerenim potpisom, kojom se izvršava brisanje upisa u Sudskom registru.</div>"
+            f"<div class='section-title'>Članak 9. — FORMA I ZAVRŠNE ODREDBE</div>"
+            f"<div class='doc-body'>Ovaj Sporazum sklopljen je u 4 (četiri) primjerka, od kojih svaka strana "
+            f"zadržava 1 (jedan), a 2 (dva) su za potrebe javnobilježničke ovjere i Sudskog registra. "
+            f"Za sporove iz ovog Sporazuma nadležan je Trgovački sud u Zagrebu.<br><br>"
+            f"<i>Napomena o formi: Sporazum mora biti sklopljen u istoj formi kao i temeljni akt Društva — "
+            f"za d.o.o. koji ima društveni ugovor u javnobilježničkom obliku obvezna je javnobilježnička ovjera.</i></div>"
+            f"<br><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='50%' align='center'><b>ZALOŽNI VJEROVNIK</b><br>(potpis ovjeren JB)<br><br>______________________</td>"
+            f"<td width='50%' align='center'><b>ZALOŽNI DUŽNIK</b><br>(potpis ovjeren JB)<br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"

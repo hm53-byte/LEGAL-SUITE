@@ -1,21 +1,24 @@
 # CLAUDE.md - LegalTech Suite Pro Handoff
 
-> **Last updated:** 2026-04-12 (Session 13)
-> **Status:** 60+ generators, 21 modules, 159 tests; u_lokativu() u svim generatorima, napuni_primjerom na zalbe/punomoci/ugovor_o_radu, Prilog lista prodaja_poduzeca, SZ/ZOO/ObZ reference, _padez_ime() u potvrdi
-> **Deploy:** Streamlit Community Cloud from `hm53-byte/LEGAL-SUITE` main branch
+> **Privatni podaci**: `{{PLACEHOLDER}}` tokeni → stvarne vrijednosti u `APLIKACIJA OBSIDIAN/APLIKACIJA_PRIVATNI_PODACI.md`
+
+> **Last updated:** 2026-04-28 (Faza 1-3 integracija)
+> **Status:** **79+ generators, 24 modula, 224 tests** (194 stari + 30 novi); 3 nova modula u Fazi 1-3 (Nautika, Apartmani, Pokretnine), ekstenzije Zemljišnih/Obveznog/Trgovačkog/Potrošača; sidebar search proširen `keywords` poljem (hvata "tabularna", "plodouživanje", "brisovno", "MTU", "brodica", "predugovor", "VIN", "FINA"...)
+> **Monetizacija:** payment gateway = **Polar.sh** (NE Stripe — odluka 2026-04-28). K3 cloud kod (Stripe MVP) zakazan za refaktor na Polar API + webhook events.
+> **Deploy:** Streamlit Community Cloud from `{{GITHUB_KORISNIK}}/LEGAL-SUITE` main branch
 
 ---
 
 ## 1. PROJECT OVERVIEW & STACK
 
 **LegalTech Suite Pro** is a Streamlit-based Croatian legal document generator.
-It produces `.docx` (python-docx) files for 60+ document types across 15 legal areas.
+It produces `.docx` (python-docx) files for **79+ document types across 17 legal areas** (added 2026-04-28: nautika/brodice, apartmani/iznajmljivanje turistima, zalog na pokretninama).
 All documents follow Croatian court formatting conventions (Times New Roman 12pt, 2.5cm margins, justified, `dd.mm.yyyy.` date format).
 
 **Stack:** Python 3.10+, Streamlit ≥1.28.0, python-docx ≥1.0.0
 **Run:** `streamlit run LEGAL-SUITE.py`
-**Tests:** `python -m pytest tests/ -x -q` (129 tests, <1s)
-**Deploy URL:** `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app`
+**Tests:** `python -m pytest tests/ -x -q` (**224 tests**, <1s)
+**Deploy URL:** `https://{{STREAMLIT_APP_ID}}.streamlit.app`
 
 ---
 
@@ -75,7 +78,47 @@ st.session_state._active_module = "Početna"  # tracks active module
 
 ---
 
-## 3. WHAT WE JUST COMPLETED (Session 8)
+## 3. WHAT WE JUST COMPLETED (Session 14 — 2026-04-28)
+
+### Faza 1A — Nautika modul (NOVO)
+- `generatori/nautika.py` (4 generatora): kupoprodaja brodice (Pomorski zakonik), tabularna izjava za HRB/Upisnik brodica, specijalna punomoć prodaje brodice, sporazum o zasnivanju založnog prava na brodici
+- `stranice/nautika.py` UI s `_polja_brodice()` helperom (registracijska oznaka, lučka kapetanija, VIN/HIN, motor)
+- Integriran u `_MODULI` u LEGAL-SUITE.py kao "Nautika" u grupi "Dokumenti"
+
+### Faza 1B — Apartmani modul (NOVO)
+- `generatori/apartmani.py` (4 generatora): suglasnost vlasnika članu obitelji za iznajmljivanje, suglasnost suvlasnika, zahtjev MTU (Pravilnik NN 9/16), zahtjev kategorizacija (Pravilnik NN 56/16)
+- `stranice/apartmani.py` UI s `_polja_nekretnine()` helperom
+
+### Faza 2A — Zemljisne ext
+- 3 nova generatora: `generiraj_brisovno_ocitovanje` (samostalan dokument vjerovnika s clausulom intabulandi), `generiraj_upis_plodouzivanja` (osobne služnosti, ZV 199-213), `generiraj_punomoc_prodaje_nekretnine` (strukturirani template s autopopulacijom k.č.br./zk.ul.)
+- UI grane dodane u `stranice/zemljisne.py` selectbox
+
+### Faza 2B — Obvezno ext (predugovor + raskidi)
+- 4 nova generatora: predugovor (ZOO 268), raskid najma (552-558, redoviti i izvanredni), raskid ugovora o djelu (633), raskid kupoprodaje zbog neispunjenja (360-368, tri tipa razloga)
+
+### Faza 2C — Prigovor računu (potrosaci ext)
+- `generiraj_prigovor_racunu(potrosac, podaci)` — single generator s sektor-config dispatcherom za 3 sektora: telekom (HAKOM/ZEK NN 76/22), energetika (HERA, NN 22/06), voda/komunalije (Zakon o vodnim uslugama NN 66/19)
+- Nova UI tab "Prigovor računu (telekom/HEP/voda)" u `stranice/potrosaci.py`
+
+### Faza 3A — Trgovacko ext
+- `generiraj_zalog_udjela(vjerovnik, duznik, drustvo, podaci)` — sporazum o zasnivanju založnog prava na poslovnom udjelu d.o.o. (ZTD 412 + Sudski registar). Konfigurabilna prava glasa i plodovi (dužnik vs vjerovnik).
+
+### Faza 3B — Pokretnine modul (NOVO)
+- `generatori/pokretnine.py` (2 generatora): `generiraj_zalog_pokretnine` (FINA Upisnik NN 121/05, bezdržavinski/državinski oblik), `generiraj_zalog_vozila` (s VIN, prometna dozvola, MUP)
+
+### Sidebar search fix
+- LEGAL-SUITE.py `_MODULI` dict proširen `keywords` poljem (22 modula). Search lambda u line 184-191 sad pretražuje i keywords. Korisnik je javio bug da "tabularna" ne hvata Zemljišne knjige.
+
+### Polar.sh decision
+- Memory file `project_legaltech_monetizacija_polar.md` u `~/.claude/.../memory/`. Polar.sh je odabran kao MoR (EU PDV automatski). K3 cloud kod (`cloud/cf_worker_stripe.ts`, Stripe MVP) zakazan za refaktor na Polar API + webhook events (`order.created`, `subscription.active`, `subscription.canceled`, `subscription.revoked`).
+
+### Tests
+- 30 novih testova u `tests/test_generatori_novi.py` (klase: TestNautika, TestApartmani, TestZemljisneExt, TestObveznoExt, TestPrigovorRacunu × 3 sektora, TestZalogUdjela, TestPokretnine, TestSearchKeywords)
+- Ukupno **224 pytest pass** (194 stari + 30 novi, 0 regresija)
+
+---
+
+## 3. WHAT WE COMPLETED (Session 8)
 
 ### Sidebar Navigation Rewrite
 - **Replaced 3 `st.radio` groups with `st.button` navigation** — fixes critical bug where user couldn't re-click already-selected module
@@ -233,7 +276,7 @@ All generators output HTML fragments (not full documents). The wrapper `<div cla
 - **OS:** Windows (paths use backslashes, terminal is cp1252 - emoji may show encoding warnings, harmless)
 - **Launch:** `streamlit run LEGAL-SUITE.py --server.headless true` (port 8501)
 - **IDE config:** `.claude/launch.json` configured for Streamlit
-- **Git remote:** `https://github.com/hm53-byte/LEGAL-SUITE.git` (main branch)
+- **Git remote:** `https://github.com/{{GITHUB_KORISNIK}}/LEGAL-SUITE.git` (main branch)
 - **Deploy:** Streamlit Community Cloud auto-deploys from main
 
 ---
@@ -254,3 +297,4 @@ All generators output HTML fragments (not full documents). The wrapper `<div cla
 | 10 | **UI overhaul: fix nn_pretraga/eoglasna/kalendar bugs, redesign login (guest-first), sidebar search, emoji cleanup, data-driven routing, CSS polish** |
 | 11 | **iznosi slovima, _padez_uloge, ZZK upozorenje, CZSS→Zavod za socijalni rad, autoscroll fix, UI opomene** |
 | 12 | **Pregled strukture dokumenta (8 formi), _padez_ime(), ZUP/ZUS/ZPPI NN 104/25, napuni_primjerom na ovrhe/obiteljsko/ugovori, 159 testova** |
+| 14 (2026-04-28) | **Faza 1-3 integracija: 19 novih generatora preko 7 modula (nautika 4 + apartmani 4 + zemljisne ext 3 + obvezno ext 4 + potrosaci ext 1 × 3 sektora + trgovacko ext 1 + pokretnine 2). Sidebar search bug fix (keywords field u 22 modula). Polar.sh memory zapisana. 30 novih pytest testova (194 → 224 ukupno, 0 regresija). README/CLAUDE update.** |

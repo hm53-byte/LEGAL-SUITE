@@ -1111,3 +1111,264 @@ def generiraj_sporazumni_raskid(strana1, strana2, podaci):
         return "".join(parts)
     except Exception as e:
         return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_predugovor(strana1, strana2, podaci):
+    """Predugovor — ZOO cl. 268. Predugovorom se preuzima obveza da se kasnije
+    sklopi glavni ugovor. Kad se ne ispuni, druga strana ima pravo zahtijevati
+    sklapanje glavnog ugovora u sudskom postupku (cl. 268 st. 4)."""
+    try:
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+        vrsta_glavnog = format_text(podaci.get('vrsta_glavnog_ugovora', 'kupoprodajni ugovor'))
+        predmet = format_text(podaci.get('predmet', ''))
+        cijena = podaci.get('cijena_eur', 0)
+        cijena_str = format_eur(cijena) if cijena else ''
+        kapara = podaci.get('kapara_eur', 0)
+        kapara_str = format_eur(kapara) if kapara else ''
+        rok_glavnog = format_text(podaci.get('rok_sklapanja_glavnog', ''))
+        bitni_uvjeti = format_text(podaci.get('bitni_uvjeti', ''))
+        forma_glavnog = format_text(podaci.get('forma_glavnog', 'pisana, s ovjerom potpisa kod javnog bilježnika'))
+
+        kapara_html = ""
+        if kapara_str:
+            kapara_html = (
+                f"<div class='section-title'>Članak 4. — KAPARA</div>"
+                f"<div class='doc-body'>Strana 1 ovime predaje, a Strana 2 prima na ime kapare iznos od "
+                f"<b>{kapara_str}</b>. Kapara se uračunava u kupoprodajnu cijenu prilikom sklapanja glavnog "
+                f"ugovora. Ako glavni ugovor ne bude sklopljen krivnjom Strane 1, kapara ostaje Strani 2. "
+                f"Ako krivnjom Strane 2 — Strana 2 vraća dvostruku kaparu Strani 1 (ZOO čl. 303).</div>"
+            )
+
+        cijena_html = ""
+        if cijena_str:
+            cijena_html = (
+                f"<div class='section-title'>Članak 3. — CIJENA / VRIJEDNOST</div>"
+                f"<div class='doc-body'>Ugovorne strane suglasno utvrđuju da će u glavnom ugovoru "
+                f"cijena/vrijednost iznositi <b>{cijena_str}</b>.</div>"
+            )
+
+        return (
+            f"<div class='header-doc'>PREDUGOVOR<br>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>(ZOO čl. 268)</span></div>"
+            f"<div class='justified'>sklopljen u {u_lokativu(mjesto)} dana {datum} između:</div><br>"
+            f"<div class='party-info'><b>1. STRANA (budući prodavatelj / davatelj):</b><br>{strana1}</div>"
+            f"<div class='party-info'><b>2. STRANA (budući kupac / primatelj):</b><br>{strana2}</div><br>"
+            f"<div class='section-title'>Članak 1. — OBVEZA SKLAPANJA GLAVNOG UGOVORA</div>"
+            f"<div class='doc-body'>Ugovorne strane se ovime obvezuju u roku iz članka 5. ovog Predugovora "
+            f"sklopiti glavni ugovor — <b>{vrsta_glavnog}</b> — pod uvjetima dogovorenim u ovom Predugovoru.</div>"
+            f"<div class='section-title'>Članak 2. — PREDMET BUDUĆEG GLAVNOG UGOVORA</div>"
+            f"<div class='doc-body'>{predmet}</div>"
+            f"{cijena_html}"
+            f"{kapara_html}"
+            f"<div class='section-title'>Članak 5. — ROK ZA SKLAPANJE GLAVNOG UGOVORA</div>"
+            f"<div class='doc-body'>Ugovorne strane se obvezuju glavni ugovor sklopiti najkasnije do "
+            f"<b>{rok_glavnog}</b>. Forma glavnog ugovora bit će: {forma_glavnog}.</div>"
+            f"<div class='section-title'>Članak 6. — BITNI UVJETI</div>"
+            f"<div class='doc-body'>{bitni_uvjeti if bitni_uvjeti else 'Ostali uvjeti dogovorit će se u glavnom ugovoru u skladu s ovim Predugovorom.'}</div>"
+            f"<div class='section-title'>Članak 7. — POSLJEDICE NEISPUNJENJA</div>"
+            f"<div class='doc-body'>Ako jedna strana odbije sklopiti glavni ugovor, druga strana ima pravo "
+            f"zahtijevati od suda da se glavni ugovor sklopi (ZOO čl. 268 st. 4), odnosno tražiti naknadu "
+            f"štete. Pravo na sklapanje glavnog ugovora gasi se u roku od godine dana od isteka roka iz "
+            f"članka 5. (ZOO čl. 268 st. 5).</div>"
+            f"<div class='section-title'>Članak 8. — ZAVRŠNE ODREDBE</div>"
+            f"<div class='doc-body'>Ovaj Predugovor stupa na snagu danom potpisa. Sastavljen je u "
+            f"4 (četiri) primjerka, po 2 (dva) za svaku stranu. Sve eventualne sporove ugovorne strane "
+            f"riješit će sporazumno, a u protivnom je nadležan sud prema općoj mjesnoj nadležnosti.</div>"
+            f"<br><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='50%' align='center'><b>1. STRANA</b><br><br>______________________</td>"
+            f"<td width='50%' align='center'><b>2. STRANA</b><br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_raskid_najma(najmodavac, najmoprimac, podaci):
+    """Otkaz / raskid ugovora o najmu — ZOO cl. 552-558.
+    Razlikuje: jednostrani redoviti otkaz (s rokom) i izvanredni raskid (zbog
+    neispunjenja, npr. neplacanje najamnine 2+ mjeseca, ZOO cl. 555)."""
+    try:
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+        vrsta_raskida = podaci.get('vrsta_raskida', 'redoviti')  # redoviti | izvanredni
+        ugovor_datum = format_text(podaci.get('ugovor_datum', ''))
+        adresa_najma = format_text(podaci.get('adresa_najma', ''))
+        otkazni_rok = format_text(podaci.get('otkazni_rok', '30 dana'))
+        razlog_izvanredni = format_text(podaci.get('razlog_izvanredni', ''))
+        datum_iseljenja = format_text(podaci.get('datum_iseljenja', ''))
+        zaostala_najamnina = podaci.get('zaostala_najamnina_eur', 0)
+        zaostala_str = format_eur(zaostala_najamnina) if zaostala_najamnina else ''
+
+        if vrsta_raskida == 'izvanredni':
+            naslov = "IZVANREDNI RASKID UGOVORA O NAJMU"
+            podnaslov = "(ZOO čl. 555 — zbog neispunjenja obveza najmoprimca)"
+            tijelo = (
+                f"<div class='doc-body'>Najmodavac ovime <b>izvanredno raskida</b> Ugovor o najmu sklopljen "
+                f"dana <b>{ugovor_datum}</b> za nekretninu na adresi <b>{adresa_najma}</b>, "
+                f"<b>bez otkaznog roka</b>, zbog sljedećih razloga:</div>"
+                f"<div class='doc-body'>{razlog_izvanredni}</div>"
+                f"<div class='doc-body'>Ovaj raskid temelji se na članku 555. Zakona o obveznim odnosima "
+                f"(neispunjenje obveza najmoprimca). Najmoprimac se obvezuje napustiti i predati nekretninu "
+                f"u stanju u kojem ju je preuzeo (uz uobičajeno trošenje) najkasnije do "
+                f"<b>{datum_iseljenja or '8 dana od primitka ovog raskida'}</b>.</div>"
+            )
+            if zaostala_str:
+                tijelo += (
+                    f"<div class='doc-body'>Najmodavac istovremeno poziva najmoprimca da podmiri zaostalu "
+                    f"najamninu i pripadajuće troškove u iznosu od <b>{zaostala_str}</b> u roku od 8 dana, "
+                    f"u protivnom će se prisilno naplatiti u sudskom postupku.</div>"
+                )
+        else:
+            naslov = "OTKAZ UGOVORA O NAJMU"
+            podnaslov = f"(redoviti otkaz s otkaznim rokom od {otkazni_rok})"
+            tijelo = (
+                f"<div class='doc-body'>Najmodavac ovime <b>otkazuje</b> Ugovor o najmu sklopljen dana "
+                f"<b>{ugovor_datum}</b> za nekretninu na adresi <b>{adresa_najma}</b>, "
+                f"uz otkazni rok od <b>{otkazni_rok}</b> koji počinje teći danom primitka ovog otkaza.</div>"
+                f"<div class='doc-body'>Najmoprimac se obvezuje predati nekretninu u stanju u kojem ju je "
+                f"preuzeo (uz uobičajeno trošenje) najkasnije do "
+                f"<b>{datum_iseljenja or 'isteka otkaznog roka'}</b>.</div>"
+            )
+
+        return (
+            f"<div class='party-info'><b>NAJMODAVAC:</b><br>{najmodavac}</div>"
+            f"<div class='party-info'><b>NAJMOPRIMAC:</b><br>{najmoprimac}</div><br>"
+            f"<div class='header-doc'>{naslov}<br>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>{podnaslov}</span></div>"
+            f"{tijelo}"
+            f"<div class='doc-body'>Sve eventualne sporove riješit ćemo sporazumno, a u protivnom je nadležan "
+            f"sud prema mjestu nekretnine.</div>"
+            f"<br>"
+            f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>NAJMODAVAC</b><br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci):
+    """Raskid ugovora o djelu — ZOO cl. 633.
+    Narucitelj uvijek moze raskinuti ugovor (cl. 633 st. 1) uz placanje
+    izvrsenog rada + obeshtecenja izvodaca za izgubljenu zaradu."""
+    try:
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+        ugovor_datum = format_text(podaci.get('ugovor_datum', ''))
+        opis_djela = format_text(podaci.get('opis_djela', ''))
+        razlog = format_text(podaci.get('razlog_raskida', ''))
+        izvrseno_html = format_text(podaci.get('izvrseno_dio', ''))
+        ponuda_naknade = podaci.get('ponuda_naknade_eur', 0)
+        ponuda_str = format_eur(ponuda_naknade) if ponuda_naknade else ''
+
+        return (
+            f"<div class='party-info'><b>NARUČITELJ:</b><br>{narucitelj}</div>"
+            f"<div class='party-info'><b>IZVOĐAČ:</b><br>{izvodac}</div><br>"
+            f"<div class='header-doc'>RASKID UGOVORA O DJELU<br>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>(ZOO čl. 633)</span></div>"
+            f"<div class='doc-body'>Naručitelj ovime <b>raskida</b> Ugovor o djelu sklopljen dana "
+            f"<b>{ugovor_datum}</b>, čiji je predmet bio:</div>"
+            f"<div class='doc-body'>{opis_djela}</div>"
+            f"<div class='section-title'>RAZLOG RASKIDA</div>"
+            f"<div class='doc-body'>{razlog if razlog else 'Naručitelj koristi pravo iz članka 633. ZOO da raskine Ugovor o djelu i prije njegovog izvršenja.'}</div>"
+            f"<div class='section-title'>OBRAČUN IZVRŠENOG RADA</div>"
+            f"<div class='doc-body'>{izvrseno_html if izvrseno_html else 'Izvođač nije do dana raskida izvršio značajan dio djela.'}</div>"
+            f"{f'<div class=\"doc-body\">Naručitelj nudi Izvođaču naknadu u iznosu od <b>{ponuda_str}</b> kojom se podmiruje vrijednost izvršenog rada i razumno obeštećenje za izgubljenu zaradu sukladno ZOO čl. 633 st. 2.</div>' if ponuda_str else ''}"
+            f"<div class='doc-body'>Izvođač se obvezuje predati Naručitelju izvršeni dio djela, kao i sav "
+            f"materijal koji mu je predan za izvedbu, najkasnije u roku od 8 dana od primitka ovog Raskida.</div>"
+            f"<br>"
+            f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>NARUČITELJ</b><br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_raskid_kupoprodaje(prodavatelj, kupac, podaci):
+    """Raskid kupoprodaje zbog neispunjenja — ZOO cl. 360-368.
+    Tri tipa: zbog neplacanja cijene (kupac), zbog nepredaje stvari (prodavatelj),
+    zbog materijalnih nedostataka (kupac, cl. 410)."""
+    try:
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+        ugovor_datum = format_text(podaci.get('ugovor_datum', ''))
+        predmet = format_text(podaci.get('predmet', ''))
+        razlog_tip = podaci.get('razlog_tip', 'neplacanje')  # neplacanje | nepredaja | nedostaci
+        opis_neispunjenja = format_text(podaci.get('opis_neispunjenja', ''))
+        cijena = podaci.get('cijena_eur', 0)
+        cijena_str = format_eur(cijena) if cijena else ''
+        rok_ostavljen = format_text(podaci.get('rok_ostavljen', ''))
+        zahtjev_povrat = format_text(podaci.get('zahtjev_povrat', ''))
+
+        razlog_map = {
+            'neplacanje': (
+                "neispunjenja obveze plaćanja kupoprodajne cijene",
+                "članak 360. ZOO (raskid zbog neispunjenja)",
+                "Prodavatelj"
+            ),
+            'nepredaja': (
+                "neispunjenja obveze predaje stvari",
+                "članak 360. ZOO (raskid zbog neispunjenja)",
+                "Kupac"
+            ),
+            'nedostaci': (
+                "materijalnih nedostataka stvari",
+                "članci 401. — 422. ZOO (odgovornost za materijalne nedostatke)",
+                "Kupac"
+            ),
+        }
+        razlog_tekst, pravni_temelj, raskidatelj = razlog_map.get(razlog_tip, razlog_map['neplacanje'])
+
+        rok_html = ""
+        if rok_ostavljen:
+            rok_html = (
+                f"<div class='doc-body'>Stranci kojoj se pripisuje neispunjenje već je dana "
+                f"<b>{rok_ostavljen}</b> ostavljen primjereni naknadni rok za ispunjenje, koji je istekao "
+                f"bez rezultata, čime su ispunjeni uvjeti za raskid sukladno ZOO čl. 362.</div>"
+            )
+
+        povrat_html = ""
+        if zahtjev_povrat:
+            povrat_html = (
+                f"<div class='section-title'>POSLJEDICE RASKIDA</div>"
+                f"<div class='doc-body'>{zahtjev_povrat}</div>"
+            )
+        elif cijena_str:
+            povrat_html = (
+                f"<div class='section-title'>POSLJEDICE RASKIDA</div>"
+                f"<div class='doc-body'>Ugovorne strane su dužne međusobno vratiti sve što su primile po "
+                f"raskinutom ugovoru (ZOO čl. 368). Iznos kupoprodajne cijene od <b>{cijena_str}</b> ima se "
+                f"vratiti u roku od 8 dana, uz pripadajuće zakonske zatezne kamate.</div>"
+            )
+
+        return (
+            f"<div class='party-info'><b>PRODAVATELJ:</b><br>{prodavatelj}</div>"
+            f"<div class='party-info'><b>KUPAC:</b><br>{kupac}</div><br>"
+            f"<div class='header-doc'>IZJAVA O RASKIDU KUPOPRODAJE<br>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>zbog {razlog_tekst}</span></div>"
+            f"<div class='doc-body'>{raskidatelj} ovime <b>raskida</b> Ugovor o kupoprodaji sklopljen dana "
+            f"<b>{ugovor_datum}</b>, čiji je predmet:</div>"
+            f"<div class='doc-body'>{predmet}</div>"
+            f"<div class='section-title'>RAZLOG RASKIDA</div>"
+            f"<div class='doc-body'>{opis_neispunjenja}</div>"
+            f"{rok_html}"
+            f"<div class='doc-body'>Pravni temelj raskida: {pravni_temelj}.</div>"
+            f"{povrat_html}"
+            f"<div class='doc-body'>Ovaj raskid stupa na snagu danom primitka od strane druge strane. "
+            f"Stranka koja prima raskid ima pravo osporavati osnovanost raskida u sudskom postupku.</div>"
+            f"<br>"
+            f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>{raskidatelj.upper()}</b><br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"

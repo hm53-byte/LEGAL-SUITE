@@ -40,7 +40,7 @@ def test_is_pro_returns_false_when_unconfigured():
 
 
 def test_get_checkout_url_returns_none_when_unconfigured():
-    """Bez STRIPE_CHECKOUT_URL_BASE, vraca None (UI sakrije gumb)."""
+    """Bez CHECKOUT_URL_BASE (ili legacy STRIPE_CHECKOUT_URL_BASE), vraca None (UI sakrije gumb)."""
     import entitlements as ent
     assert ent.get_checkout_url(user_id="user-1") is None
 

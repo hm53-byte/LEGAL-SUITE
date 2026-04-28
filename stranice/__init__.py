@@ -19,4 +19,7 @@ from stranice.kalendar import render_kalendar
 from stranice.nn_pretraga import render_nn_pretraga
 from stranice.jednostavno import render_jednostavno
 from stranice.posrednik_najam import render_posrednik_najam
+from stranice.nautika import render_nautika
+from stranice.apartmani import render_apartmani
+from stranice.pokretnine import render_pokretnine
 from stranice.pravila import render_pravila

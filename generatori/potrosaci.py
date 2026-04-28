@@ -343,3 +343,136 @@ def generiraj_prijavu_inspekciji(podnositelj, podaci):
 
     except Exception as e:
         return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_prigovor_racunu(potrosac, podaci):
+    """Prigovor na iznos racuna davatelju usluga.
+    Sektori i pravni temelji:
+      - telekom: Zakon o elektronickim komunikacijama (NN 76/22), HAKOM Pravilnik
+      - energetika: Zakon o energiji, opci uvjeti opskrbe HEP/RWE
+      - voda/komunalije: Zakon o vodama, opci uvjeti komunalnih usluga
+    Pravo na prigovor opcenito: ZZP cl. 10 (pravo na pisani prigovor),
+    ZOO cl. 295-296 (osporavanje obveze)."""
+    try:
+        danas = date.today().strftime("%d.%m.%Y.")
+        sektor = podaci.get('sektor', 'telekom')
+        davatelj = format_text(podaci.get('davatelj', ''))
+        davatelj_adresa = format_text(podaci.get('davatelj_adresa', ''))
+        broj_racuna = format_text(podaci.get('broj_racuna', ''))
+        datum_racuna = format_text(podaci.get('datum_racuna', ''))
+        razdoblje = format_text(podaci.get('razdoblje', ''))
+        sporni_iznos = podaci.get('sporni_iznos_eur', 0)
+        sporni_str = format_eur(sporni_iznos) if sporni_iznos else ''
+        ukupno_racun = podaci.get('ukupno_racun_eur', 0)
+        ukupno_str = format_eur(ukupno_racun) if ukupno_racun else ''
+        razlog = format_text(podaci.get('razlog_prigovora', ''))
+        broj_korisnika = format_text(podaci.get('broj_korisnika', ''))  # broj ugovora / korisnicki broj
+        zahtjev_storno = podaci.get('zahtjev_storno', True)
+        mjesto = podaci.get('mjesto', 'Zagreb')
+
+        sektor_konfig = {
+            'telekom': {
+                'naslov': "PRIGOVOR NA IZNOS RAČUNA — TELEKOMUNIKACIJSKE USLUGE",
+                'temelj': (
+                    "Zakon o elektroničkim komunikacijama (NN 76/22), "
+                    "Pravilnik o načinu i uvjetima obavljanja djelatnosti elektroničkih komunikacijskih mreža (HAKOM), "
+                    "Opći uvjeti poslovanja {davatelj}"
+                ),
+                'rok': "u roku od 30 dana od primitka računa (ZEK)",
+                'tijelo_drugi_stupanj': "Hrvatska regulatorna agencija za mrežne djelatnosti — HAKOM",
+                'oznaka_korisnika': "Korisnički broj / broj ugovora",
+            },
+            'energetika': {
+                'naslov': "PRIGOVOR NA IZNOS RAČUNA — ENERGETSKA USLUGA",
+                'temelj': (
+                    "Zakon o tržištu električne energije (NN 111/21) / Zakon o tržištu plina, "
+                    "Opći uvjeti opskrbe {davatelj}, ZOO čl. 295-296"
+                ),
+                'rok': "u roku od 15 dana od primitka računa (Opći uvjeti opskrbe)",
+                'tijelo_drugi_stupanj': "Hrvatska energetska regulatorna agencija — HERA",
+                'oznaka_korisnika': "Šifra obračunskog mjernog mjesta (OMM) / broj ugovora",
+            },
+            'voda': {
+                'naslov': "PRIGOVOR NA IZNOS RAČUNA — KOMUNALNE / VODNE USLUGE",
+                'temelj': (
+                    "Zakon o vodnim uslugama (NN 66/19), "
+                    "Opći uvjeti isporuke vodnih usluga {davatelj}, "
+                    "Zakon o komunalnom gospodarstvu (NN 68/18), ZOO čl. 295-296"
+                ),
+                'rok': "u roku od 15 dana od primitka računa",
+                'tijelo_drugi_stupanj': "Vijeće za vodne usluge",
+                'oznaka_korisnika': "Šifra korisnika / broj ugovora o opskrbi",
+            },
+        }
+        cfg = sektor_konfig.get(sektor, sektor_konfig['telekom'])
+
+        adresa_html = (
+            f"<b>{davatelj}</b><br>{davatelj_adresa}"
+            if davatelj_adresa else f"<b>{davatelj}</b>"
+        )
+
+        racun_info = []
+        racun_info.append(f"<b>Broj računa:</b> {broj_racuna}")
+        if datum_racuna:
+            racun_info.append(f"<b>Datum izdavanja računa:</b> {datum_racuna}")
+        if razdoblje:
+            racun_info.append(f"<b>Obračunsko razdoblje:</b> {razdoblje}")
+        if ukupno_str:
+            racun_info.append(f"<b>Ukupan iznos računa:</b> {ukupno_str}")
+        if sporni_str:
+            racun_info.append(f"<b>Sporni iznos:</b> {sporni_str}")
+        if broj_korisnika:
+            racun_info.append(f"<b>{cfg['oznaka_korisnika']}:</b> {broj_korisnika}")
+        racun_html = "<br>".join(racun_info)
+
+        zahtjev_html = ""
+        if zahtjev_storno and sporni_str:
+            zahtjev_html = (
+                f"<div class='doc-body'><b>ZAHTJEV:</b><br>"
+                f"Tražim da se sporni iznos od <b>{sporni_str}</b> stornira (poništi) i izda ispravljeni račun. "
+                f"Sve do okončanja postupka po ovom Prigovoru, smatram da nemam obvezu plaćanja spornog dijela "
+                f"računa, sukladno {cfg['rok']}. Tražim također obustavu daljnjih postupaka naplate, "
+                f"opomena i obustave usluge u dijelu koji se odnosi na sporni iznos.</div>"
+            )
+        elif zahtjev_storno:
+            zahtjev_html = (
+                f"<div class='doc-body'><b>ZAHTJEV:</b><br>"
+                f"Tražim da se račun preispita i da se sporni dio stornira (poništi) ili izda ispravljeni račun. "
+                f"Tražim također obustavu daljnjih postupaka naplate dok se prigovor riješi.</div>"
+            )
+
+        return (
+            f"<div style='font-weight:bold;font-size:14px;'>{adresa_html}</div><br><br>"
+            f"<div class='party-info'><b>PODNOSITELJ PRIGOVORA (potrošač):</b><br>{potrosac}</div><br>"
+            f"<div class='header-doc'>{cfg['naslov']}</div>"
+            f"<div class='doc-body'>"
+            f"Na temelju {cfg['temelj'].format(davatelj=davatelj)}, te "
+            f"članka 10. Zakona o zaštiti potrošača (pravo na pisani prigovor), "
+            f"podnosim pisani prigovor na iznos sljedećeg računa:</div>"
+            f"<div class='section-title'>I. PODACI O RAČUNU</div>"
+            f"<div class='doc-body'>{racun_html}</div>"
+            f"<div class='section-title'>II. RAZLOG PRIGOVORA</div>"
+            f"<div class='doc-body'>{razlog}</div>"
+            f"<div class='section-title'>III. ZAHTJEV</div>"
+            f"{zahtjev_html}"
+            f"<div class='section-title'>IV. ROK ZA ODGOVOR</div>"
+            f"<div class='doc-body'>Tražim da na ovaj Prigovor odgovorite u pisanom obliku u roku od "
+            f"<b>15 (petnaest) dana</b> od primitka, sukladno čl. 10. ZZP. Ako u navedenom roku "
+            f"ne dobijem zadovoljavajući odgovor, podnijet ću prigovor nadležnom regulatornom tijelu "
+            f"(<b>{cfg['tijelo_drugi_stupanj']}</b>) i, prema potrebi, pokrenuti sudski postupak za "
+            f"utvrđenje neosnovanosti spornog iznosa.</div>"
+            f"<div class='section-title'>V. PRILOZI</div>"
+            f"<div class='doc-body'><ol>"
+            f"<li>Preslika spornog računa</li>"
+            f"<li>Dokaz o (eventualnom) prethodnom usmenom prigovoru</li>"
+            f"<li>Dokumentacija na temelju koje se osporava iznos (mjerni podaci, prethodni računi i sl.)</li>"
+            f"</ol></div>"
+            f"<br>"
+            f"<div class='justified'>U {mjesto}, dana {danas}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>PODNOSITELJ PRIGOVORA</b><br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"

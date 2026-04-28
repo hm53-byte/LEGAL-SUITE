@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 import streamlit as st
 from datetime import date
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, audit_kwargs
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, audit_kwargs, napuni_primjerom
 from generatori.obvezno import (
     generiraj_darovanje,
     generiraj_cesiju,
@@ -13,6 +13,10 @@ from generatori.obvezno import (
     generiraj_licenciju,
     generiraj_posredovanje,
     generiraj_sporazumni_raskid,
+    generiraj_predugovor,
+    generiraj_raskid_najma,
+    generiraj_raskid_ugovora_djelu,
+    generiraj_raskid_kupoprodaje,
 )
 
 
@@ -489,6 +493,10 @@ def render_obvezno():
             "Licencni ugovor",
             "Ugovor o posredovanju",
             "Sporazumni raskid ugovora",
+            "Predugovor",
+            "Raskid ugovora o najmu",
+            "Raskid ugovora o djelu",
+            "Raskid kupoprodaje (zbog neispunjenja)",
         ],
         key="obvezno_tip",
     )
@@ -509,3 +517,214 @@ def render_obvezno():
         _render_posredovanje()
     elif tip_dokumenta == "Sporazumni raskid ugovora":
         _render_sporazumni_raskid()
+    elif tip_dokumenta == "Predugovor":
+        _render_predugovor()
+    elif tip_dokumenta == "Raskid ugovora o najmu":
+        _render_raskid_najma()
+    elif tip_dokumenta == "Raskid ugovora o djelu":
+        _render_raskid_djelo()
+    elif tip_dokumenta == "Raskid kupoprodaje (zbog neispunjenja)":
+        _render_raskid_kupoprodaje()
+
+
+def _render_predugovor():
+    """Predugovor — ZOO čl. 268."""
+    st.subheader("Predugovor")
+    st.caption("ZOO čl. 268 — obveza sklapanja glavnog ugovora u dogovorenom roku.")
+    napuni_primjerom('predugovor', '')
+
+    s1, _, _ = unos_stranke("1. STRANA (budući prodavatelj/davatelj)", "pred_s1")
+    s2, _, _ = unos_stranke("2. STRANA (budući kupac/primatelj)", "pred_s2")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        vrsta = st.selectbox(
+            "Vrsta glavnog ugovora",
+            ["kupoprodajni ugovor", "ugovor o najmu", "ugovor o djelu", "ugovor o radu", "ostalo"],
+            key="pred_vrsta",
+        )
+        cijena = st.number_input("Cijena/vrijednost (EUR)", 0.0, step=1000.0, key="pred_cij")
+        kapara = st.number_input("Kapara (EUR, opcionalno)", 0.0, step=100.0, key="pred_kap")
+    with col2:
+        rok = st.text_input("Rok za sklapanje glavnog ugovora", placeholder="npr. 01.07.2026.", key="pred_rok")
+        forma = st.text_input("Forma glavnog ugovora", "pisana, s ovjerom potpisa kod javnog bilježnika", key="pred_for")
+        mjesto = st.text_input("Mjesto sklapanja", "Zagreb", key="pred_mj")
+
+    predmet = st.text_area(
+        "Predmet budućeg glavnog ugovora",
+        placeholder="npr. Stan na adresi Ilica 100, Zagreb, površine 65 m², k.č. 1234/5, k.o. Centar, zk.ul. 5678",
+        height=100, key="pred_pre",
+    )
+    bitni = st.text_area(
+        "Bitni uvjeti (opcionalno)",
+        placeholder="Dodatni bitni uvjeti glavnog ugovora",
+        height=80, key="pred_bit",
+    )
+
+    if st.button("Generiraj predugovor", type="primary"):
+        podaci = {
+            'vrsta_glavnog_ugovora': vrsta, 'predmet': predmet,
+            'cijena_eur': cijena, 'kapara_eur': kapara,
+            'rok_sklapanja_glavnog': rok, 'bitni_uvjeti': bitni,
+            'forma_glavnog': forma, 'mjesto': mjesto,
+        }
+        doc = generiraj_predugovor(s1, s2, podaci)
+        audit_input = {"strana1_html": s1, "strana2_html": s2, "podaci": podaci}
+        prikazi_dokument(doc, "Predugovor.docx", "Preuzmi predugovor",
+                         **audit_kwargs("predugovor", audit_input, "obvezno"))
+
+
+def _render_raskid_najma():
+    """Raskid ugovora o najmu — ZOO čl. 552-558."""
+    st.subheader("Raskid ugovora o najmu")
+    st.caption("ZOO čl. 552-558. Razlikuj redoviti otkaz (s rokom) i izvanredni raskid (zbog neispunjenja, npr. neplaćanje 2+ mjeseca).")
+    napuni_primjerom('raskid_najma', '')
+
+    najmodavac, _, _ = unos_stranke("NAJMODAVAC", "rn_nd")
+    najmoprimac, _, _ = unos_stranke("NAJMOPRIMAC", "rn_np")
+
+    vrsta = st.radio(
+        "Vrsta raskida",
+        ["redoviti", "izvanredni"],
+        format_func=lambda x: "Redoviti otkaz (s otkaznim rokom)" if x == "redoviti" else "Izvanredni raskid (bez roka — zbog neispunjenja)",
+        key="rn_vrsta",
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        ugovor_datum = st.text_input("Datum sklapanja ugovora o najmu", placeholder="dd.mm.yyyy.", key="rn_ud")
+        adresa = st.text_input("Adresa nekretnine", key="rn_adr")
+        mjesto = st.text_input("Mjesto", "Zagreb", key="rn_mj")
+    with col2:
+        if vrsta == "redoviti":
+            rok = st.text_input("Otkazni rok", "30 dana", key="rn_rok")
+            datum_iseljenja = st.text_input("Datum predaje nekretnine (opcionalno)", placeholder="ostavi prazno za 'po isteku roka'", key="rn_di_red")
+            razlog = ""
+            zaostala = 0.0
+        else:
+            rok = ""
+            datum_iseljenja = st.text_input("Rok za iseljenje", "8 dana od primitka raskida", key="rn_di_izv")
+            zaostala = st.number_input("Zaostala najamnina (EUR, opcionalno)", 0.0, step=100.0, key="rn_zao")
+            razlog = ""
+
+    if vrsta == "izvanredni":
+        razlog = st.text_area(
+            "Razlog izvanrednog raskida",
+            placeholder="npr. Najmoprimac nije plaćao najamninu za mjesece veljača, ožujak i travanj 2026. godine, unatoč pisanim opomenama od dd.mm.yyyy.",
+            height=100, key="rn_raz",
+        )
+
+    if st.button("Generiraj otkaz/raskid", type="primary"):
+        podaci = {
+            'vrsta_raskida': vrsta,
+            'ugovor_datum': ugovor_datum,
+            'adresa_najma': adresa,
+            'otkazni_rok': rok,
+            'razlog_izvanredni': razlog,
+            'datum_iseljenja': datum_iseljenja,
+            'zaostala_najamnina_eur': zaostala,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_raskid_najma(najmodavac, najmoprimac, podaci)
+        naziv = "Izvanredni_raskid_najma.docx" if vrsta == "izvanredni" else "Otkaz_najma.docx"
+        audit_input = {"najmodavac_html": najmodavac, "najmoprimac_html": najmoprimac, "podaci": podaci}
+        prikazi_dokument(doc, naziv, "Preuzmi dokument",
+                         **audit_kwargs(f"raskid_najma_{vrsta}", audit_input, "obvezno"))
+
+
+def _render_raskid_djelo():
+    """Raskid ugovora o djelu — ZOO čl. 633."""
+    st.subheader("Raskid ugovora o djelu")
+    st.caption("ZOO čl. 633 — naručitelj uvijek može raskinuti ugovor; obvezan je platiti izvršeni rad i razumno obeštećenje.")
+    napuni_primjerom('raskid_djelo', '')
+
+    narucitelj, _, _ = unos_stranke("NARUČITELJ", "rd_nar")
+    izvodac, _, _ = unos_stranke("IZVOĐAČ", "rd_izv")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        ugovor_datum = st.text_input("Datum sklapanja ugovora o djelu", placeholder="dd.mm.yyyy.", key="rd_ud")
+        ponuda = st.number_input("Ponuda naknade za izvršeni rad (EUR)", 0.0, step=100.0, key="rd_pon")
+    with col2:
+        mjesto = st.text_input("Mjesto", "Zagreb", key="rd_mj")
+        razlog = st.text_input("Razlog raskida (opcionalno)", placeholder="npr. promjena okolnosti naručitelja", key="rd_raz")
+
+    opis = st.text_area(
+        "Opis djela",
+        placeholder="npr. Izrada drvene terase 30 m² na adresi Ilica 1, Zagreb, prema specifikaciji od dd.mm.yyyy.",
+        height=80, key="rd_opi",
+    )
+    izvrseno = st.text_area(
+        "Što je izvršeno do dana raskida (opcionalno)",
+        placeholder="npr. Postavljena nosiva konstrukcija, isporučen materijal za podnu oblogu (50%)",
+        height=80, key="rd_izv_o",
+    )
+
+    if st.button("Generiraj raskid", type="primary"):
+        podaci = {
+            'ugovor_datum': ugovor_datum, 'opis_djela': opis,
+            'razlog_raskida': razlog, 'izvrseno_dio': izvrseno,
+            'ponuda_naknade_eur': ponuda, 'mjesto': mjesto,
+        }
+        doc = generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci)
+        audit_input = {"narucitelj_html": narucitelj, "izvodac_html": izvodac, "podaci": podaci}
+        prikazi_dokument(doc, "Raskid_ugovora_o_djelu.docx", "Preuzmi raskid",
+                         **audit_kwargs("raskid_djelo", audit_input, "obvezno"))
+
+
+def _render_raskid_kupoprodaje():
+    """Raskid kupoprodaje zbog neispunjenja — ZOO čl. 360-368."""
+    st.subheader("Raskid kupoprodaje (zbog neispunjenja)")
+    st.caption("ZOO čl. 360-368. Tri tipa razloga: neplaćanje cijene (raskida prodavatelj), nepredaja stvari (raskida kupac), materijalni nedostaci (kupac, čl. 410).")
+    napuni_primjerom('raskid_kupoprodaje', '')
+
+    prodavatelj, _, _ = unos_stranke("PRODAVATELJ", "rk_pro")
+    kupac, _, _ = unos_stranke("KUPAC", "rk_kup")
+
+    razlog_tip = st.selectbox(
+        "Razlog raskida",
+        ["neplacanje", "nepredaja", "nedostaci"],
+        format_func=lambda x: {
+            "neplacanje": "Kupac nije platio cijenu (raskida prodavatelj)",
+            "nepredaja": "Prodavatelj nije predao stvar (raskida kupac)",
+            "nedostaci": "Materijalni nedostaci stvari (raskida kupac, čl. 410)",
+        }[x],
+        key="rk_tip",
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        ugovor_datum = st.text_input("Datum sklapanja ugovora", placeholder="dd.mm.yyyy.", key="rk_ud")
+        cijena = st.number_input("Kupoprodajna cijena (EUR)", 0.0, step=100.0, key="rk_cij")
+        mjesto = st.text_input("Mjesto", "Zagreb", key="rk_mj")
+    with col2:
+        rok_ostavljen = st.text_input(
+            "Datum kad je ostavljen naknadni rok (opcionalno)",
+            placeholder="dd.mm.yyyy.",
+            help="Ako je drugoj strani već ostavljen primjereni rok za ispunjenje (ZOO čl. 362), upiši datum.",
+            key="rk_rok",
+        )
+
+    predmet = st.text_area("Predmet kupoprodaje", height=80, key="rk_pre")
+    opis = st.text_area(
+        "Opis neispunjenja",
+        placeholder="npr. Kupac nije platio kupoprodajnu cijenu o roku 01.05.2026. unatoč opomeni od 10.05.2026.",
+        height=100, key="rk_opi",
+    )
+    zahtjev_povrat = st.text_area(
+        "Zahtjev za povrat (opcionalno)",
+        placeholder="Specifični zahtjev za povrat stvari/cijene; ako prazno, koristi se default formulacija ZOO čl. 368.",
+        height=80, key="rk_pov",
+    )
+
+    if st.button("Generiraj raskid", type="primary"):
+        podaci = {
+            'razlog_tip': razlog_tip, 'ugovor_datum': ugovor_datum,
+            'predmet': predmet, 'opis_neispunjenja': opis,
+            'cijena_eur': cijena, 'rok_ostavljen': rok_ostavljen,
+            'zahtjev_povrat': zahtjev_povrat, 'mjesto': mjesto,
+        }
+        doc = generiraj_raskid_kupoprodaje(prodavatelj, kupac, podaci)
+        audit_input = {"prodavatelj_html": prodavatelj, "kupac_html": kupac, "podaci": podaci}
+        prikazi_dokument(doc, "Raskid_kupoprodaje.docx", "Preuzmi raskid",
+                         **audit_kwargs(f"raskid_kupoprodaje_{razlog_tip}", audit_input, "obvezno"))

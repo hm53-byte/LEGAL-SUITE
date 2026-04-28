@@ -3,7 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox, audit_kwargs
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox, audit_kwargs, napuni_primjerom
 from generatori.trgovacko import (
     generiraj_drustveni_ugovor,
     generiraj_odluku_skupstine,
@@ -12,6 +12,7 @@ from generatori.trgovacko import (
     generiraj_zapisnik_uprave,
     generiraj_prodaju_poduzeca,
     SEKCIJE_PRODAJA_PODUZECA,
+    generiraj_zalog_udjela,
 )
 
 
@@ -30,6 +31,7 @@ def render_trgovacko():
             "Ugovor o povjerljivosti (NDA)",
             "Zapisnik sjednice uprave",
             "Ugovor o prodaji poduzeća",
+            "Zalog na poslovnom udjelu d.o.o.",
         ],
         key="trg_kategorija",
     )
@@ -46,6 +48,73 @@ def render_trgovacko():
         _render_zapisnik_uprave()
     elif kategorija == "Ugovor o prodaji poduzeća":
         _render_prodaja_poduzeca()
+    elif kategorija == "Zalog na poslovnom udjelu d.o.o.":
+        _render_zalog_udjela()
+
+
+def _render_zalog_udjela():
+    """Zalog na poslovnom udjelu d.o.o. — ZTD čl. 412."""
+    st.subheader("Zalog na poslovnom udjelu d.o.o.")
+    st.info("Forma: javnobilježnički akt ili privatna isprava s ovjerenim potpisima (paralelizam s društvenim ugovorom). Upis u Sudski registar.")
+    napuni_primjerom('zalog_udjela', '')
+
+    col1, col2 = st.columns(2)
+    with col1:
+        vjerovnik, _, _ = unos_stranke("ZALOŽNI VJEROVNIK", "zu_vj")
+    with col2:
+        duznik, _, _ = unos_stranke("ZALOŽNI DUŽNIK (član Društva)", "zu_zd")
+
+    st.subheader("Društvo")
+    drustvo = st.text_input("Naziv društva (puna tvrtka)", key="zu_dr", placeholder="npr. NOVA TVRTKA d.o.o.")
+    c1, c2, c3 = st.columns(3)
+    oib_d = c1.text_input("OIB Društva", key="zu_oib", max_chars=11)
+    mbs_d = c2.text_input("MBS", key="zu_mbs", max_chars=8)
+    sjediste_d = c3.text_input("Sjedište Društva", key="zu_sj")
+
+    st.subheader("Predmet zaloga (poslovni udjel)")
+    c1, c2 = st.columns(2)
+    nominalni = c1.number_input("Nominalni iznos udjela (EUR)", 0.0, step=100.0, key="zu_nom")
+    postotak = c2.text_input("Postotak udjela u temeljnom kapitalu", key="zu_pos", placeholder="npr. 50%")
+
+    st.subheader("Tražbina koja se osigurava")
+    c1, c2 = st.columns(2)
+    with c1:
+        glavnica = st.number_input("Iznos tražbine (EUR)", 0.0, step=100.0, key="zu_gl")
+        kamata = st.text_input("Kamata", "zakonska zatezna kamata", key="zu_kam")
+    with c2:
+        rok_dosp = st.text_input("Rok dospijeća tražbine", key="zu_rd", placeholder="npr. 31.12.2027.")
+        mjesto = st.text_input("Mjesto sklapanja", "Zagreb", key="zu_mj")
+
+    osnova = st.text_area("Osnova tražbine", placeholder="npr. Ugovor o zajmu od 01.05.2026. u iznosu od 30.000 EUR", height=80, key="zu_os")
+
+    st.subheader("Posebne klauzule")
+    c1, c2 = st.columns(2)
+    glasacka = c1.radio(
+        "Pravo glasa u skupštini Društva",
+        ["duznik", "vjerovnik"],
+        format_func=lambda x: "Ostaje Založnom dužniku (default)" if x == "duznik" else "Prelazi na Založnog vjerovnika",
+        key="zu_gls",
+    )
+    dividenda = c2.radio(
+        "Plodovi (dividenda, dobit)",
+        ["duznik", "vjerovnik"],
+        format_func=lambda x: "Ostaju Založnom dužniku (default)" if x == "duznik" else "Prelaze Založnom vjerovniku",
+        key="zu_div",
+    )
+
+    if st.button("Generiraj sporazum", type="primary"):
+        podaci = {
+            'oib_drustva': oib_d, 'mbs_drustva': mbs_d, 'sjediste_drustva': sjediste_d,
+            'nominalni_iznos_eur': nominalni, 'postotak_udjela': postotak,
+            'iznos_trazbine_eur': glavnica, 'kamatna_stopa': kamata,
+            'rok_dospijeca': rok_dosp, 'osnova_trazbine': osnova,
+            'glasacka_prava': glasacka, 'dividenda_kome': dividenda,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_zalog_udjela(vjerovnik, duznik, drustvo, podaci)
+        audit_input = {"vjerovnik_html": vjerovnik, "duznik_html": duznik, "drustvo": drustvo, "podaci": podaci}
+        prikazi_dokument(doc, "Zalog_udjela.docx", "Preuzmi sporazum",
+                         **audit_kwargs("zalog_udjela", audit_input, "trgovacko"))
 
 
 def _render_drustveni_ugovor():

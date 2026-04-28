@@ -673,5 +673,37 @@ CSS_STILOVI = f"""
             display: none !important;
         }}
     }}
+
+    /* =========================================================================
+       Sidebar collapse button — zamijeniti default ">>"/"<<" strelice
+       sa vertikalnim trima tockama (kebab menu style "⋮")
+       ========================================================================= */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stBaseButton-headerNoPadding"][aria-label*="sidebar" i],
+    [kind="headerNoPadding"][aria-label*="sidebar" i] {{
+        position: relative !important;
+    }}
+    [data-testid="stSidebarCollapseButton"] svg,
+    [data-testid="stBaseButton-headerNoPadding"][aria-label*="sidebar" i] svg,
+    [kind="headerNoPadding"][aria-label*="sidebar" i] svg {{
+        display: none !important;
+    }}
+    [data-testid="stSidebarCollapseButton"]::after,
+    [data-testid="stBaseButton-headerNoPadding"][aria-label*="sidebar" i]::after,
+    [kind="headerNoPadding"][aria-label*="sidebar" i]::after {{
+        content: "⋮";
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1;
+        color: #94A3B8;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }}
+    [data-testid="stSidebarCollapseButton"]:hover::after,
+    [data-testid="stBaseButton-headerNoPadding"][aria-label*="sidebar" i]:hover::after,
+    [kind="headerNoPadding"][aria-label*="sidebar" i]:hover::after {{
+        color: #D4A843;
+    }}
 </style>
 """

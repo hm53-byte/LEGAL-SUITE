@@ -449,3 +449,201 @@ def generiraj_upis_sluznosti(sud, predlagatelj, podaci, troskovi_dict):
         )
     except Exception as e:
         return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_brisovno_ocitovanje(vjerovnik, vlasnik, podaci):
+    """Brisovno ocitovanje (Loschungserklarung) — samostalan dokument vjerovnika
+    s clausulom intabulandi za brisanje zaloznog prava (hipoteke) iz zk."""
+    try:
+        ko = format_text(podaci.get('ko', ''))
+        ulozak = format_text(podaci.get('ulozak', ''))
+        cestica = format_text(podaci.get('cestica', ''))
+        opis_nekretnine = format_text(podaci.get('opis_nekretnine', ''))
+        z_broj = format_text(podaci.get('z_broj', ''))
+        datum_upisa = format_text(podaci.get('datum_upisa', ''))
+        iznos_trazbine = format_text(podaci.get('iznos_trazbine', ''))
+        razlog_prestanka = format_text(podaci.get('razlog_prestanka', 'isplate cjelokupne tražbine'))
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+
+        upis_info = []
+        if z_broj:
+            upis_info.append(f"<b>Pod brojem upisa (Z):</b> {z_broj}")
+        if datum_upisa:
+            upis_info.append(f"<b>Datum upisa:</b> {datum_upisa}")
+        if iznos_trazbine:
+            upis_info.append(f"<b>Osigurana tražbina:</b> {iznos_trazbine}")
+        upis_html = "<br>".join(upis_info)
+
+        upis_default = f"Založno pravo upisano u C list (Teretovnicu) zk.ul. {ulozak}, K.O. {ko}."
+
+        return (
+            f"<div class='header-doc'>BRISOVNO OČITOVANJE<br>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>(Clausula Intabulandi za brisanje založnog prava)</span></div>"
+            f"<div class='party-info'><b>VJEROVNIK (izdavatelj očitovanja):</b><br>{vjerovnik}</div><br>"
+            f"<div class='party-info'><b>VLASNIK NEKRETNINE:</b><br>{vlasnik}</div><br>"
+            f"<div class='doc-body'>Vjerovnik ovime potvrđuje da je njegova tražbina osigurana založnim pravom "
+            f"(hipotekom) na nižeopisanoj nekretnini <b>prestala</b> uslijed {razlog_prestanka}, "
+            f"te da Vjerovnik nema više nikakvih potraživanja koja bi bila osigurana navedenim založnim pravom.</div>"
+            f"<div class='section-title'>I. NEKRETNINA</div>"
+            f"<div class='doc-body'>"
+            f"<b>Katastarska općina (k.o.):</b> {ko}<br>"
+            f"<b>Broj zk. uloška:</b> {ulozak}<br>"
+            f"<b>Broj čestice (k.č.br.):</b> {cestica}<br>"
+            f"{f'<b>Opis u naravi:</b> {opis_nekretnine}<br>' if opis_nekretnine else ''}"
+            f"</div>"
+            f"<div class='section-title'>II. UPIS KOJI SE BRIŠE</div>"
+            f"<div class='doc-body'>{upis_html if upis_html else upis_default}</div>"
+            f"<div class='section-title'>III. CLAUSULA INTABULANDI</div>"
+            f"<div class='doc-body clausula'>"
+            f"Vjerovnik ovime <b>izričito i bezuvjetno dopušta</b> da se na temelju ovog Brisovnog očitovanja "
+            f"u zemljišnim knjigama provede <b>brisanje</b> založnog prava (hipoteke) upisanog u korist Vjerovnika "
+            f"na gore opisanoj nekretnini, bez daljnje suglasnosti i bez prisutnosti Vjerovnika.<br><br>"
+            f"Ovo Brisovno očitovanje predstavlja samostalnu i potpunu ispravu temeljem koje vlasnik nekretnine "
+            f"može podnijeti zemljišnoknjižni prijedlog za brisanje upisa."
+            f"</div>"
+            f"<br>"
+            f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>VJEROVNIK</b><br>(potpis ovjeren kod javnog bilježnika)<br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_upis_plodouzivanja(sud, vlasnik, plodouzivatelj, podaci, troskovi_dict):
+    """Prijedlog za uknjizbu prava plodouzivanja (uzufrukta) — osobne sluznosti.
+    Pravni temelj: ZV cl. 199-219."""
+    try:
+        ko = format_text(podaci.get('ko', ''))
+        ulozak = format_text(podaci.get('ulozak', ''))
+        cestica = format_text(podaci.get('cestica', ''))
+        opis_nekretnine = format_text(podaci.get('opis_nekretnine', ''))
+        opseg = format_text(podaci.get('opseg', 'puno plodouživanje (uživanje stvari u cijelosti)'))
+        ogranicenja = format_text(podaci.get('ogranicenja', ''))
+        pravni_temelj = format_text(podaci.get('pravni_temelj', ''))
+        naknada = format_text(podaci.get('naknada', 'bez naknade'))
+        trajanje = format_text(podaci.get('trajanje', 'doživotno (do smrti plodouživatelja)'))
+        mjesto = podaci.get('mjesto', '')
+        datum = date.today().strftime('%d.%m.%Y.')
+
+        troskovnik_html = formatiraj_troskovnik(troskovi_dict)
+
+        return (
+            f'<div style="font-weight: bold; font-size: 14px;">{sud.upper()}</div>'
+            f'<div style="font-size: 12px;">Zemljišnoknjižni odjel</div><br><br>'
+            f"<div class='party-info'><b>PREDLAGATELJ (vlasnik):</b><br>{vlasnik}</div>"
+            f"<div class='party-info'><b>PLODOUŽIVATELJ (ovlaštenik osobne služnosti):</b><br>{plodouzivatelj}</div><br>"
+            f"<div class='header-doc'>PRIJEDLOG ZA UKNJIŽBU<br>"
+            f"<span style='font-size: 12pt; font-weight: normal;'>prava plodouživanja (uzufrukta) — osobne služnosti</span></div>"
+            f"<div class='doc-body'><b>I. NEKRETNINA</b><br><br>"
+            f"<b>Katastarska općina (k.o.):</b> {ko}<br>"
+            f"<b>Broj zk. uloška:</b> {ulozak}<br>"
+            f"<b>Broj čestice (k.č.br.):</b> {cestica}<br>"
+            f"{f'<b>Opis u naravi:</b> {opis_nekretnine}' if opis_nekretnine else ''}</div>"
+            f"<div class='doc-body'><b>II. PRAVO KOJE SE UPISUJE</b><br><br>"
+            f"<b>Vrsta prava:</b> Pravo plodouživanja (uzufrukt) — osobna služnost<br>"
+            f"<b>Opseg:</b> {opseg}<br>"
+            f"{f'<b>Ograničenja / izuzeća:</b> {ogranicenja}<br>' if ogranicenja else ''}"
+            f"<b>Naknada:</b> {naknada}<br>"
+            f"<b>Trajanje:</b> {trajanje}</div>"
+            f"<div class='doc-body'><b>III. PRAVNI TEMELJ</b><br><br>"
+            f"{pravni_temelj}<br><br>"
+            f"<i>Pozivajući se na članke 199. — 213. Zakona o vlasništvu i drugim stvarnim pravima "
+            f"(NN 91/96 i izmjene) o osobnim služnostima.</i></div>"
+            f"<div class='doc-body'><b>IV. PETITUM</b><br><br>"
+            f"Predlaže se da naslovni sud u zemljišnoj knjizi dozvoli i provede:<br><br>"
+            f"<div style='text-align: center; border: 1px solid black; padding: 10px; margin: 20px 0;'>"
+            f"UKNJIŽBU PRAVA PLODOUŽIVANJA<br>(uzufrukt — osobna služnost)<br>"
+            f"u korist plodouživatelja, u C list (Teretovnicu) zk.ul. {ulozak}, K.O. {ko}</div><br>"
+            f"<i>Napomena: Pravo plodouživanja je strogo osobno pravo. Ne prenosi se nasljeđivanjem, "
+            f"darovanjem niti prodajom. Prestaje smrću plodouživatelja, odricanjem, propadanjem stvari "
+            f"ili istekom roka (ako je ugovoreno na rok).</i></div>"
+            f"<div class='section-title'>POPIS PRILOGA:</div>"
+            f"<div class='doc-body'><ol>"
+            f"<li>Isprava koja je temelj za uknjižbu plodouživanja ({pravni_temelj})</li>"
+            f"<li>Izvadak iz zemljišne knjige</li>"
+            f"<li>Dokaz o uplati sudske pristojbe</li>"
+            f"</ol></div>"
+            f"{troskovnik_html}<br>"
+            f"<div class='doc-body justified'>"
+            f"U {u_lokativu(mjesto) if mjesto else format_text(mjesto)}, {datum}</div><br><br>"
+            f'<table width="100%"><tr><td width="50%"></td>'
+            f'<td width="50%" align="center"><b>PREDLAGATELJ</b><br><br>______________________</td></tr></table>'
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"
+
+
+def generiraj_punomoc_prodaje_nekretnine(vlastodavac, punomocnik, podaci):
+    """Specijalna punomoc za prodaju nekretnine — strukturirani template."""
+    try:
+        ko = format_text(podaci.get('ko', ''))
+        ulozak = format_text(podaci.get('ulozak', ''))
+        cestica = format_text(podaci.get('cestica', ''))
+        opis_nekretnine = format_text(podaci.get('opis_nekretnine', ''))
+        adresa = format_text(podaci.get('adresa', ''))
+        povrsina = format_text(podaci.get('povrsina_m2', ''))
+        min_cijena = podaci.get('minimalna_cijena_eur', 0)
+        min_cijena_str = format_eur(min_cijena) if min_cijena else ''
+        rok_vazenja = format_text(podaci.get('rok_vazenja', '12 (dvanaest) mjeseci od datuma ovjere'))
+        mjesto = podaci.get('mjesto', 'Zagreb')
+        datum = date.today().strftime('%d.%m.%Y.')
+
+        nekretnina_rows = []
+        if ko:
+            nekretnina_rows.append(f"<b>Katastarska općina (k.o.):</b> {ko}")
+        if ulozak:
+            nekretnina_rows.append(f"<b>Broj zk. uloška:</b> {ulozak}")
+        if cestica:
+            nekretnina_rows.append(f"<b>Broj čestice (k.č.br.):</b> {cestica}")
+        if opis_nekretnine:
+            nekretnina_rows.append(f"<b>Opis u naravi:</b> {opis_nekretnine}")
+        if adresa:
+            nekretnina_rows.append(f"<b>Adresa:</b> {adresa}")
+        if povrsina:
+            nekretnina_rows.append(f"<b>Površina (m²):</b> {povrsina}")
+        nekretnina_html = "<br>".join(nekretnina_rows)
+
+        cijena_klauzula = (
+            f"<li>pregovarati o kupoprodajnoj cijeni, ali ne ispod iznosa od <b>{min_cijena_str}</b>;</li>"
+            if min_cijena_str else
+            "<li>pregovarati o kupoprodajnoj cijeni i prihvatiti onu koju smatra najpovoljnijom;</li>"
+        )
+
+        return (
+            f"<div class='header-doc'>SPECIJALNA PUNOMOĆ<br>"
+            f"<span style='font-size: 12pt; font-weight: normal;'>za prodaju nekretnine</span></div>"
+            f"<div class='justified'>Ja, dolje potpisani/a:</div><br>"
+            f"<div class='party-info'><b>VLASTODAVAC (vlasnik nekretnine):</b><br>{vlastodavac}</div><br>"
+            f"<div class='justified'>kao isključivi vlasnik nižeopisane nekretnine, ovime dajem</div><br>"
+            f"<div style='text-align: center; font-weight: bold; font-size: 14pt; margin: 20px 0;'>SPECIJALNU PUNOMOĆ</div>"
+            f"<div class='party-info'><b>PUNOMOĆNIKU:</b><br>{punomocnik}</div><br>"
+            f"<div class='justified'>za prodaju sljedeće nekretnine:</div><br>"
+            f"<div class='doc-body'>{nekretnina_html}</div>"
+            f"<div class='justified'>Punomoćnik je ovlašten u moje ime i za moj račun:</div>"
+            f"<div class='doc-body'><ol>"
+            f"<li>oglasiti i ponuditi nekretninu na prodaju (uključujući angažiranje agencije za posredovanje);</li>"
+            f"{cijena_klauzula}"
+            f"<li>sklopiti i potpisati Predugovor i Ugovor o kupoprodaji nekretnine s kupcem po izboru punomoćnika;</li>"
+            f"<li>potpisati i ovjeriti Tabularnu izjavu (clausulu intabulandi) za upis prava vlasništva u korist kupca;</li>"
+            f"<li>preuzeti kupoprodajnu cijenu (ili dio cijene kao kaparu/predujam) i izdati potvrdu o primitku;</li>"
+            f"<li>predati nekretninu kupcu u posjed sa svim pripadnostima i ispravama (energetski certifikat, "
+            f"povijesni izvadak iz zk., dokaz o plaćenim režijama i komunalnim naknadama);</li>"
+            f"<li>obavljati sve poslove pri zemljišnoknjižnom odjelu, poreznoj upravi, javnom bilježniku i "
+            f"drugim tijelima potrebne za prijenos prava vlasništva i prijavu poreza na promet nekretnina;</li>"
+            f"<li>poduzimati sve ostale pravne i faktične radnje potrebne za uspješan dovršetak kupoprodaje.</ol></div>"
+            f"<div class='justified'>Ova specijalna punomoć vrijedi {rok_vazenja}, ako prije ne bude opozvana "
+            f"u pisanom obliku s ovjerenim potpisom.</div><br>"
+            f"<div class='justified'>Pravni temelj: članci 308. — 331. Zakona o obveznim odnosima "
+            f"i odredbe Zakona o zemljišnim knjigama o uknjižbi na temelju ovjerenih isprava.</div><br>"
+            f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
+            f"<table width='100%'><tr>"
+            f"<td width='40%'></td>"
+            f"<td width='60%' align='center'><b>VLASTODAVAC</b><br>(potpis ovjeren kod javnog bilježnika)<br><br>______________________</td>"
+            f"</tr></table>"
+        )
+    except Exception as e:
+        return f"<div class='doc-body'>Greška pri generiranju dokumenta: {e}</div>"

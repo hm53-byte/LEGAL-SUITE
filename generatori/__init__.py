@@ -29,6 +29,9 @@ from generatori.zemljisne import (
     generiraj_upis_hipoteke,
     generiraj_brisanje_hipoteke,
     generiraj_upis_sluznosti,
+    generiraj_brisovno_ocitovanje,
+    generiraj_upis_plodouzivanja,
+    generiraj_punomoc_prodaje_nekretnine,
 )
 from generatori.opomene import generiraj_opomenu
 from generatori.punomoci import generiraj_punomoc
@@ -38,6 +41,7 @@ from generatori.trgovacko import (
     generiraj_prijenos_udjela,
     generiraj_nda,
     generiraj_zapisnik_uprave,
+    generiraj_zalog_udjela,
 )
 from generatori.obvezno import (
     generiraj_darovanje,
@@ -48,6 +52,10 @@ from generatori.obvezno import (
     generiraj_licenciju,
     generiraj_posredovanje,
     generiraj_sporazumni_raskid,
+    generiraj_predugovor,
+    generiraj_raskid_najma,
+    generiraj_raskid_ugovora_djelu,
+    generiraj_raskid_kupoprodaje,
 )
 from generatori.obiteljsko import (
     generiraj_sporazum_razvod,
@@ -76,8 +84,25 @@ from generatori.potrosaci import (
     generiraj_reklamaciju,
     generiraj_jednostrani_raskid,
     generiraj_prijavu_inspekciji,
+    generiraj_prigovor_racunu,
 )
 from generatori.posrednik_najam import (
     generiraj_ugovor_najam_ab,
     generiraj_ugovor_upravljanje_bc,
+)
+from generatori.nautika import (
+    generiraj_kupoprodaju_brodice,
+    generiraj_tabularnu_brodice,
+    generiraj_punomoc_prodaje_brodice,
+    generiraj_zalog_brodice,
+)
+from generatori.apartmani import (
+    generiraj_suglasnost_obitelji,
+    generiraj_suglasnost_suvlasnika,
+    generiraj_zahtjev_mtu,
+    generiraj_zahtjev_kategorizacija,
+)
+from generatori.pokretnine import (
+    generiraj_zalog_pokretnine,
+    generiraj_zalog_vozila,
 )

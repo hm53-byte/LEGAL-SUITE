@@ -1,12 +1,19 @@
-# wrangler.toml — Cloudflare Workers config za K3 Stripe webhook
+# wrangler.toml — Cloudflare Workers config za K3 Polar.sh webhook
 #
 # Deploy: cd cloud && wrangler deploy
-# Secrets: vidi cf_worker_stripe.ts header za listu (wrangler secret put ...)
+# Secrets: vidi cf_worker_polar.ts header za listu (wrangler secret put ...)
+#
+# Legacy: stari Stripe entry point je cf_worker_stripe.ts (deprecated 2026-04-28).
+# Da bi paralelno deploy-ao i Stripe i Polar (migration period), promijeni
+# `name` u "lts-stripe-webhook" + `main = cf_worker_stripe.ts" i deploy-aj kao
+# zaseban worker.
 
-name = "lts-stripe-webhook"
-main = "cf_worker_stripe.ts"
+name = "lts-polar-webhook"
+main = "cf_worker_polar.ts"
 compatibility_date = "2026-01-15"
-compatibility_flags = ["nodejs_compat"]  # za stripe sdk crypto
+# nodejs_compat nije potreban za Polar (raw fetch + Web Crypto API umjesto
+# nodejs crypto SDK-a). Zadrzano za eventualni fallback na cf_worker_stripe.ts.
+compatibility_flags = ["nodejs_compat"]
 
 [observability]
 enabled = true

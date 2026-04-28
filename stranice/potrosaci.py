@@ -2,11 +2,12 @@
 # STRANICA: Zastita potrosaca (Consumer protection)
 # -----------------------------------------------------------------------------
 import streamlit as st
-from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, audit_kwargs
+from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, audit_kwargs, napuni_primjerom
 from generatori.potrosaci import (
     generiraj_reklamaciju,
     generiraj_jednostrani_raskid,
     generiraj_prijavu_inspekciji,
+    generiraj_prigovor_racunu,
 )
 
 
@@ -210,10 +211,11 @@ def render_potrosaci():
 
     zaglavlje_sastavljaca()
 
-    tab1, tab2, tab3 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "Reklamacija",
         "Jednostrani raskid",
         "Prijava inspekciji",
+        "Prigovor računu (telekom/HEP/voda)",
     ])
 
     with tab1:
@@ -222,3 +224,89 @@ def render_potrosaci():
         _render_jednostrani_raskid()
     with tab3:
         _render_prijava_inspekciji()
+    with tab4:
+        _render_prigovor_racunu()
+
+
+def _render_prigovor_racunu():
+    """Prigovor na iznos računa davateljima usluga (telekom, energetika, voda)."""
+    st.subheader("Prigovor na iznos računa davatelju usluga")
+    st.caption("ZZP čl. 10 (pravo na pisani prigovor) + sektorski propisi: ZEK (telekom) / Zakon o tržištu energije (HEP) / Zakon o vodnim uslugama.")
+    napuni_primjerom('prigovor_racunu', '')
+
+    sektor = st.selectbox(
+        "Sektor davatelja usluge",
+        ["telekom", "energetika", "voda"],
+        format_func=lambda x: {
+            "telekom": "Telekom (A1, T-HT, Telemach, Iskon...)",
+            "energetika": "Energetika (HEP, RWE, GEN-I — struja/plin)",
+            "voda": "Voda i komunalije (vodovod, odvoz otpada...)",
+        }[x],
+        key="prr_sek",
+    )
+
+    potrosac, _, _ = unos_stranke("PODNOSITELJ PRIGOVORA (potrošač)", "prr_pot")
+
+    st.subheader("Podaci o davatelju usluge")
+    col1, col2 = st.columns(2)
+    with col1:
+        davatelj = st.text_input("Naziv davatelja", key="prr_dav", placeholder={
+            "telekom": "npr. A1 HRVATSKA d.o.o.",
+            "energetika": "npr. HEP-Opskrba d.o.o.",
+            "voda": "npr. Vodovod i kanalizacija d.o.o.",
+        }[sektor])
+        davatelj_adresa = st.text_input("Adresa davatelja", key="prr_dav_adr")
+    with col2:
+        broj_korisnika_label = {
+            "telekom": "Korisnički broj / broj ugovora",
+            "energetika": "Šifra OMM / broj ugovora",
+            "voda": "Šifra korisnika / broj ugovora",
+        }[sektor]
+        broj_korisnika = st.text_input(broj_korisnika_label, key="prr_bk")
+
+    st.subheader("Podaci o spornom računu")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        broj_racuna = st.text_input("Broj računa", key="prr_br", placeholder="npr. 12345/2026")
+        ukupno = st.number_input("Ukupan iznos računa (EUR)", 0.0, step=1.0, key="prr_uk")
+    with c2:
+        datum_racuna = st.text_input("Datum izdavanja računa", key="prr_dr", placeholder="dd.mm.yyyy.")
+        sporni = st.number_input("Sporni iznos (EUR)", 0.0, step=1.0, key="prr_sp")
+    with c3:
+        razdoblje = st.text_input("Obračunsko razdoblje", key="prr_rz", placeholder="npr. ožujak 2026.")
+        mjesto = st.text_input("Mjesto", "Zagreb", key="prr_mj")
+
+    razlog = st.text_area(
+        "Razlog prigovora",
+        placeholder={
+            "telekom": "npr. Naplaćene usluge inozemnog roaminga koje nisam koristio. Imao sam aktivnu opciju 'EU roaming gratis'.",
+            "energetika": "npr. Iznos računa za ožujak premašuje 4× standardnu potrošnju, a brojilo nije fizički očitano nego je obračun na temelju procjene.",
+            "voda": "npr. Naplaćena potrošnja od 50 m³ za jedan mjesec pri prosjeku 8 m³ — sumnja na curenje koje nije moja odgovornost.",
+        }[sektor],
+        height=120, key="prr_raz",
+    )
+
+    zahtjev_storno = st.checkbox(
+        "Tražim storno spornog iznosa + obustavu naplate dok se prigovor riješi",
+        value=True, key="prr_zs",
+    )
+
+    if st.button("Generiraj prigovor", type="primary"):
+        podaci = {
+            'sektor': sektor,
+            'davatelj': davatelj,
+            'davatelj_adresa': davatelj_adresa,
+            'broj_racuna': broj_racuna,
+            'datum_racuna': datum_racuna,
+            'razdoblje': razdoblje,
+            'sporni_iznos_eur': sporni,
+            'ukupno_racun_eur': ukupno,
+            'razlog_prigovora': razlog,
+            'broj_korisnika': broj_korisnika,
+            'zahtjev_storno': zahtjev_storno,
+            'mjesto': mjesto,
+        }
+        doc = generiraj_prigovor_racunu(potrosac, podaci)
+        audit_input = {"potrosac_html": potrosac, "podaci": podaci}
+        prikazi_dokument(doc, f"Prigovor_racun_{sektor}.docx", "Preuzmi prigovor",
+                         **audit_kwargs(f"prigovor_racunu_{sektor}", audit_input, "potrosaci"))
