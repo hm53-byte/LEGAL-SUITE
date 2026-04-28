@@ -255,7 +255,7 @@ Helper: `_bp(sirina=30)` vraća `"_" * sirina` — crta za ručni upis.
 ## INOVACIJA KONTEKST
 
 U istoj sesiji napravljena je inovacija "Transparentna Ekvivalencija" (TE) za LEGAL-SUITE53 projekt.
-Svi artefakti su u: `C:/Users/Hrvoje Matej/Desktop/PRAKTIČNA PRIMJENA AI-ja U PRAVU/MD verzije/claude/PROJEKTI/LEGAL-SUITE53/`
+Svi artefakti su u: `C:/Users/{{WIN_USER}}/Desktop/PRAKTIČNA PRIMJENA AI-ja U PRAVU/MD verzije/claude/PROJEKTI/LEGAL-SUITE53/`
 - PLAN.md, CUDNI_IZVORI.md, FILOZOFIRANJE_SLOJ_PRVI.md, PRIMJENA_A.md, PRIMJENA_B.md
 - SLOJ_DRUGI.md, SLOJ_2_5_NUMEROLOGY_TEST.md, SLOJ_TRECI.md (KANDIDAT), STRES_TEST.md
 - Ocjena: A- (7/7 testova, implementabilno)

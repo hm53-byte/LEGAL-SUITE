@@ -1,8 +1,8 @@
 # UPUTE ZA SESIJU 14 — LegalTech Suite Pro
 
 > Napravljeno u sesiji 13 (2026-04-12). Stanje: 159 testova, svi prolaze.
-> Git: `hm53-byte/LEGAL-SUITE` main branch, commit `be3b1ad`
-> Deploy: `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app`
+> Git: `{{GITHUB_KORISNIK}}/LEGAL-SUITE` main branch, commit `be3b1ad`
+> Deploy: `https://{{STREAMLIT_APP_ID}}.streamlit.app`
 
 ---
 
@@ -95,7 +95,7 @@ Prilog lista se generira samo za uključene sekcije, numerirana redoslijedom.
 - **ZOO**: App ima `NN 35/05, 41/08, 125/11, 78/15, 29/18, 126/21, 114/22, 156/22`
 - **OZ** (Ovršni zakon): `NN 112/12, 25/13, 93/14, 55/16, 73/17, 131/20`
 
-Lokacija FAKS zakona: `C:\Users\Hrvoje Matej\Documents\faks\TRGOVAČKO\VJEZBE - TRG\zakoni\`
+Lokacija FAKS zakona: `C:\Users\{{WIN_USER}}\Documents\faks\TRGOVAČKO\VJEZBE - TRG\zakoni\`
 
 ---
 

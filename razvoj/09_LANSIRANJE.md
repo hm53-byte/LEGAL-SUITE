@@ -34,7 +34,7 @@ LS_CHECKOUT_YEARLY  = "https://legaltech-suite-pro.lemonsqueezy.com/buy/uuid-yea
 #  samo u Edge Function gdje su već postavljeni preko `supabase secrets set`)
 
 # ----- APP CONFIG -----
-APP_URL = "https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app"
+APP_URL = "https://{{STREAMLIT_APP_ID}}.streamlit.app"
 
 # ----- ADMIN (opcionalno, za buduće admin features) -----
 ADMIN_EMAIL = "tvoj@email.com"
@@ -367,7 +367,7 @@ for email, data in users.items():
     try:
         resp = sb.auth.admin.invite_user_by_email(email, {
             "data": {"full_name": name},
-            "redirect_to": "https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app",
+            "redirect_to": "https://{{STREAMLIT_APP_ID}}.streamlit.app",
         })
         print(f"Migrated: {email}")
     except Exception as e:

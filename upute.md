@@ -9,11 +9,11 @@
 
 ### 1. Stavi kod na GitHub
 
-Kod je vec na GitHubu: https://github.com/hm53-byte/LEGAL-SUITE
+Kod je vec na GitHubu: https://github.com/{{GITHUB_KORISNIK}}/LEGAL-SUITE
 
 Za buduce promjene:
 ```bash
-cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
+cd "C:\Users\{{WIN_USER}}\Documents\APLIKACIJA"
 git add -A
 git commit -m "Opis promjene"
 git push
@@ -24,7 +24,7 @@ git push
 1. Idi na https://share.streamlit.io
 2. Klikni **"New app"**
 3. Ispuni formu:
-   - **Repository**: odaberi `hm53-byte/LEGAL-SUITE`
+   - **Repository**: odaberi `{{GITHUB_KORISNIK}}/LEGAL-SUITE`
    - **Branch**: `main`
    - **Main file path**: `LEGAL-SUITE.py`
 4. Klikni **"Deploy!"**

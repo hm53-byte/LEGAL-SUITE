@@ -1,6 +1,6 @@
 # HANDOFF — Sljedeća sesija
 
-> Nastavi u `C:\Users\Hrvoje Matej\Documents\APLIKACIJA`
+> Nastavi u `C:\Users\{{WIN_USER}}\Documents\APLIKACIJA`
 > Pročitaj CLAUDE.md za puni kontekst projekta.
 
 ## Što je gotovo (Session 11):
@@ -51,13 +51,13 @@ Korisnik želi vidljivo drugačiji, premium UI. Trenutni dizajn je "biologija ud
 
 ## Dugoročni plan (NAKON UI redesigna):
 
-1. Inovacija prema `C:\Users\Hrvoje Matej\Desktop\PRAKTIČNA PRIMJENA AI-ja U PRAVU\MD verzije\claude\PROJEKTI\LEGAL-SUITE53`
+1. Inovacija prema `C:\Users\{{WIN_USER}}\Desktop\PRAKTIČNA PRIMJENA AI-ja U PRAVU\MD verzije\claude\PROJEKTI\LEGAL-SUITE53`
 2. Analiza svakodnevnih dokumenata za neuke stranke on-the-go
 3. Problemi iz PROBLEM_S_APP.md (autoscroll, input validacija, uvjeti korištenja, itd.)
 
 ## Pokretanje:
 ```
-cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
+cd "C:\Users\{{WIN_USER}}\Documents\APLIKACIJA"
 streamlit run LEGAL-SUITE.py --server.headless true
 python -m pytest tests/ -x -q
 ```

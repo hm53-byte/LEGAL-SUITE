@@ -2,7 +2,7 @@
 
 > **Datum nastanka**: 2026-04-27
 > **Status**: AKTIVNI PLAN (faza 0 — priprema)
-> **Vlasnik odluka**: Hrvoje Matej Lešić
+> **Vlasnik odluka**: {{VLASNIK}}
 > **Glavni dokument**: ovaj README orkestrira sve sub-dokumente
 
 ---

@@ -11,7 +11,7 @@
 
 ## 1. Definicije
 
-- **Aplikacija**: web servis "LegalTechSuite Pro" dostupan na `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app` i eventualnim budućim domenama.
+- **Aplikacija**: web servis "LegalTechSuite Pro" dostupan na `https://{{STREAMLIT_APP_ID}}.streamlit.app` i eventualnim budućim domenama.
 - **Davatelj**: vlasnik i razvijatelj Aplikacije (kontakt naveden u Privacy Policy).
 - **Korisnik**: bilo koja fizička ili pravna osoba koja koristi Aplikaciju, registrirana ili neregistrirana.
 - **Dokument**: `.docx` datoteka generirana iz Aplikacije nakon što Korisnik popuni formu.

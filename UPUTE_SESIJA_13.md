@@ -1,8 +1,8 @@
 # UPUTE ZA SESIJU 13 — LegalTech Suite Pro
 
 > Napravljeno u sesiji 12 (2026-04-12). Stanje: 159 testova, svi prolaze.
-> Git: `hm53-byte/LEGAL-SUITE` main branch, commit `778d165`
-> Deploy: `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app`
+> Git: `{{GITHUB_KORISNIK}}/LEGAL-SUITE` main branch, commit `778d165`
+> Deploy: `https://{{STREAMLIT_APP_ID}}.streamlit.app`
 
 ---
 
@@ -98,7 +98,7 @@ Preporučujem Opciju A — ograničen scope, visoka korisnost.
 ## KAKO POKRENUTI APP LOKALNO
 
 ```bash
-cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
+cd "C:\Users\{{WIN_USER}}\Documents\APLIKACIJA"
 streamlit run LEGAL-SUITE.py
 # Otvori http://localhost:8501
 ```
@@ -106,7 +106,7 @@ streamlit run LEGAL-SUITE.py
 ## KAKO POKRENUTI TESTOVE
 
 ```bash
-cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
+cd "C:\Users\{{WIN_USER}}\Documents\APLIKACIJA"
 python -m pytest tests/ -x -q
 # Očekivano: 159 passed
 ```

@@ -176,7 +176,7 @@ Supabase nudi izbor regije pri kreiranju projekta:
 ## 5. Domena + brand
 
 ### 5.1 Domena
-Trenutno: `legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app` (auto-generirana Streamlit subdomena)
+Trenutno: `{{STREAMLIT_APP_ID}}.streamlit.app` (auto-generirana Streamlit subdomena)
 
 **Faza 1**: kupi vlastitu domenu (~12 €/god)
 - **Predložene varijante**:

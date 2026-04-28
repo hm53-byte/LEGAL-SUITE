@@ -55,8 +55,8 @@ Reference iz RIJEKA_PRATILAC (univerzalni, čitaju se direktno odande):
 
 Putevi:
 ```
-C:\Users\Hrvoje Matej\Desktop\RIJEKA_PRATILAC\GLAVNI INZINJER\BRZ_MOZAK - nacin drukcijeg razmisljanja - drugi skut sagledavanja problema\CLAUDE_CORE.md
-C:\Users\Hrvoje Matej\Desktop\RIJEKA_PRATILAC\GLAVNI INZINJER\BRZ_MOZAK - nacin drukcijeg razmisljanja - drugi skut sagledavanja problema\CLAUDE_FILTERI.md
+C:\Users\{{WIN_USER}}\Desktop\RIJEKA_PRATILAC\GLAVNI INZINJER\BRZ_MOZAK - nacin drukcijeg razmisljanja - drugi skut sagledavanja problema\CLAUDE_CORE.md
+C:\Users\{{WIN_USER}}\Desktop\RIJEKA_PRATILAC\GLAVNI INZINJER\BRZ_MOZAK - nacin drukcijeg razmisljanja - drugi skut sagledavanja problema\CLAUDE_FILTERI.md
 ... itd
 ```
 

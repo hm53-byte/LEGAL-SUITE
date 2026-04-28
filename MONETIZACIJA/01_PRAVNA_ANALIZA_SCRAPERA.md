@@ -149,7 +149,7 @@ GDPR čl. 35 + AZOP-ov objavljen popis tipova obrade za koje je DPIA obvezna ([A
 
 ### 5.4 Voditelj obrade — kritičan trenutak
 
-**Sada**: si fizička osoba (Hrvoje Matej Lešić) — pravna odgovornost je **na tebi osobno**.
+**Sada**: si fizička osoba ({{VLASNIK}}) — pravna odgovornost je **na tebi osobno**.
 
 **Nakon Faze 1**: prebaci sve na **j.d.o.o.** kao voditelja obrade. To te štiti od osobne odgovornosti za AZOP kazne (do 20M EUR ili 4% globalnog prometa).
 

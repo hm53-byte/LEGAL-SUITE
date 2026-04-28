@@ -55,7 +55,7 @@ Bez ovoga ti neće isplatiti niti euro.
 
 1. Settings (gornji desni) → **Account** → **Settings**
 2. **Business details:**
-   - **Business name:** točan naziv tvog obrta (npr. "LegalTech Suite, obrt vl. Hrvoje Matej")
+   - **Business name:** točan naziv tvog obrta (npr. "LegalTech Suite, obrt vl. {{VLASNIK}}")
    - **Business address:** adresa obrta (kao na rješenju o registraciji)
    - **Tax ID / VAT number:** tvoj OIB (ili PDV-id ako si u sustavu PDV-a)
    - **Country:** Croatia
@@ -275,7 +275,7 @@ LS_CHECKOUT_WEEKLY  = "https://legaltech-suite-pro.lemonsqueezy.com/buy/<uuid-1>
 LS_CHECKOUT_MONTHLY = "https://legaltech-suite-pro.lemonsqueezy.com/buy/<uuid-2>"
 LS_CHECKOUT_YEARLY  = "https://legaltech-suite-pro.lemonsqueezy.com/buy/<uuid-3>"
 
-APP_URL = "https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app"
+APP_URL = "https://{{STREAMLIT_APP_ID}}.streamlit.app"
 ```
 
 Ovi će se zalijepiti u secrets u `09_LANSIRANJE.md`.

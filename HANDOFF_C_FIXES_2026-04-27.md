@@ -54,7 +54,7 @@ git commit -m "feat(C1): ukloni api_epredmet — fiktivni GraphQL API"
 
 ### C2: Port e-Oglasna scrapera iz RIJEKA_PRATILAC
 
-**Razlog**: e-Oglasna API (`api_eoglasna.py`) je isto fiktivan. RIJEKA_PRATILAC u `C:\Users\Hrvoje Matej\Desktop\RIJEKA_PRATILAC\src\e_oglasna_scraper.py` ima **283 LOC pravi scraper** koji radi:
+**Razlog**: e-Oglasna API (`api_eoglasna.py`) je isto fiktivan. RIJEKA_PRATILAC u `C:\Users\{{WIN_USER}}\Desktop\RIJEKA_PRATILAC\src\e_oglasna_scraper.py` ima **283 LOC pravi scraper** koji radi:
 - BeautifulSoup + lxml za HTML parsing
 - pypdf za PDF dokumente
 - Rate limiter (2 req/s)
@@ -63,7 +63,7 @@ git commit -m "feat(C1): ukloni api_epredmet — fiktivni GraphQL API"
 
 **Akcija**:
 
-1. **Read referenca**: `C:\Users\Hrvoje Matej\Desktop\RIJEKA_PRATILAC\src\e_oglasna_scraper.py`
+1. **Read referenca**: `C:\Users\{{WIN_USER}}\Desktop\RIJEKA_PRATILAC\src\e_oglasna_scraper.py`
 
 2. **Adaptacija za APLIKACIJA stack**:
    - Zamijeni `from .config import settings` s hardcoded base URL `https://e-oglasna.pravosudje.hr`
@@ -100,7 +100,7 @@ git commit -m "feat(C1): ukloni api_epredmet — fiktivni GraphQL API"
 ## Ulaz u sljedeću sesiju
 
 ```bash
-cd "C:\Users\Hrvoje Matej\Documents\APLIKACIJA"
+cd "C:\Users\{{WIN_USER}}\Documents\APLIKACIJA"
 git pull   # provjeri da imaš zadnji main
 git log --oneline -10   # trebaš vidjeti GOAT Ciklus 1 commit kao zadnji
 ```
@@ -116,6 +116,6 @@ Nakon C-fixova: K3 → Polar migracija (vidi `PREPORUKA_MOR.md` integration plan
 - **194/194 pytest pass** (lokalno)
 - **Push-ano**: zadnji commit `0e7b639` (A4 sidebar prefix); GOAT Ciklus 1 commit slijedi
 - **Cloud setup**: NIJE pokrenut (čeka Polar migraciju umjesto Stripe)
-- **Streamlit Cloud deploy**: aktivan na `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app` ali **graceful degradation** drži — entitlements/audit_chain su no-op bez Supabase credentials
+- **Streamlit Cloud deploy**: aktivan na `https://{{STREAMLIT_APP_ID}}.streamlit.app` ali **graceful degradation** drži — entitlements/audit_chain su no-op bez Supabase credentials
 
 Spreman za clear context. Sljedeća sesija dolazi sa svježim tokenima.

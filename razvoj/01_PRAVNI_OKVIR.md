@@ -44,7 +44,7 @@ Ako primaš novac na svoj osobni račun bez registracije, dvije stvari mogu poć
 1. **Online preko e-Građani / e-Obrt** (https://e-obrt.gov.hr) — možeš sve riješiti od kuće
 2. Ili u Gradskom uredu za gospodarstvo (po mjestu prebivališta)
 3. Treba ti: OIB, osobna iskaznica, **šifra djelatnosti** (za tebe je relevantna **62.01 — Računalno programiranje** ili **63.11 — Obrada podataka**)
-4. Naziv obrta: nešto poput "**LegalTech Suite, obrt za računalno programiranje, vl. Hrvoje Matej**"
+4. Naziv obrta: nešto poput "**LegalTech Suite, obrt za računalno programiranje, vl. {{VLASNIK}}**"
 5. Otvaraš **poslovni račun u banci** (NE smiješ koristiti osobni za prihode iz obrta). Najjeftinije: **Erste Direkt** ili **Revolut Business** (free tier postoji)
 
 **Vrijeme:** registracija 1-3 radna dana. PDV identifikacijski broj (ako ti zatreba) još tjedan dana.

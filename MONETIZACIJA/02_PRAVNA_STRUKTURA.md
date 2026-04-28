@@ -171,7 +171,7 @@ Ako si jedini član j.d.o.o. i radiš u njemu, obavezno se obračunavaju doprino
 3. **Naziv tvrtke**: predloženo `LegalTech Suite j.d.o.o.` ili `LST Hrvatska j.d.o.o.` ili sličan brand-konzistentan naziv
 4. **NKD klasifikacija**: glavna djelatnost **62.01 (Računalno programiranje)**, sekundarna **63.99 (Ostale informacijske uslužne djelatnosti, n. d.)** — IZBJEGAVAJ 69.10 (Pravne djelatnosti) jer to traži položen pravosudni ispit
 5. **Sjedište**: Zagreb (tvoja rezidencija prema memory) — adresa može biti virtualna (Coworking Office, virtual office služi ~30-60 €/mj) ako ne želiš javno otkriti kućnu adresu
-6. **Direktor**: Hrvoje Matej Lešić, sole director
+6. **Direktor**: {{VLASNIK}}, sole director
 7. **Otvori HR IBAN business**: Erste Mojo Business ili PBZ Online — sa eOsobnom istog dana
 8. **Kontakt računovodstveni servis**: 2-3 ponude (Aning, Brojevi, Aestus, lokalne male agencije Zagreb)
 9. **eRačun rješenje**: FINA Moj eRačun (besplatno za male) ili Helena (paušal ~5 €/mj)

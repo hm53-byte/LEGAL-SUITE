@@ -73,7 +73,7 @@ Otvorit će browser, prijavi se s istim accountom kao u Supabase web UI, klikni 
 U `APLIKACIJA` folderu (PowerShell):
 
 ```powershell
-cd C:\Users\Hrvoje Matej\Documents\APLIKACIJA
+cd C:\Users\{{WIN_USER}}\Documents\APLIKACIJA
 supabase init
 ```
 

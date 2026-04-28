@@ -16,7 +16,7 @@
 - [ ] **j.d.o.o. otvoren** preko START platforme — MBS, OIB pravne osobe (Faza 1, ~5-10 radnih dana)
 - [ ] **HR IBAN business** otvoren (Erste Mojo / PBZ / Zaba) — uplata TK 1.250 €
 - [ ] **Računovodstveni servis** ugovoren (~150-200 €/mj)
-- [ ] **HZZO + HZMO aktivirani za direktora** — VAŽNO: direktor NIJE Hrvoje Matej dok studira (vidi Dio II)
+- [ ] **HZZO + HZMO aktivirani za direktora** — VAŽNO: direktor NIJE {{VLASNIK}} dok studira (vidi Dio II)
 - [ ] **DPA-ovi potpisani**: Streamlit, Supabase, Polar, Hetzner (kasnije)
 - [ ] **DPIA finalizirana** — AZOP obrazac popunjen, spremljen u repo
 
@@ -160,7 +160,7 @@ SC pravila eksplicit isključuju studente koji:
 ### 5. Konkretna struktura
 
 **j.d.o.o. setup**:
-- **Osnivač / član društva (100 %)**: Hrvoje Matej Lešić
+- **Osnivač / član društva (100 %)**: {{VLASNIK}}
 - **Direktor**: roditelj/sibling/pouzdani prijatelj — **bez naknade dopušteno** (volonterski direktor)
 - **Operativno**: ti vodiš sav razvoj, marketing, podršku — direktor samo formalno potpisuje ugovore (preko punomoći ili specifičnih ovlasti)
 - **Banka**: direktor otvara IBAN, ali ti dobijaš ovlast za upravljanje računom (joint signatory)
@@ -198,7 +198,7 @@ SC pravila eksplicit isključuju studente koji:
 ### Update plan dokumenata
 
 `MONETIZACIJA/02_PRAVNA_STRUKTURA.md` treba ispravke u sljedećoj sesiji:
-- "Direktor: Hrvoje Matej Lešić, sole director" → **"Direktor: TBD (ne korisnik dok studira)"**
+- "Direktor: {{VLASNIK}}, sole director" → **"Direktor: TBD (ne korisnik dok studira)"**
 - Sekcija "Mjesečni operativni trošak" → ako direktor je volonter bez plaće, fiksni mjesečni trošak je manji (~150-200 €/mj samo knjigovodstvo + banka, bez ~700-900 € direktorske plaće)
 
 **Unit economics impact**: break-even pada s ~13.500 €/god na **~3.000 €/god** → Faza 2 puno realističnija za solo dev.

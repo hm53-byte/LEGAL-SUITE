@@ -175,7 +175,7 @@ Imaš već 60+ generatora. Roadmap za nove (vidi `RAZVOJ_PRIJEDLOZI.md`):
 
 ## 7. KAD POVEZATI PRAVU DOMENU
 
-Default Streamlit URL je ružan: `https://legal-suite-flh3jnmcj5kc7jp5y9w9eb.streamlit.app`.
+Default Streamlit URL je ružan: `https://{{STREAMLIT_APP_ID}}.streamlit.app`.
 
 ### 7.1 Kupi domenu
 

@@ -239,7 +239,7 @@ Razlozi:
 
 **Faza 2**:
 - Aktiviraj **`*@student.pravo.hr` permanent FREE** (memory note: imamo confirmation)
-- Postavi LinkedIn HR profilu **Hrvoje Matej Lešić** kao "Founder, LegalTech Suite Pro" (kasnije, kad d.o.o. radi)
+- Postavi LinkedIn HR profilu **{{VLASNIK}}** kao "Founder, LegalTech Suite Pro" (kasnije, kad d.o.o. radi)
 - Pokreni mjesečni newsletter (~50 subskribera initial)
 
 **Faza 3**:
