@@ -4,36 +4,70 @@
 # =============================================================================
 import streamlit as st
 import streamlit.components.v1 as components
-from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
-from pomocne import docx_opcije
-from stranice import (
-    render_ugovori,
-    render_tuzbe,
-    render_ovrhe,
-    render_zalbe,
-    render_zemljisne,
-    render_kamate,
-    render_opomene,
-    render_punomoci,
-    render_trgovacko,
-    render_obvezno,
-    render_obiteljsko,
-    render_upravno,
-    render_kazneno,
-    render_stecajno,
-    render_potrosaci,
-    render_pristojbe,
-    render_eoglasna,
-    render_kalendar,
-    render_nn_pretraga,
-    render_jednostavno,
-    render_posrednik_najam,
-    render_nautika,
-    render_apartmani,
-    render_pokretnine,
-    render_pravila,
-)
-from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
+import sys
+import traceback
+
+# Page config mora biti prvi st.* poziv. Postavlja se s fallback default-ima
+# u slučaju da config import failuje (vidi diagnostic block ispod).
+st.set_page_config(page_title="LegalTech Suite Pro", page_icon=":scroll:", layout="wide")
+
+# Diagnostic import wrapper — Streamlit Cloud redact-aira default error message,
+# pa je pravi traceback nedostupan bez "Manage app" pristupa. Ovaj try/except
+# prikazuje puni traceback direktno u UI-ju ako bilo koji import failuje.
+# UKLONITI nakon stabilizacije deploya.
+_IMPORT_DIAGNOSTIC_STAGES = []
+try:
+    _IMPORT_DIAGNOSTIC_STAGES.append("config")
+    from config import PAGE_TITLE, PAGE_ICON, PAGE_LAYOUT, CSS_STILOVI
+
+    _IMPORT_DIAGNOSTIC_STAGES.append("pomocne")
+    from pomocne import docx_opcije
+
+    _IMPORT_DIAGNOSTIC_STAGES.append("stranice")
+    from stranice import (
+        render_ugovori,
+        render_tuzbe,
+        render_ovrhe,
+        render_zalbe,
+        render_zemljisne,
+        render_kamate,
+        render_opomene,
+        render_punomoci,
+        render_trgovacko,
+        render_obvezno,
+        render_obiteljsko,
+        render_upravno,
+        render_kazneno,
+        render_stecajno,
+        render_potrosaci,
+        render_pristojbe,
+        render_eoglasna,
+        render_kalendar,
+        render_nn_pretraga,
+        render_jednostavno,
+        render_posrednik_najam,
+        render_nautika,
+        render_apartmani,
+        render_pokretnine,
+        render_pravila,
+    )
+
+    _IMPORT_DIAGNOSTIC_STAGES.append("auth")
+    from auth import login_stranica, prikazi_korisnika_sidebar, provjeri_auth, _authenticate
+except Exception as _imp_err:
+    st.error(f"**Import error pri startu** — failed at stage: `{_IMPORT_DIAGNOSTIC_STAGES[-1] if _IMPORT_DIAGNOSTIC_STAGES else 'unknown'}`")
+    st.markdown(f"**Type:** `{type(_imp_err).__name__}`")
+    st.markdown(f"**Message:** `{_imp_err}`")
+    st.markdown("**Full traceback:**")
+    st.code(traceback.format_exc(), language="python")
+    st.markdown("**Diagnostic info:**")
+    st.code(
+        f"Python: {sys.version}\n"
+        f"Stages reached: {_IMPORT_DIAGNOSTIC_STAGES}\n"
+        f"sys.path: {sys.path[:5]}",
+        language="text",
+    )
+    st.stop()
 
 # Konfiguracija stranice
 st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout=PAGE_LAYOUT)
