@@ -1,0 +1,51 @@
+# Python artefakti: nastaju pri svakom pokretanju, nemaju vrijednost u repozitoriju
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Virtualna okruzenja: lokalna instalacija ovisnosti, gradi se iz requirements.txt
+venv/
+.venv/
+env/
+
+# Tajne i konfiguracija okruzenja: kljucevi za Supabase, Polar i Cloudflare ne idu javno
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Lokalni podaci korisnika: auth.py ovdje sprema e-mailove i hasheve lozinki
+.users.json
+*.db
+*.sqlite
+*.sqlite3
+
+# Generirani dokumenti: izlaz aplikacije, sadrzi osobne podatke unesene u forme
+izlaz/
+*.docx
+
+# Alati i operacijski sustav
+.claude/
+.DS_Store
+.idea/
+.vscode/
+
+# Radne biljeske agenta i dnevnici sesija: nisu dokumentacija proizvoda
+CLAUDE.md
+HANDOFF*.md
+UPUTE_SESIJA_*.md
+PRIJASNJI_RAZGOVOR.md
+PROBLEM_S_APP.md
+GLAVNI_INZINJER/
+agent_docs/
+
+# Poslovna gradja: cjenovni model, procjena vrijednosti, odabir dobavljaca, pravna struktura
+MONETIZACIJA/
+GOAT/
+tasks.md
+
+# Zastarjeli prirucnik za odbaceni stack (Lemon Squeezy); aktualne upute su u cloud/SETUP.md
+razvoj/
+
+# Osobne biljeske bez veze s projektom
+RAZVOJ_PRIJEDLOZI.md

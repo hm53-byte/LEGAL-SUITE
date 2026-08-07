@@ -1,0 +1,17 @@
+{
+    "name": "lts-polar-webhook",
+    "version": "0.2.0",
+    "description": "Cloudflare Worker za K3 Polar.sh webhook + checkout (LEGAL-SUITE)",
+    "main": "cf_worker_polar.ts",
+    "scripts": {
+        "deploy": "wrangler deploy",
+        "dev": "wrangler dev",
+        "tail": "wrangler tail"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20250109.0",
+        "wrangler": "^3.99.0",
+        "typescript": "^5.7.0"
+    }
+}

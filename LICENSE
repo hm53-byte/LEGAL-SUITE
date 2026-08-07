@@ -1,0 +1,121 @@
+===============================================================================
+HRVATSKI
+===============================================================================
+
+LEGAL-SUITE
+Copyright (c) 2026 Hrvoje Matej. Sva prava pridržana.
+
+1. VLASNIŠTVO
+
+Ovo je vlasnički softver. Kod, predlošci dokumenata, tekstovi klauzula,
+podatkovne tablice i dokumentacija autorsko su djelo nositelja prava. Objava
+na GitHubu nije objava pod otvorenom licencom i ne daje nikakva prava osim
+onih navedenih u točki 2.
+
+2. ŠTO JE DOPUŠTENO
+
+Dopušteno je čitanje i pregled koda radi uvida i ocjene, primjerice od strane
+poslodavca ili recenzenta, te izrada forka unutar GitHuba pomoću GitHubove
+fork funkcije radi istog uvida, kako predviđaju GitHubovi uvjeti korištenja.
+
+Bez prethodnog pisanog dopuštenja nositelja prava nije dopušteno korištenje
+koda ili predložaka u drugim projektima, umnožavanje izvan GitHuba, izmjena,
+distribucija, javno stavljanje na raspolaganje, prodaja, pružanje usluge
+trećima, ni sustavno preuzimanje značajnog dijela baze predložaka i podataka.
+
+3. IZLAZ APLIKACIJE NIJE PRAVNI SAVJET
+
+Aplikacija deterministički popunjava pripremljene obrasce podacima koje
+korisnik sam unese. Ne ocjenjuje slučaj i ne predviđa ishod postupka.
+
+Generirani dokument nije pravni savjet ni pravno mišljenje i ne zamjenjuje
+odvjetnika. Korištenjem aplikacije ne nastaje odnos odvjetnika i stranke.
+Rokovi, nadležnost, pravna osnova i sadržaj podneska ostaju odgovornost
+korisnika, a prije podnošenja sudu preporučuje se provjera kod odvjetnika
+(Hrvatska odvjetnička komora, www.hok-cba.hr).
+
+4. BEZ JAMSTVA
+
+Softver i svi generirani dokumenti daju se takvi kakvi jesu, bez ikakvog
+jamstva, izričitog ili prešutnog. Ne jamči se prikladnost za određenu svrhu,
+točnost, potpunost, pravna ispravnost, pravodobnost, usklađenost s propisima
+ni prihvatljivost dokumenta pred sudom ili tijelom javne vlasti. Propisi,
+pristojbe i obrasci mijenjaju se, a sadržaj repozitorija ne mora biti ažuran.
+
+5. ODGOVORNOST ZA ŠTETU
+
+U mjeri u kojoj to pravo dopušta, nositelj prava ne odgovara za štetu nastalu
+korištenjem softvera ili generiranih dokumenata, uključujući izgubljeni spor,
+propušteni rok, odbačeni podnesak, troškove postupka i izmaklu korist.
+
+Ovo ograničenje ne dira u prisilne propise. Odgovornost za štetu prouzročenu
+namjerno ili krajnjom nepažnjom po hrvatskom se pravu ne može unaprijed
+isključiti ni ograničiti, pa se ovom licencom i ne isključuje. Isto vrijedi
+za odgovornost za smrt ili tjelesnu ozljedu i za prava potrošača po prisilnim
+propisima.
+
+6. MJERODAVNO PRAVO
+
+Primjenjuje se pravo Republike Hrvatske, uz nadležnost stvarno nadležnog suda
+u Zagrebu. Upiti za dopuštenje: GitHub profil nositelja prava (hm53-byte).
+
+===============================================================================
+ENGLISH (translation, the Croatian text above prevails)
+===============================================================================
+
+LEGAL-SUITE
+Copyright (c) 2026 Hrvoje Matej. All rights reserved.
+
+1. OWNERSHIP
+
+This is proprietary software. The code, document templates, clause texts, data
+tables and documentation are copyrighted works of the rights holder. GitHub
+publication is not open source licensing and grants no rights beyond section 2.
+
+2. WHAT IS PERMITTED
+
+You may read and review the code for inspection and assessment, for example as
+an employer or reviewer, and you may fork the repository within GitHub using
+GitHub's fork function for the same purpose, as GitHub's terms provide.
+
+Without prior written permission of the rights holder you may not use the code
+or templates in other projects, copy them outside GitHub, modify, distribute,
+make them publicly available, sell them, provide services to third parties, or
+systematically extract a substantial part of the template and data collection.
+
+3. THE OUTPUT IS NOT LEGAL ADVICE
+
+The application deterministically fills prepared forms with data entered by
+the user. It does not assess the case and does not predict any outcome.
+
+A generated document is not legal advice or a legal opinion and is not a
+substitute for a lawyer. Use of the application creates no attorney-client
+relationship. Deadlines, jurisdiction, legal basis and the content of any
+submission remain the user's responsibility, and review by a lawyer before
+filing is recommended (Croatian Bar Association, www.hok-cba.hr).
+
+4. NO WARRANTY
+
+The software and all generated documents are provided as is, without warranty
+of any kind, express or implied. No warranty is given as to fitness for a
+particular purpose, accuracy, completeness, legal correctness, timeliness,
+compliance with regulations, or acceptance of a document by a court or public
+authority. Legislation, fees and forms change, and the contents of this
+repository may be out of date.
+
+5. LIABILITY
+
+To the extent permitted by law, the rights holder is not liable for damage
+arising from use of the software or of generated documents, including a lost
+case, a missed deadline, a rejected submission, costs of proceedings and lost
+profit.
+
+This limitation does not affect mandatory law. Under Croatian law, liability
+for damage caused intentionally or by gross negligence cannot be excluded or
+limited in advance, and this licence does not purport to exclude it. The same
+applies to liability for death or personal injury and to consumer rights.
+
+6. GOVERNING LAW
+
+Croatian law applies, with jurisdiction of the competent court in Zagreb.
+Permission requests: GitHub profile of the rights holder (hm53-byte).
