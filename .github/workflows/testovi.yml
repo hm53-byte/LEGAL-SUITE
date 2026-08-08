@@ -1,0 +1,54 @@
+name: testovi
+
+# Pokrece se na svaku promjenu glavne grane i na svaki zahtjev za spajanjem.
+# Bez ovoga se pad testova vidi tek kad ga netko rucno pokrene lokalno, a to
+# se u praksi ne dogodi.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  testovi:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Dvije verzije, ne jedna: aplikacija se vrti na Streamlit Cloudu
+        # cija se verzija Pythona mijenja bez nase odluke, pa se odstupanje
+        # mora vidjeti ovdje a ne u proizvodnji.
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Postavi Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Instaliraj ovisnosti
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Pokreni testove
+        run: pytest tests -q
+
+      - name: Provjeri da u repozitoriju nema tajni
+        # Trazi ono sto se stvarno moze omaknuti: kljuc Polara, servisni kljuc
+        # Supabasea i zaboravljenu datoteku s tajnama. Nalaz obara tijek.
+        run: |
+          if grep -rEn "polar_[a-zA-Z0-9_]{20,}|service_role.*eyJ[A-Za-z0-9_-]{20,}" \
+               --include="*.py" --include="*.toml" --include="*.md" --include="*.ts" . ; then
+            echo "Nadjena tajna u repozitoriju."
+            exit 1
+          fi
+          if [ -f .streamlit/secrets.toml ]; then
+            echo ".streamlit/secrets.toml je u repozitoriju, a ne smije biti."
+            exit 1
+          fi
+          echo "Nema tajni."

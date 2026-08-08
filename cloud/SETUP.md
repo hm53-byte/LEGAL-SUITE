@@ -48,6 +48,16 @@
 
    > **Note**: Tablica i kolone još uvijek nose `stripe_*` imena (`stripe_event_id`, `stripe_subscription_id`, `stripe_customer_id`). To je legacy iz Stripe MVP-a — schema je payment-gateway-neutralna i Polar event ID-jevi i subscription/customer ID-jevi normalno se upisuju u te kolone. Cosmetic rename (`payment_*`) može se napraviti naknadno migration-om.
 
+5b. **Primijeni preostale migracije**, istim putem (SQL Editor, New query, Run),
+   redom i svaku zasebno:
+   - `cloud/0007_audit_chain.sql` (kolone lanca revizije nad `download_log`)
+   - `cloud/0008_retencija_download_log.sql` (rok čuvanja 24 mjeseca i raspored)
+
+   Obje su idempotentne, pa ponovno pokretanje ne kvari ništa. Migracija 0008
+   sama pokušava postaviti `pg_cron` posao i javlja je li uspjela. Detaljne
+   upute, provjere i pričuvni put bez `pg_cron` su u
+   [`docs/brisanje_podataka.md`](../docs/brisanje_podataka.md).
+
 6. **Dohvati credentials**:
    - **Settings → API**
    - Spremi (potrebno kasnije):

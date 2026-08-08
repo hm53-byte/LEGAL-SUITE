@@ -64,7 +64,12 @@ Korisnik je odgovoran za čuvanje pristupnih podataka. Davatelj koristi PBKDF2-S
 
 ### 3.4 Brisanje računa
 
-Korisnik može u svako doba zatražiti brisanje računa slanjem e-maila na kontakt adresu navedenu u Privacy Policy. Brisanje je nepovratno i obuhvaća sve podatke o Korisniku osim onih koje Davatelj mora čuvati po zakonu (npr. fiskalni račun za platilane pretplate, vidi Privacy Policy).
+Korisnik može u svako doba zatražiti brisanje računa slanjem e-maila na kontakt adresu navedenu u Privacy Policy. Brisanje je nepovratno.
+
+Dva izuzetka, oba objašnjena u Privacy Policy:
+
+- Podaci koje Davatelj mora čuvati po zakonu (npr. dokumentacija o plaćanju za plaćene pretplate) ostaju do isteka zakonskog roka.
+- Zapis o generiranom dokumentu u tablici `download_log` ne briše se kao redak, nego mu se prazne osobni stupci; ostaju vrijeme generiranja i dva lančana sažetka koji drže lanac revizije na okupu. Razlog i posljedice su u članku 7.1 Privacy Policy.
 
 ## 4. Watermark i serijski broj dokumenta
 

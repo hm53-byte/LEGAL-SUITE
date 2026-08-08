@@ -141,9 +141,9 @@ pip install pytest
 python -m pytest tests/ -q
 ```
 
-U `tests/` je 224 test funkcije u 11 datoteka (prebrojano statički). Pokrivaju
-provjeru OIB-a, formatiranje iznosa, generatore, pretvorbu u DOCX, kalkulator
-pristojbi, watermark i lanac revizije.
+U `tests/` je 282 test funkcije u 12 datoteka. Pokrivaju provjeru OIB-a,
+formatiranje iznosa, generatore, pretvorbu u DOCX, kalkulator pristojbi,
+watermark, lanac revizije i retenciju zapisa o preuzimanjima.
 
 Česte greške pri pokretanju: [`docs/troubleshooting.md`](docs/troubleshooting.md).
 

@@ -32,6 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 import unicodedata
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -155,6 +156,186 @@ def verify_chain(rows: list[dict[str, Any]]) -> tuple[bool, int | None]:
             return False, i
         parent = row.get("current_hash")
     return True, None
+
+
+# =============================================================================
+# 4. Provjera lanca uz retenciju (nadgrobni redci)
+# =============================================================================
+# Retencija od 24 mjeseca (cloud/0008_retencija_download_log.sql) ne brise stari
+# redak, nego mu prazni sve stupce osim generated_at, parent_hash i current_hash.
+# Takav ostatak zovemo nadgrobni redak: ne moze se prerecunati jer vise nema
+# input_canonical_hash, output_sha256 ni generator_version_hash, ali cuva vezu
+# jer sljedeci redak preko svog parent_hash pokazuje na njegov current_hash.
+#
+# verify_chain() gore ovo ne zna i na nadgrobnom retku javlja neuspjeh. Nije
+# mijenjana jer je vec u upotrebi; nove provjere idu kroz funkciju ispod.
+
+
+def je_nadgrobni(row: dict[str, Any]) -> bool:
+    """True ako je redak ispraznjen po retenciji.
+
+    Oznaka je stupac anonymized_at: NULL znaci zivi redak, vrijednost znaci da
+    je posao retencije obrisao osobne stupce i ostavio samo kariku lanca.
+    """
+    return row.get("anonymized_at") is not None
+
+
+def _trenutak(vrijednost: Any) -> "datetime | None":
+    """Procitaj timestamptz iz PostgREST-a; None ako se ne da procitati.
+
+    Neuspjeh vraca None umjesto da digne iznimku: provjera lanca ne smije pasti
+    zbog zapisa vremena koji ne prepoznaje, nego preskociti ono sto ne moze
+    ocijeniti. Postgres salje i oblik s 'Z' i onaj s pomakom, a fromisoformat
+    do Pythona 3.11 ne prima 'Z'.
+    """
+    if not isinstance(vrijednost, str) or not vrijednost:
+        return None
+    tekst = vrijednost.strip()
+    if tekst.endswith(("Z", "z")):
+        tekst = tekst[:-1] + "+00:00"
+    try:
+        procitano = datetime.fromisoformat(tekst)
+    except ValueError:
+        return None
+    return procitano if procitano.tzinfo else procitano.replace(tzinfo=timezone.utc)
+
+
+def verify_chain_retention_aware(
+    rows: list[dict[str, Any]],
+    parent_postoji: Callable[[str], bool] | None = None,
+    mjeseci_retencije: int | None = None,
+) -> tuple[bool, int | None, str | None]:
+    """Provjera lanca koja zakonitu retenciju ne prijavljuje kao kvar.
+
+    `rows` je kronoloski sortirana lista redaka JEDNOG korisnika (ORDER BY
+    generated_at ASC). Nadgrobni redci gube user_id pa u takav dohvat ne ulaze;
+    zato prvi redak liste redovito ima parent_hash koji pokazuje izvan liste.
+
+    `parent_postoji(hes)` je neobavezan upit u bazu: True ako u download_logu
+    postoji redak s tim current_hash. Sluzi da se razlikuje "prethodnik je
+    anonimiziran, ali postoji" od "prethodnik je nestao". Bez njega se korijen
+    lanca ne moze potvrditi i funkcija to kaze umjesto da pretpostavi.
+
+    POZOVI GA SAMO SA SERVISNIM KLJUCEM BAZE. Politika zastite na razini retka
+    je `USING (user_id = auth.uid())`, a nadgrobni redak nema user_id, pa je
+    korisnickom JWT-u nevidljiv. Implementacija `parent_postoji` koja ide preko
+    korisnickog kljuca vraca False za svakog anonimiziranog prethodnika i
+    provjera javi "prekinuta_veza", dakle upravo laznu uzbunu zbog koje
+    nadgrobni redak i postoji.
+
+    `mjeseci_retencije` je neobavezan: ako se preda, nadgrobni redak koji je
+    ispraznjen prije isteka tog roka prijavljuje se kao "rana_anonimizacija".
+    Vidi ogradu nize; zadano je iskljuceno jer brisanje na zahtjev korisnika
+    (GDPR cl. 17) zakonito prazni i mlade retke.
+
+    Vraca (u_redu, indeks, razlog). Razlozi:
+      "mutacija"            zivi redak nije u skladu sam sa sobom, netko je
+                            promijenio jedno od pet hesiranih polja
+      "prekinuta_veza"      prethodnik ne postoji nigdje u tablici
+      "nepotpun_prikaz"     prethodnik postoji u tablici, ali nije u `rows`,
+                            dakle greska u dohvatu, a ne u podacima
+      "nepoznat_korijen"    prvi redak ima roditelja, a lookup nije proslijeden
+      "nadgrobni_bez_hesa"  nadgrobnom retku nedostaje current_hash, karika je
+                            izgubljena i lanac se dalje ne moze pratiti
+      "rana_anonimizacija"  redak je ispraznjen prije isteka roka; trazi
+                            objasnjenje (zahtjev za brisanje ili zahvat rukom),
+                            javlja se samo uz `mjeseci_retencije`
+
+    Zivi redci od prije K1 nemaju nijedan hes (vidi cloud/0007_audit_chain.sql)
+    i preskacu se bez prigovora. Nikad nisu bili u lancu: get_last_chain_hash ih
+    izostavlja uvjetom current_hash not.is.null, pa lanac preko njih prekoracuje
+    i provjera mora raditi isto, inace bi svaki stariji racun javljao laznu
+    uzbunu.
+
+    Prazna lista vraca (True, None, None): nema tvrdnje koja bi se mogla oboriti.
+
+    STO OVA FUNKCIJA NE MOZE. Tri ogranicenja, sva tri stvarna:
+
+    1. Nadgrobni redak se ne provjerava, nego se vjeruje njegovom
+       current_hash. Drukcije ne moze, jer su ulazi iz kojih se racunao
+       obrisani. Posljedica: tko ima pravo pisanja moze bilo kojem retku
+       obrisati sadrzaj, postaviti anonymized_at i proci ovu provjeru. Taj
+       napad, za razliku od brisanja retka, nije razlicit od zakonite
+       retencije. `mjeseci_retencije` hvata samo nemarnu izvedbu, jer
+       anonymized_at nije ni u jednom hesu pa ga napadac moze postaviti na
+       vrijednost koja izgleda uredno.
+    2. Nadgrobni redci na koje vise nista ne pokazuje nemaju nikakvu zastitu.
+       Nastaju kad korisnik 24 mjeseca ne generira dokument: tada su svi
+       njegovi redci ispraznjeni, get_last_chain_hash vrati None i sljedeci
+       redak krece kao novi korijen. Stari nadgrobni redci ostaju bez ijednog
+       potomka, pa se mogu izmijeniti ili ukloniti a da nijedna provjera to ne
+       primijeti.
+    3. Napadac koji ima pravo pisanja i prerecuna current_hash za izmijenjeni
+       redak i sve sljedece prolazi i ovdje i u verify_chain. Za obranu od toga
+       treba vanjsko sidro (npr. periodicni zapis zadnjeg current_hash izvan
+       baze).
+    """
+    prag_dana = None if mjeseci_retencije is None else int(mjeseci_retencije) * 28
+
+    prethodni: str | None = None
+    vidjena_karika = False
+
+    for i, row in enumerate(rows):
+        pohranjeni_parent = row.get("parent_hash")
+        nadgrobni = je_nadgrobni(row)
+
+        # Redak od prije K1: nema sto tvrditi, pa nema sto ni oboriti.
+        if not nadgrobni and not row.get("current_hash"):
+            continue
+
+        # 1) Je li redak u skladu sam sa sobom. Racuna se iz POHRANJENOG
+        # parent_hash, ne iz susjeda, pa provjera vrijedi i za redak izvadjen
+        # sam iz konteksta.
+        if nadgrobni:
+            if not row.get("current_hash"):
+                return False, i, "nadgrobni_bez_hesa"
+            # Sadrzaj nadgrobnog retka se ne moze provjeriti; jedino sto se o
+            # njemu jos moze reci je je li ispraznjen prije roka. 28 dana po
+            # mjesecu je namjerno donja ocjena, da zakonita retencija nikad ne
+            # padne u ovu granu. Vidi ogradu 1 u opisu funkcije.
+            if prag_dana is not None:
+                nastao = _trenutak(row.get("generated_at"))
+                ispraznjen = _trenutak(row.get("anonymized_at"))
+                if (
+                    nastao is not None
+                    and ispraznjen is not None
+                    and (ispraznjen - nastao).days < prag_dana
+                ):
+                    return False, i, "rana_anonimizacija"
+        else:
+            # `or ""` jer PostgREST vraca NULL kao None, a build_chain_link
+            # spaja nizove; bez toga provjera puca umjesto da presudi.
+            ocekivani = build_chain_link(
+                input_hash=row.get("input_canonical_hash") or "",
+                output_hash=row.get("output_sha256") or "",
+                generator_hash=row.get("generator_version_hash") or "",
+                parent_hash=pohranjeni_parent,
+                schema_version=row.get("input_schema_version") or SCHEMA_VERSION,
+            )
+            if ocekivani != row.get("current_hash"):
+                return False, i, "mutacija"
+
+        # 2) Je li redak vezan na prethodnika. Prva karika se mjeri po lancu, ne
+        # po polozaju u listi, jer su preskoceni redci mogli biti ispred nje.
+        if not vidjena_karika:
+            if pohranjeni_parent is not None:
+                if parent_postoji is None:
+                    return False, i, "nepoznat_korijen"
+                if not parent_postoji(pohranjeni_parent):
+                    return False, i, "prekinuta_veza"
+        elif pohranjeni_parent != prethodni:
+            if (
+                parent_postoji is not None
+                and pohranjeni_parent is not None
+                and parent_postoji(pohranjeni_parent)
+            ):
+                return False, i, "nepotpun_prikaz"
+            return False, i, "prekinuta_veza"
+
+        prethodni = row.get("current_hash")
+        vidjena_karika = True
+
+    return True, None, None
 
 
 # =============================================================================
