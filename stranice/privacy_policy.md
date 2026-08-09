@@ -1,7 +1,8 @@
 # Politika privatnosti - LEGAL-SUITE
 
-**Verzija**: 1.1 (nacrt 2026-08-09)
-**Status**: NACRT. Nije spreman za objavu.
+**Verzija**: 1.2 (nacrt 2026-08-09)
+**Status**: NACRT. Nije spreman za objavu kao završen dokument, ali je točniji od
+inačice 1.0 koja je trenutno javna.
 
 ---
 
@@ -19,6 +20,25 @@
 > prilagoditi se stvarnim okolnostima Davatelja prije aktivacije naplate.
 >
 > **3. Dio tvrdnji čeka potvrdu Davatelja.** Vidi objašnjenje oznaka niže.
+>
+> **4. Prethodna inačica je već javna i sadrži tvrdnju koja nije točna.**
+> Inačica 1.0 objavljena je u javnom repozitoriju i u njoj stoji da se zapisi u
+> `download_log` nakon 24 mjeseca automatski brišu cron poslom. Takav posao ne
+> postoji. Dok ta inačica stoji vani, javno objavljena politika obećava brisanje
+> koje se ne provodi. Ovo je zasebna vrsta rizika od nepopunjenih polja i ne
+> uklanja se čekanjem: uklanja se objavom ispravljenog teksta.
+
+### Kako čitati ovaj dokument
+
+Dokument opisuje dva stanja i razlikuje ih izričito:
+
+- ono što Aplikacija radi **sada**, u konfiguraciji u kojoj naplata i
+  zapisivanje preuzimanja nisu uključeni;
+- ono što će raditi kad Davatelj te dijelove uključi.
+
+Gdje god se ta dva stanja razlikuju, razlika je označena oznakom
+**[NIJE AKTIVNO]** i objašnjena je u istom odlomku. Tvrdnja bez te oznake opisuje
+sadašnje stanje.
 
 ### Oznake u tekstu
 
@@ -47,10 +67,23 @@ da se tvrdnja potvrdi, ili tako da se preoblikuje u ono što je stvarno točno.
 
 ### 2.1 Pristup bez registracije (gost)
 
-Aplikacija nudi gumb "Isprobaj besplatno". Klikom se otvara sesija pod
-zajedničkom internom oznakom `gost@legalsuite.hr`. Ta oznaka nije adresa
-korisnika i ne stvara se korisnički zapis: o gostu se ne pohranjuje ništa što bi
-ga identificiralo.
+Aplikacija ima dva načina rada i u oba se do rada dolazi bez registracije.
+
+U **jednostavnom načinu**, koji je zadani, prijavna se stranica uopće ne
+prikazuje: sesija pod zajedničkom internom oznakom `gost@legalsuite.hr` otvara se
+sama, pri prvom otvaranju Aplikacije. Korisnik pritom ne prolazi kroz nijedan
+korak u kojem bi mu bila ponuđena ova Politika.
+
+U **naprednom načinu** prikazuje se prijavna stranica s gumbom "Isprobaj
+besplatno"; klikom se otvara ista gostujuća sesija.
+
+Ta oznaka nije adresa korisnika i ne stvara se korisnički zapis: o gostu se ne
+pohranjuje ništa što bi ga identificiralo.
+
+**Politika se ne prikazuje sama od sebe. [NIJE AKTIVNO]** Ni u jednom načinu
+rada, ni pri registraciji, Aplikacija ne prikazuje ovu Politiku niti traži njezino
+prihvaćanje. Dokument je dostupan samo ako Korisnik sam otvori stranicu "Pravila
+i privatnost". Vidi napomenu uz datum stupanja na snagu na kraju dokumenta.
 
 ### 2.2 Podaci pri registraciji
 
@@ -74,12 +107,19 @@ Korisnik zbog toga ne smije računati da će mu račun trajati.
 **Datum zadnje prijave se ne pohranjuje.** Vrijeme prijave postoji samo u
 memoriji tekuće sesije i nestaje s njom.
 
+**Upozorenje uz prelazak računa u bazu.** Pripremljena shema baze
+(`cloud/supabase_schema.sql`) ima za račune stupce `last_login_at` i
+`oauth_subject`. Čim Davatelj tu shemu primijeni i prijavu poveže s bazom, obje
+niječne tvrdnje iz ovog i sljedećeg članka prestaju biti točne. Tada se ovaj
+članak mora prepisati prije nego što se ta izmjena objavi, a ne poslije.
+
 ### 2.3 Prijava preko Googlea
 
 Ako Korisnik odabere prijavu Googleom, Davatelj od Googlea prima e-mail adresu i
 ime s Googleova profila. Ti podaci žive samo u tekućoj sesiji i ne upisuju se
 ni u jednu datoteku ni bazu. Trajni identifikator Google računa (`sub`) se
-ne prima i ne pohranjuje.
+ne prima i ne pohranjuje. Vrijedi i ovdje upozorenje s kraja članka 2.2: shema
+baze predviđa stupac za taj identifikator.
 
 Prijava Apple računom nije dovršena: gumb se pojavljuje samo ako Davatelj upiše
 Apple podatke u postavke, ali obrada Appleova odgovora nije implementirana, pa
@@ -114,8 +154,23 @@ tog trenutka vrijedi sve što je gore navedeno, uključujući rok čuvanja iz
 
 **Ne pohranjujemo sadržaj generiranih dokumenata.** Sav sadržaj koji Korisnik
 unese (imena stranaka, OIB-i, opisi, iznosi) ostaje samo u memoriji poslužitelja
-tijekom generiranja i odmah se odbacuje. Generirani `.docx` vraća se Korisniku
-izravno; kopija se ne čuva.
+tijekom generiranja i odmah se odbacuje. Gotova datoteka gradi se u memoriji i
+predaje Korisniku na preuzimanje; na disk se ne zapisuje i kopija se ne čuva.
+
+**Što se s tim unosom ne radi.** Dok je u memoriji, uneseni sadržaj služi
+isključivo popunjavanju predloška koji je Korisnik odabrao. Ne koristi se ni za
+jednu drugu svrhu: nema profiliranja, nema oglašavanja, nema analize ponašanja,
+nema ustupanja trećima i ne koristi se za učenje ili podešavanje bilo kakvog
+modela. Aplikacija nema ugrađen jezični model ni drugi oblik strojnog učenja
+(vidi članak 3.1).
+
+**Uneseni sadržaj može biti osjetljiv.** Predlošci pokrivaju i obiteljske,
+nasljedne, kaznene i ovršne stvari, pa Korisnik u obrazac može upisati podatke
+koji su za njega ili za treću osobu osjetljivi. Zbog toga vrijedi pravilo iz
+prethodnog odlomka: takav sadržaj ne izlazi iz memorije. Jedini trag koji od
+njega ostaje, i to tek kad se zapisivanje uključi, jest kriptografski sažetak
+opisan gore u ovom članku, koji se u članku 7.1 tretira kao pseudonimiziran
+podatak i briše se po roku iz članka 7.
 
 ### 2.5 Kalendar rokova i ročišta
 
@@ -138,6 +193,14 @@ Ako SMTP nije konfiguriran, podsjetnik se ne šalje i aplikacija to javi.
 Davatelj mora navesti kojeg SMTP pružatelja koristi i uvrstiti ga u popis u
 članku 5. **[VLASNIK POTVRĐUJE]**
 
+3. **Adresa primatelja podsjetnika može biti tuđa.** Polje "Email za podsjetnik"
+   prima bilo koju adresu. Ako Korisnik upiše tuđu, ta osoba postaje ispitanik
+   čije podatke Davatelj obrađuje, a od Davatelja ne dobiva nikakvu obavijest:
+   Aplikacija joj ovu Politiku ne šalje niti je na nju upućuje. Zbog toga
+   upozorenje iz točke 1 vrijedi i ovdje: ne upisujte tuđu adresu. Tko je za
+   takav unos voditelj obrade, a tko izvršitelj, ovim dokumentom nije uređeno i
+   Davatelj to mora riješiti prije objave. **[VLASNIK POTVRĐUJE]**
+
 ### 2.6 Podaci pri pretplati (samo PRO korisnici)
 
 Ovaj članak opisuje što se obrađuje kad je naplata aktivirana. **U trenutnoj
@@ -156,11 +219,17 @@ Kad je naplata aktivna, u bazi se nalaze:
   onakav kakav stigne, a sadrži i e-mail adresu kupca, iznos, valutu i
   identifikator proizvoda. Služi za to da se isti događaj ne obradi dvaput.
 
-**Podatke o kartici ne prikupljamo niti pohranjujemo.** Plaćanje se odvija
-izravno između Korisnika i pružatelja naplate (Polar.sh, koji nastupa kao
-Merchant of Record); Davatelj dobiva samo potvrdu da je pretplata aktivna. U
-kodu postoji i naslijeđena Stripe integracija; ako je aktivirana, isto vrijedi
-za Stripe.
+**Podatke o kartici ne prikupljamo niti pohranjujemo.** Broj kartice, datum
+isteka i sigurnosni kod ne prolaze kroz Aplikaciju: plaćanje se odvija izravno
+između Korisnika i pružatelja naplate (Polar.sh, koji nastupa kao Merchant of
+Record). U kodu postoji i naslijeđena Stripe integracija; ako je aktivirana, za
+karticu vrijedi isto.
+
+Davatelj pritom ne dobiva samo potvrdu da je pretplata aktivna. Prima cjelovitu
+obavijest o događaju plaćanja i sprema je onakvu kakva stigne, sa sadržajem
+navedenim u zadnjoj točki gornjeg popisa, uključujući e-mail adresu kupca. Ova
+je rečenica dodana zato što je raniji tekst govorio "samo potvrdu", što je
+manje nego što se stvarno prima.
 
 ### 2.7 Tehnički podaci
 
@@ -182,10 +251,49 @@ svakog pružatelja i navesti ovdje. **[VLASNIK POTVRĐUJE]**
 | Zapis o generiranom dokumentu (tip, datum, serial, sažeci) | Legitiman interes (čl. 6(1)(f)) | Dokazivanje autentičnosti dokumenta u sporu i sprečavanje zlouporabe |
 | Unosi u kalendar i e-mail za podsjetnik | Ugovor (čl. 6(1)(b)) | Bez tih podataka funkcija podsjetnika ne postoji |
 | Identifikator kupca kod pružatelja naplate i zapis o plaćanju | Ugovor (čl. 6(1)(b)) | Bez toga nije moguće provjeriti plaćanje ni izvršiti povrat |
-| Cookies nužni za rad sesije | Legitiman interes (čl. 6(1)(f)) | Aplikacija bez sesije ne može raditi |
+| Cookies nužni za rad sesije | Izuzeće od privole po čl. 43. st. 4. Zakona o elektroničkim komunikacijama (NN 76/22); vidi napomenu ispod tablice | Pohrana je nužna za pružanje usluge koju je Korisnik izričito zatražio: Aplikacija bez sesije ne može raditi |
 
 Obrada IP adrese ne navodi se u ovoj tablici jer je aplikacija ne obavlja (vidi
 članak 2.7).
+
+**Napomena uz nužne kolačiće.** Čl. 43. st. 4. Zakona o elektroničkim
+komunikacijama (NN 76/22) dopušta pohranu podataka u terminalnoj opremi bez
+privole kad je nužna za pružanje usluge informacijskog društva na izričit zahtjev
+korisnika. Raniji tekst ove Politike za te je kolačiće navodio legitimni interes
+iz čl. 6. st. 1. t. (f) GDPR-a. Nije poznato je li AZOP zauzeo stav o tome koji
+je od ta dva okvira mjerodavan za nužne kolačiće sesije: u javno objavljenim
+rješenjima i mišljenjima takvo izjašnjenje nije nađeno. Ovdje se navodi izuzeće
+iz Zakona o elektroničkim komunikacijama jer je to propis koji izravno uređuje
+pohranu u terminalnoj opremi. To je ocjena Davatelja, a ne utvrđena praksa.
+
+### 3.1 Automatizirano donošenje odluka i profiliranje
+
+**Nema ga.** Aplikacija ne donosi nijednu odluku o Korisniku automatiziranom
+obradom, uključujući izradu profila, u smislu GDPR čl. 22. Konkretno:
+
+- ne ocjenjuje Korisnika ni njegov predmet i ne dodjeljuje mu bodove, razrede ni
+  rizične oznake;
+- ne predviđa ishod postupka, ne preporučuje koji dokument treba i ne bira
+  predložak umjesto Korisnika; predložak bira Korisnik;
+- ne prilagođava sadržaj, cijenu ni ponudu na temelju ponašanja Korisnika;
+- ne sadrži jezični model, klasifikator ni drugi oblik strojnog učenja. Popuna
+  predloška je determinističko uvrštavanje unesenih vrijednosti u unaprijed
+  napisan tekst: isti unos uvijek daje isti izlaz.
+
+Jedina automatska radnja koja se veže uz Korisnika jest provjera ima li aktivnu
+PRO pretplatu, i to je provjera zapisa o plaćanju, a ne ocjena osobe.
+
+### 3.2 Je li davanje podataka obvezno i što ako se ne daju
+
+| Podatak | Je li obvezan | Što ako se ne da |
+|---|---|---|
+| Ništa, za rad kao gost | Nije. Registracija nije uvjet korištenja | Aplikacija radi u punom opsegu predložaka |
+| E-mail, ime i lozinka pri registraciji | Ugovorni uvjet, i to samo ako Korisnik želi račun | Bez njih se račun ne može otvoriti. Aplikacija se i dalje može koristiti kao gost |
+| Podaci koje Korisnik upiše u obrazac dokumenta | Nisu obveza prema Davatelju, nego uvjet da dokument bude upotrebljiv | Dokument se generira i s nepotpunim unosom, ali takav dokument najčešće nije upotrebljiv pred sudom ili tijelom |
+| Unosi u kalendar i adresa za podsjetnik | Nisu obvezni | Bez njih funkcija kalendara i podsjetnika ne radi. Ostatak Aplikacije radi |
+| Podaci pri pretplati | Ugovorni uvjet za PRO | Bez njih se pretplata ne može sklopiti; besplatni tier ostaje dostupan |
+
+Zakonske obveze davanja podataka Davatelju nema ni za jedan od gornjih podataka.
 
 ## 4. Serijski broj dokumenta i forenzički trag
 
@@ -215,29 +323,55 @@ oznakom `guest` umjesto oznake korisnika, pa se iz njega ne može utvrditi ni tk
 je dokument generirao. Praktično: serijski broj sada dokazuje samo da je
 dokument nastao u ovom obliku, a ne i tko ga je izradio.
 
-**Tko može čitati tablicu.** Na tablici je uključena zaštita na razini retka:
-prijavljeni Korisnik može čitati i unositi samo vlastite retke, a cjeloviti uvid
-ima jedino Davatelj preko servisnog ključa baze. Za brisanje i izmjenu retka ne
-postoji nijedno pravilo, što znači da se iz aplikacije redak ne može ni obrisati
-ni promijeniti; to je moguće samo servisnim ključem.
+**Tko može čitati tablicu.** Na tablici je uključena zaštita na razini retka.
+Pravila su napisana tako da vežu redak uz identitet korisnika koji izdaje baza
+(`auth.uid()`): tko je tako prijavljen, čita i unosi samo vlastite retke, a
+cjeloviti uvid ima jedino Davatelj preko servisnog ključa baze. Za brisanje i
+izmjenu retka ne postoji nijedno pravilo, pa se iz Aplikacije redak ne može ni
+obrisati ni promijeniti; to je moguće samo servisnim ključem.
+
+**Što to znači sada. [NIJE AKTIVNO]** Aplikacija se ne prijavljuje na bazu
+korisničkim identitetom: prijava iz članka 2.2 s bazom nije povezana. Zbog toga
+je `auth.uid()` prazan i nijedno od navedenih pravila nikome ne odobrava ni
+čitanje ni upis. Posljedica je ista kao u članku 2.4: kroz Aplikaciju u tu
+tablicu ne ulazi ni jedan redak i iz nje se ništa ne čita. Opis iznad opisuje
+stanje koje nastupa tek kad Davatelj prijavu poveže s bazom.
 
 ## 5. Tko ima pristup vašim podacima (treće strane)
 
 | Treća strana | Što vidi | Gdje | Razlog |
 |---|---|---|---|
-| **Streamlit Inc.** (San Francisco, CA, SAD) | Promet prema aplikaciji, uključujući IP adresu i User-Agent u vlastitim zapisima; datoteke `.users.json` i `_data/kalendar.json` nalaze se na njihovom poslužitelju | SAD | Hosting Aplikacije |
-| **Supabase Inc.** (San Francisco, CA, SAD) | Podaci iz članaka 2.4 i 2.6 kad su te funkcije aktivirane; ne vidi sadržaj dokumenata | Regija koju je Davatelj odabrao pri otvaranju projekta **[VLASNIK POTVRĐUJE]** | Baza podataka |
-| **Cloudflare Inc.** (San Francisco, CA, SAD) | Webhook događaji pružatelja naplate (identifikator i e-mail kupca, plan, status) | Cloudflareova globalna mreža; obrada se ne odvija nužno unutar EU **[VLASNIK POTVRĐUJE]** | Obrada webhookova o plaćanju |
-| **Polar.sh** (Polar Software Inc.) | E-mail, podaci o kartici, podaci o transakciji | Prema Polarovoj politici privatnosti | Procesiranje plaćanja (Merchant of Record) |
-| **Stripe Payments Europe Ltd.** (Dublin, Irska) | E-mail, podaci o kartici, podaci o transakciji | EU (Irska) | Procesiranje plaćanja (naslijeđena integracija; vrijedi samo ako je Stripe checkout aktiviran) |
+| **Streamlit Community Cloud**, pravna osoba koja pruža uslugu nije potvrđena **[VLASNIK POTVRĐUJE]** | Promet prema aplikaciji, uključujući IP adresu i User-Agent u vlastitim zapisima; datoteke `.users.json` i `_data/kalendar.json` nalaze se na njihovom poslužitelju | SAD | Hosting Aplikacije |
+| **Supabase Inc.** (San Francisco, CA, SAD) | Podaci iz članaka 2.4 i 2.6 kad su te funkcije aktivirane; ne vidi sadržaj dokumenata | Regija u kojoj je projekt otvoren nije navedena u ovom dokumentu, pa Korisnik iz njega ne može znati gdje se podaci nalaze **[VLASNIK POTVRĐUJE]** | Baza podataka |
+| **Cloudflare Inc.** (San Francisco, CA, SAD) | Webhook događaji pružatelja naplate (identifikator i e-mail kupca, plan, status) | Cloudflareova globalna mreža, koja ima poslužitelje i izvan EGP-a | Obrada webhookova o plaćanju |
+| **Polar.sh**, točan naziv pravne osobe nije potvrđen **[VLASNIK POTVRĐUJE]** | E-mail, podaci o kartici, podaci o transakciji | Prema Polarovoj politici privatnosti | Procesiranje plaćanja (Merchant of Record) |
+| **Stripe**, ugovorna strana za korisnike iz EGP-a je društvo sa sjedištem u Irskoj **[VLASNIK POTVRĐUJE]** | E-mail, podaci o kartici, podaci o transakciji | Prema Stripeovoj politici privatnosti; ovaj dokument ne tvrdi da obrada ostaje unutar EU | Procesiranje plaćanja (naslijeđena integracija; vrijedi samo ako je Stripe checkout aktiviran) |
 | **SMTP pružatelj za podsjetnike** | E-mail adresa primatelja i sadržaj podsjetnika (naslov, datum, opis, oznaka predmeta) | Prema uvjetima pružatelja **[VLASNIK POTVRĐUJE]** | Slanje podsjetnika iz kalendara |
 | **Google LLC** | E-mail i ime s Google profila, ako Korisnik odabere prijavu Googleom | Prema Googleovoj politici privatnosti | Prijava vanjskim računom |
 
-**Prijenos izvan EU.** Streamlit i Cloudflare imaju sjedište u SAD-u i obrada se
-može odvijati izvan EU. Za takav prijenos potreban je valjan mehanizam iz GDPR
-poglavlja V (standardne ugovorne klauzule ili odluka o primjerenosti). Koji
-mehanizam vrijedi za svakog pružatelja i je li prihvaćen, Davatelj mora
-utvrditi i ovdje navesti. **[VLASNIK POTVRĐUJE]**
+**Puni podaci o primateljima nedostaju.** Tablica imenuje pružatelje, ali ne
+navodi adresu sjedišta ni registracijski broj nijednoga od njih, a za dva
+pružatelja ni točan naziv pravne osobe. Dok to nije popunjeno, Korisnik ne može
+provjeriti s kim njegovi podaci stvarno završe. **[VLASNIK POTVRĐUJE]**
+
+**Prijenos izvan EGP-a: da, odvija se.** Pružatelj hostinga Aplikacije i
+Cloudflare Inc. posluju iz SAD-a, Davatelj im obradu nije ograničio na Europski
+gospodarski prostor, i Aplikacija nema postavku kojom bi to učinio. Korisnik zato
+mora računati s time da se njegovi podaci obrađuju i izvan EGP-a.
+
+Ova je rečenica namjerno bez ograde. Raniji tekst je govorio da se obrada "može"
+odvijati izvan EU. AZOP je takvo izražavanje ("možda", "u pravilu unutar EU, a
+iznimno izvan") ocijenio protivnim čl. 12. st. 1. GDPR-a u rješenju protiv
+teleoperatora, uz kaznu od 4.500.000 eura, upravo zato što ispitanik iz takve
+formulacije ne može zaključiti prenose li se njegovi podaci ili ne
+(https://azop.hr/teleoperatoru-upravna-novcana-kazna-u-ukupnom-iznosu-od-45-milijuna-eura/,
+pročitano 9.8.2026.; rješenje prema podacima AZOP-a nije pravomoćno).
+
+Za takav prijenos potreban je valjan mehanizam iz GDPR poglavlja V (standardne
+ugovorne klauzule ili odluka o primjerenosti). Koji mehanizam vrijedi za svakog
+pružatelja i je li prihvaćen, Davatelj mora utvrditi i ovdje navesti prije
+objave; do tada ovaj dokument ne tvrdi da takav mehanizam postoji.
+**[VLASNIK POTVRĐUJE]**
 
 **Ugovori o obradi (GDPR čl. 28).** Postojanje potpisanog ugovora o obradi s
 pojedinim pružateljem ne vidi se iz aplikacije ni iz repozitorija. Prije objave
@@ -250,7 +384,21 @@ ovdje napisati da postoji. **[VLASNIK POTVRĐUJE]**
 Sukladno GDPR-u i Zakonu o provedbi Opće uredbe o zaštiti podataka (NN 42/18),
 Korisnik ima sljedeća prava. Sva se ostvaruju slanjem zahtjeva na kontakt adresu
 iz članka 13. **U Aplikaciji ne postoji samoposlužno sučelje za ta prava**, pa
-ih Davatelj obrađuje ručno, u roku od 30 dana.
+ih Davatelj obrađuje ručno.
+
+**Rok.** Davatelj odgovara bez nepotrebnog odgađanja, a najkasnije u roku od
+mjesec dana od primitka zahtjeva. Taj se rok može produljiti za najviše dodatna
+dva mjeseca ako je zahtjev složen ili ih je više; u tom slučaju Davatelj o
+produljenju i o razlozima obavještava Korisnika unutar prvog mjeseca (GDPR čl.
+12. st. 3.). Davatelj se obvezuje na taj rok bez obzira na to koliko dugo traje
+tehnička provedba brisanja, koja je opisana u članku 6.3.
+
+**Provjera identiteta.** Ako Davatelj ima osnovanu sumnju u identitet osobe koja
+podnosi zahtjev, zatražit će dodatne podatke nužne za potvrdu identiteta prije
+nego što po zahtjevu postupi (GDPR čl. 12. st. 6.). Zatražit će samo ono što je
+za to nužno i te podatke neće koristiti ni u koju drugu svrhu. Razlog je zaštita
+samog Korisnika: bez te provjere zahtjev za presliku podataka ili za brisanje
+mogla bi podnijeti bilo koja osoba koja zna Korisnikovu adresu e-pošte.
 
 ### 6.1 Pravo na pristup (čl. 15)
 
@@ -286,9 +434,9 @@ priprema ručno i dostavlja kao JSON.
 ### 6.5 Pravo na prigovor (čl. 21)
 
 Korisnik može uložiti prigovor na obradu utemeljenu na legitimnom interesu (npr.
-zapis o generiranim dokumentima). Davatelj odgovara u roku od 30 dana; ako
-prigovor smatra opravdanim, prestaje s tom obradom osim ako postoje uvjerljiviji
-legitimni razlozi.
+zapis o generiranim dokumentima). Davatelj odgovara u roku iz uvoda ovog članka;
+ako prigovor smatra opravdanim, prestaje s tom obradom osim ako postoje
+uvjerljiviji legitimni razlozi.
 
 ### 6.6 Pravo na povlačenje privole
 
@@ -296,11 +444,20 @@ Ne primjenjuje se na obrade utemeljene na ugovoru ili legitimnom interesu (vidi
 članak 3). Primjenjuje se na eventualne marketinške poruke za koje je dana
 zasebna privola (vidi članak 8).
 
+Ako Korisnik privolu povuče, povlačenje vrijedi unaprijed: ne utječe na
+zakonitost obrade koja se na temelju te privole provodila prije povlačenja (GDPR
+čl. 7. st. 3.). Povlačenje je jednako jednostavno kao davanje privole i ne
+povlači nikakvu naknadu ni posljedicu za korištenje Aplikacije.
+
 ### 6.7 Pravo žalbe nadzornom tijelu
 
 Korisnik se može žaliti **Agenciji za zaštitu osobnih podataka** (AZOP),
-www.azop.hr, ako smatra da Davatelj ne poštuje GDPR. Adresu i kontakt AZOP-a
-Davatelj treba provjeriti na dan objave dokumenta i upisati ovdje.
+www.azop.hr, ako smatra da Davatelj ne poštuje GDPR. Prije objave ovdje treba
+stajati i adresa sjedišta AZOP-a, njegova adresa e-pošte i telefon: to traži
+AZOP-ov vlastiti obrazac politike privatnosti
+(https://azop.hr/wp-content/uploads/2024/03/2-politika-privatnosti_obrazac.docx,
+obrazac objavljen 03/2024, preuzet 9.8.2026.). Te podatke Davatelj mora provjeriti
+na izvoru na dan objave dokumenta, jer se u ovom nacrtu ne navode napamet.
 **[VLASNIK POTVRĐUJE]**
 
 ## 7. Razdoblje čuvanja podataka
@@ -315,6 +472,31 @@ Davatelj treba provjeriti na dan objave dokumenta i upisati ovdje.
 | Dokumentacija o plaćanju za PRO pretplate | Prema Zakonu o računovodstvu (NN 78/15); Davatelj mora provjeriti koji rok se primjenjuje na njegov oblik poslovanja i upisati ga ovdje. **[VLASNIK POTVRĐUJE]** |
 | Podaci kod pružatelja naplate | Prema politici privatnosti pružatelja (Polar.sh; Stripe za naslijeđenu integraciju) |
 | Zapisi prometa kod pružatelja infrastrukture | Prema njihovim uvjetima; Davatelj na njih ne utječe (članak 2.7) **[VLASNIK POTVRĐUJE]** |
+
+**Koji redci ove tablice još ne zadovoljavaju.** Smjernice o transparentnosti
+(WP260 rev.01, str. 38, koje je AZOP objavio na hrvatskom na
+https://azop.hr/wp-content/uploads/2020/12/smjernice-o-transparentnosti.pdf)
+traže da rok ili kriterij budu takvi da ispitanik na temelju vlastite situacije
+može procijeniti koliko će se njegovi podaci čuvati. Tome udovoljava samo redak
+za `download_log`, koji ima brojku. Ostali retci daju kriterij vezan uz radnju
+Korisnika ili uz odluku trećega, a redak za `stripe_events` ne daje ni to.
+
+Neodređen rok za `stripe_events` nije formalni propust. To je stanje koje je AZOP
+sankcionirao u dva objavljena predmeta: protiv specijalne bolnice, gdje je
+utvrđeno da rokovi čuvanja nisu propisani internim aktima (rješenje KLASA
+UP/I-034-01/24-01/23 od 21.8.2024., ukupno 190.000 eura), i protiv Hrvatskog
+ureda za osiguranje, gdje maksimalni rokovi nisu bili zasebno propisani
+(101.000 eura, prema Godišnjem izvješću AZOP-a za 2025.). Taj zapis sadrži
+e-mail adresu kupca (članak 2.6), pa nije riječ o tehničkom dnevniku bez osobnog
+podatka.
+
+**Zašto ovdje nema pravila o neaktivnom računu.** Uobičajeno rješenje kod sličnih
+usluga jest brisanje ili pseudonimizacija nakon određenog broja mjeseci bez
+prijave. Takvo se pravilo ovdje ne može postaviti jer Aplikacija ne bilježi datum
+zadnje prijave (članak 2.2), pa nema podatka na kojem bi se rok mjerio. Davatelj
+ima dvije mogućnosti i mora izabrati jednu prije objave: ili ostaviti račun bez
+roka i to ovako reći, ili početi bilježiti datum zadnje prijave, čime se članak
+2.2 mijenja. Treće mogućnosti, da se rok obeća a ne mjeri, nema.
 
 ### 7.1 Zašto se zapis o dokumentu ne briše, nego se prazni
 
@@ -455,8 +637,12 @@ Davatelj primjenjuje sljedeće mjere:
 - **Ograničenja prijave**: aplikacija ne ograničava broj neuspjelih pokušaja
   prijave i traži lozinku od najmanje šest znakova. Preporučuje se dugačka
   lozinka koja se ne koristi nigdje drugdje.
-- **Pristup podacima u bazi**: zaštita na razini retka (Korisnik vidi samo svoje
-  retke), a cjeloviti pristup ima samo Davatelj preko servisnog ključa.
+- **Pristup podacima u bazi**: na tablicama s korisničkim podacima (`users`,
+  `entitlements`, `download_log`) uključena je zaštita na razini retka, uz
+  ograničenje iz članka 4. Tablica `stripe_events` nema zaštitu na razini retka:
+  do nje se dolazi isključivo servisnim ključem, koji drži Davatelj i koji nije
+  ni u Aplikaciji ni u repozitoriju. Cjeloviti pristup svim tablicama ima samo
+  Davatelj, tim ključem.
 - **Šifriranje pohranjenih podataka i sigurnosne kopije**: obavlja ih pružatelj
   baze. Koji je opseg šifriranja, postoje li sigurnosne kopije na odabranom
   planu i koliko se dugo čuvaju, Davatelj mora provjeriti u svojim postavkama i
@@ -479,26 +665,117 @@ obrisati bez naknade.
 
 Davatelj može mijenjati ovu Politiku. Izmijenjeni tekst objavljuje se u
 Aplikaciji, na stranici "Pravila i privatnost", uz navođenje datuma izmjene, i
-primjenjuje se 30 dana nakon objave. Korisnik koji nastavi koristiti Aplikaciju
-nakon toga prihvaća izmjene; ako se ne slaže, može zatražiti brisanje računa bez
-naknade.
+primjenjuje se 30 dana nakon objave.
 
-Automatsko slanje obavijesti o izmjenama e-mailom nije uspostavljeno (vidi
-članak 8). Ako Davatelj takvu obavijest bude slao, slat će je na adresu iz
-računa Korisnika.
+**Nastavak korištenja nije prihvaćanje bitne izmjene.** Ranija inačica ovog
+članka govorila je suprotno. Smjernice o transparentnosti (WP260 rev.01, t. 29
+do 31, str. 16 do 18) uputu ispitaniku da sam prati promjene ocjenjuju ne samo
+nedostatnom nego i nepoštenom u odnosu na načelo poštenosti iz čl. 5. st. 1. t.
+(a) GDPR-a, i traže da se bitne izmjene priopće načinom kojim će ih većina
+primatelja stvarno primijetiti, zasebno od drugog sadržaja i znatno prije nego
+što počnu proizvoditi učinke.
+
+Bitnima se smatraju barem ove izmjene, i one se priopćuju pojedinačno:
+
+- promjena svrhe obrade ili uvođenje nove svrhe;
+- promjena identiteta voditelja obrade;
+- promjena načina na koji Korisnik ostvaruje svoja prava;
+- skraćenje ili produljenje roka čuvanja iz članka 7.;
+- uvođenje novog primatelja podataka ili novog prijenosa izvan EGP-a.
+
+**Kako se to sada provodi. [NIJE AKTIVNO]** Automatsko slanje obavijesti
+e-mailom nije uspostavljeno (vidi članak 8.). Dok se ne uspostavi, Davatelj je
+dužan takvu obavijest poslati ručno, na adresu iz računa Korisnika, prije nego
+izmjena počne vrijediti. Za korisnike koji rade kao gosti Davatelj nema adresu i
+ne može ih obavijestiti; o gostima se ne pohranjuje nikakav podatak (članak 2.1),
+pa se na njih izmjena odnosi tek od trenutka objave u Aplikaciji.
+
+Korisnik koji se s izmjenom ne slaže može zatražiti brisanje računa bez naknade.
 
 ## 13. Kontakt
 
 Pitanja, primjedbe i GDPR zahtjevi šalju se na: **<<< VLASNIK UPISUJE: kontakt e-mail za GDPR >>>**
 
-Davatelj odgovara u roku od 30 dana.
+Davatelj odgovara u roku iz uvoda članka 6.: bez nepotrebnog odgađanja, a
+najkasnije u roku od mjesec dana, uz mogućnost produljenja za najviše dodatna dva
+mjeseca uz obavijest o razlogu.
 
 ---
 
-**Datum stupanja na snagu**: dan kad Korisnik prihvati ovu Politiku pri
-registraciji ili pri prvoj pretplati nakon ažuriranja.
+**Datum stupanja na snagu**: danom objave u Aplikaciji, na stranici "Pravila i
+privatnost".
 
-**Posljednja izmjena**: 2026-08-09 (nacrt v1.1)
+> **Napomena o prihvaćanju. [NIJE AKTIVNO]** Raniji tekst je ovdje govorio da
+> Politika stupa na snagu danom kad je Korisnik prihvati pri registraciji ili pri
+> prvoj pretplati. Takav korak u Aplikaciji ne postoji: obrazac za registraciju
+> nema kućicu za prihvaćanje, prijavna se stranica u zadanom načinu rada uopće ne
+> prikazuje (članak 2.1), a naplata nije aktivna (članak 2.6). Zato se ovdje ne
+> tvrdi prihvaćanje kojeg nema. Time se ujedno ne popravlja ono što je stvaran
+> nedostatak: GDPR čl. 13. st. 1. traži da se ove informacije daju u trenutku
+> prikupljanja podataka, a registracija podatke prikuplja bez da ovaj dokument
+> ikad prikaže. Davatelj to mora riješiti izmjenom Aplikacije, ne izmjenom ovog
+> teksta.
+
+**Posljednja izmjena**: 2026-08-09 (nacrt v1.2)
+
+### Što je izmijenjeno u v1.2 (isti dan, nakon usporedbe s praksom AZOP-a)
+
+Popis je zaveden i u `docs/politika_usporedba.md`, zajedno s onim što nije
+promijenjeno jer traži vlasnikovu odluku.
+
+- **Prijenos izvan EGP-a** (članak 5.): "obrada se može odvijati izvan EU"
+  zamijenjeno je jednoznačnom tvrdnjom da se prijenos odvija. Ograđena
+  formulacija te vrste izričito je sankcionirana u rješenju AZOP-a protiv
+  teleoperatora.
+- **Automatizirano donošenje odluka i profiliranje** (novi članak 3.1): ranije
+  nije bilo spomenuto ni potvrdno ni niječno, a riječ je o obveznom elementu iz
+  GDPR čl. 13. st. 2. t. (f).
+- **Je li davanje podataka obvezno** (novi članak 3.2): obvezni element iz GDPR
+  čl. 13. st. 2. t. (e), ranije je nedostajao.
+- **Rok za odgovor na zahtjev** (članak 6., 6.5, 13.): umjesto ravnih 30 dana
+  sada stoji zakonski rok od mjesec dana uz mogućnost produljenja za dva mjeseca
+  (GDPR čl. 12. st. 3.).
+- **Provjera identiteta podnositelja zahtjeva** (članak 6.): dodana, po GDPR čl.
+  12. st. 6. i po AZOP-ovu obrascu politike privatnosti.
+- **Učinak povlačenja privole** (članak 6.6): dodano da povlačenje ne dira
+  zakonitost ranije obrade (GDPR čl. 7. st. 3.).
+- **Obavijest o izmjenama** (članak 12.): uklonjena je konstrukcija po kojoj
+  nastavak korištenja znači prihvaćanje izmjene, uz popis izmjena koje se
+  priopćuju pojedinačno. Smjernice o transparentnosti takvu konstrukciju
+  ocjenjuju nepoštenom.
+- **Zaštita na razini retka** (članci 4. i 10.): ranije je stajala kao činjenica.
+  Sada je odvojeno pravilo koje je zapisano u bazi od stanja u kojem to pravilo
+  nikome ništa ne odobrava, jer Aplikacija korisnika ne prijavljuje na bazu.
+  Dodano je i da tablica `stripe_events` nema zaštitu na razini retka.
+- **Ulaz u Aplikaciju** (članak 2.1): dodan je zadani način rada, u kojem se
+  prijavna stranica uopće ne prikazuje, i činjenica da se ova Politika nigdje ne
+  prikazuje sama od sebe.
+- **Datum stupanja na snagu**: uklonjena tvrdnja o prihvaćanju pri registraciji,
+  jer takav korak u Aplikaciji ne postoji.
+- **Nepohranjivanje sadržaja** (članak 2.4): dodana izjava o zabrani sekundarne
+  uporabe (nema profiliranja, oglašavanja ni učenja modela) i upozorenje da
+  uneseni sadržaj može biti osjetljiv.
+- **Tuđa adresa za podsjetnik** (članak 2.5): dodana točka 3, jer osoba čiju
+  adresu Korisnik upiše od Davatelja ne dobiva nikakvu obavijest.
+- **Kolačići** (članak 3.): pravni okvir za nužne kolačiće promijenjen je s
+  legitimnog interesa na izuzeće iz čl. 43. st. 4. Zakona o elektroničkim
+  komunikacijama, uz napomenu da izjašnjenje AZOP-a o tom pitanju nije nađeno.
+- **Rokovi čuvanja** (članak 7.): dodano je koji redci tablice ne zadovoljavaju
+  mjerilo iz Smjernica o transparentnosti i zašto se pravilo o neaktivnom računu
+  ne može postaviti dok se ne bilježi datum zadnje prijave.
+- **Prelazak računa u bazu** (članci 2.2 i 2.3): dodano upozorenje da pripremljena
+  shema ima stupce za datum zadnje prijave i za trajni identifikator OAuth računa,
+  pa niječne tvrdnje iz tih članaka prestaju vrijediti onog dana kad se shema
+  primijeni.
+- **Što se prima pri plaćanju** (članak 2.6): rečenica "Davatelj dobiva samo
+  potvrdu da je pretplata aktivna" bila je u proturječju s popisom tri retka
+  iznad, koji kaže da se sprema cjelovit zapis događaja s e-mailom kupca.
+  Ispravljeno u korist popisa.
+- **Identitet primatelja** (članak 5.): za pružatelja hostinga i za Polar naziv
+  pravne osobe više se ne navodi kao utvrđen, jer iz repozitorija nije provjerljiv.
+  Za Stripe je uklonjena tvrdnja da se obrada odvija u EU (Irskoj), koja je bila
+  tvrdnja o lokaciji obrade, a ne o sjedištu ugovorne strane. Dodana je napomena
+  da tablici nedostaju adrese i registracijski brojevi.
 
 ### Što je izmijenjeno u odnosu na v1.0
 
