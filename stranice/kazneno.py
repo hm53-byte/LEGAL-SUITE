@@ -2,6 +2,7 @@
 # STRANICA: Kazneno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, formatiraj_troskovnik, odabir_suda, unos_tocaka, napuni_primjerom, audit_kwargs
 from generatori.kazneno import (
     generiraj_kaznenu_prijavu,
@@ -284,6 +285,7 @@ def _render_zalba_kaznena_presuda():
 
 def render_kazneno():
     st.header("Kazneno pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

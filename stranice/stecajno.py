@@ -2,6 +2,7 @@
 # STRANICA: Stecajno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, odabir_suda, unos_tocaka, audit_kwargs
 from generatori.stecajno import (
     generiraj_prijedlog_stecaj,
@@ -250,6 +251,7 @@ def _render_stecaj_potrosaca():
 
 def render_stecajno():
     st.header("Stečajno pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

@@ -2,6 +2,7 @@
 # STRANICA: Tuzbe (parnicni postupak)
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import (
     unos_stranke,
     unos_vise_stranaka,
@@ -21,6 +22,7 @@ from pristojbe import pristojba_tuzba, odvjetnicka_nagrada_sastav
 
 def render_tuzbe():
     st.header("Tužba (parnični postupak)")
+    prikazi_obavijest_o_obradi("dokument")
 
     zastupanje = zaglavlje_sastavljaca()
 

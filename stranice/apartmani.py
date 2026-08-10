@@ -2,6 +2,7 @@
 # STRANICA: Apartmani — iznajmljivanje, MTU, kategorizacija
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, audit_kwargs, napuni_primjerom
 from generatori.apartmani import (
     generiraj_suglasnost_obitelji,
@@ -35,6 +36,7 @@ def _polja_nekretnine(prefix):
 
 def render_apartmani():
     st.header("Apartmani — iznajmljivanje turistima")
+    prikazi_obavijest_o_obradi("dokument")
     st.caption(
         "Pravni temelj: Zakon o ugostiteljskoj djelatnosti (NN 85/15), "
         "Pravilnici NN 9/16 (MTU) i NN 56/16 (kategorizacija)."

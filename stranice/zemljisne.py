@@ -2,6 +2,7 @@
 # STRANICA: Zemljisne knjige
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import (
     unos_stranke,
     zaglavlje_sastavljaca,
@@ -30,6 +31,7 @@ from pristojbe import pristojba_zk_prijedlog
 
 def render_zemljisne():
     st.header("Zemljišne knjige")
+    prikazi_obavijest_o_obradi("dokument")
     zk_usluga = doc_selectbox(
         "Odaberite ZK uslugu",
         ["Tabularna isprava", "ZK Prijedlog (Uknjižba)", "Brisovna tužba",

@@ -71,6 +71,25 @@ ne spomene.
 one koji su se već registrirali. Ovo se ne popravlja pisanjem, nego izmjenom
 aplikacije.
 
+**Riješeno 10.8.2026., djelomično.** Aplikacija je izmijenjena: novi modul
+`privatnost.py` daje jednu kratku obavijest o obradi koja se prikazuje na svakom
+mjestu unosa osobnih podataka, uključujući prijavu i registraciju, prije ijednog
+polja. Obuhvaćena je 21 datoteka; mjesta su utvrđena čitanjem koda, a ne popisom
+koji bi netko održavao rukom.
+
+Test to drži tako da AST-om skenira `stranice/*.py` i `auth.py`, prepozna svaku
+datoteku s poljem za slobodan unos i traži poziv obavijesti. Nova stranica s
+unosom pada bez ijedne izmjene testa. Da test nije tautologija dokazano je
+dodavanjem sintetičke stranice: test pada, pa se stranica ukloni.
+
+**Što time nije riješeno:** prihvaćanje se i dalje ne traži; kratka obavijest ne
+pokriva primatelje, prijenos izvan EGP-a ni kolačiće nego za to upućuje na
+politiku; a voditelj obrade i kontakt i dalje nisu upisani, pa obavijest ne
+ispunjava čl. 13. st. 1. t. (a) i (b) dok se ta polja ne popune. Uz to, u kalendar
+se može upisati tuđa adresa e-pošte, a ta osoba i dalje ne dobiva obavijest po
+čl. 14.; obavijest od takvog unosa sada odvraća, što nije isto što i obavijestiti
+tu osobu.
+
 ### 2.3 Rok čuvanja za `stripe_events` nije određen
 
 **Gdje**: članak 7., tablica, redak `stripe_events`.

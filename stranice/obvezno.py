@@ -2,6 +2,7 @@
 # STRANICA: Obvezno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from datetime import date
 from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, audit_kwargs, napuni_primjerom
 from generatori.obvezno import (
@@ -479,6 +480,7 @@ def _render_sporazumni_raskid():
 def render_obvezno():
     """Glavna render funkcija za modul Obvezno pravo."""
     st.header("Obvezno pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

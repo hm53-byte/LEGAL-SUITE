@@ -3,6 +3,7 @@
 # Persistencija: JSON datoteka (_data/kalendar.json)
 # =============================================================================
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from datetime import datetime, timedelta
 import json
 import os
@@ -135,6 +136,7 @@ def render_kalendar():
     """Stranica za kalendar s dogadajima i podsjetnicima."""
     st.header("Kalendar")
     st.caption("Pratite rocista, rokove i dogadaje. Postavite podsjetnik putem emaila.")
+    prikazi_obavijest_o_obradi("kalendar")
 
     # Provjeri podsjetnike pri svakom ucitavanju
     _provjeri_podsjetnike()

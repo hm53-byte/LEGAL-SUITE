@@ -2,6 +2,7 @@
 # STRANICA: Zastita potrosaca (Consumer protection)
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, audit_kwargs, napuni_primjerom
 from generatori.potrosaci import (
     generiraj_reklamaciju,
@@ -208,6 +209,7 @@ def _render_prijava_inspekciji():
 
 def render_potrosaci():
     st.header("Zaštita potrošača")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

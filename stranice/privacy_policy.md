@@ -1,6 +1,6 @@
 # Politika privatnosti - LEGAL-SUITE
 
-**Verzija**: 1.2 (nacrt 2026-08-09)
+**Verzija**: 1.3 (nacrt 2026-08-10)
 **Status**: NACRT. Nije spreman za objavu kao završen dokument, ali je točniji od
 inačice 1.0 koja je trenutno javna.
 
@@ -80,10 +80,16 @@ besplatno"; klikom se otvara ista gostujuća sesija.
 Ta oznaka nije adresa korisnika i ne stvara se korisnički zapis: o gostu se ne
 pohranjuje ništa što bi ga identificiralo.
 
-**Politika se ne prikazuje sama od sebe. [NIJE AKTIVNO]** Ni u jednom načinu
-rada, ni pri registraciji, Aplikacija ne prikazuje ovu Politiku niti traži njezino
-prihvaćanje. Dokument je dostupan samo ako Korisnik sam otvori stranicu "Pravila
-i privatnost". Vidi napomenu uz datum stupanja na snagu na kraju dokumenta.
+**Puni dokument se ne prikazuje sam od sebe, kratka obavijest se prikazuje.**
+Od 10.8.2026. Aplikacija na svakom mjestu gdje se unose osobni podaci prikazuje
+kratku obavijest o obradi: tko obrađuje, u koju svrhu, na kojoj osnovi, koliko
+se čuva i koja prava Korisnik ima, uz poveznicu na ovaj dokument. To vrijedi i
+za prijavu i za registraciju, prije ijednog polja.
+
+Ovaj puni dokument se i dalje ne prikazuje sam od sebe niti se traži njegovo
+prihvaćanje; dostupan je preko poveznice iz obavijesti ili preko stranice
+"Pravila i privatnost". Kratka obavijest ne pokriva sve iz članka 13. (primatelji,
+prijenos izvan EGP-a, kolačići) nego za to upućuje ovamo.
 
 ### 2.2 Podaci pri registraciji
 
@@ -710,13 +716,34 @@ privatnost".
 > prvoj pretplati. Takav korak u Aplikaciji ne postoji: obrazac za registraciju
 > nema kućicu za prihvaćanje, prijavna se stranica u zadanom načinu rada uopće ne
 > prikazuje (članak 2.1), a naplata nije aktivna (članak 2.6). Zato se ovdje ne
-> tvrdi prihvaćanje kojeg nema. Time se ujedno ne popravlja ono što je stvaran
-> nedostatak: GDPR čl. 13. st. 1. traži da se ove informacije daju u trenutku
-> prikupljanja podataka, a registracija podatke prikuplja bez da ovaj dokument
-> ikad prikaže. Davatelj to mora riješiti izmjenom Aplikacije, ne izmjenom ovog
-> teksta.
+> tvrdi prihvaćanje kojeg nema.
+>
+> **Dopuna 10.8.2026.** Raniji tekst je ovdje stajao da registracija podatke
+> prikuplja bez da se ovaj dokument ikad prikaže i da to Davatelj mora riješiti
+> izmjenom Aplikacije. Izmjena je napravljena: na svakom mjestu unosa, uključujući
+> prijavu i registraciju, stoji kratka obavijest o obradi s poveznicom na ovaj
+> dokument. Prihvaćanje se i dalje ne traži, a kratka obavijest ne pokriva sve
+> stavke članka 13. nego za ostalo upućuje ovamo.
+>
+> Ono što i dalje nedostaje: voditelj obrade i njegov kontakt nisu upisani, pa
+> obavijest ne ispunjava članak 13. stavak 1. točke (a) i (b) dok se ne popune.
+> Bez kontakta zahtjev za ostvarivanje prava nema kamo.
 
-**Posljednja izmjena**: 2026-08-09 (nacrt v1.2)
+**Posljednja izmjena**: 2026-08-10 (nacrt v1.3)
+
+### Što je izmijenjeno u v1.3
+
+- **Obavijest u trenutku prikupljanja** (članak 2.1 i napomena uz datum stupanja
+  na snagu). Raniji tekst je tvrdio da Aplikacija ovu Politiku ne prikazuje ni u
+  jednom načinu rada, ni pri registraciji, i da to Davatelj mora riješiti izmjenom
+  Aplikacije. Izmjena je napravljena, pa je ta tvrdnja postala netočna i
+  ispravljena je: na svakom mjestu unosa osobnih podataka, uključujući prijavu i
+  registraciju, stoji kratka obavijest o obradi s poveznicom na ovaj dokument.
+- Zadržano je i izrijekom rečeno što obavijest **ne** rješava: prihvaćanje se ne
+  traži, primatelji i prijenos izvan EGP-a i kolačići nisu u kratkoj obavijesti
+  nego samo ovdje, a voditelj obrade i kontakt i dalje nisu upisani, pa obavijest
+  ne ispunjava članak 13. stavak 1. točke (a) i (b).
+
 
 ### Što je izmijenjeno u v1.2 (isti dan, nakon usporedbe s praksom AZOP-a)
 

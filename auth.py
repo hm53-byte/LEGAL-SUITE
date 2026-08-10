@@ -3,6 +3,7 @@
 # Podrzava: email/lozinka, Google OAuth, Apple OAuth, gost pristup
 # =============================================================================
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 import hashlib
 import secrets
 import json
@@ -228,6 +229,11 @@ def login_stranica():
         st.markdown("---")
 
         # --- PRIJAVA / REGISTRACIJA (za korisnike koji zele account) ---
+        # Obavijest iz cl. 13. stoji iznad obje forme, dakle prije nego korisnik
+        # upise ijedan podatak. `navigacija=False` jer se dok korisnik nije
+        # prijavljen usmjeravanje po modulima ne izvodi, pa bi gumb bio mrtav.
+        prikazi_obavijest_o_obradi("racun", navigacija=False)
+
         tab_login, tab_register = st.tabs(["Prijava", "Registracija"])
 
         with tab_login:

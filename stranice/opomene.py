@@ -2,12 +2,14 @@
 # STRANICA: Opomena pred tuzbu / ovrhu
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, napuni_primjerom, doc_selectbox, audit_kwargs
 from generatori.opomene import generiraj_opomenu
 
 
 def render_opomene():
     st.header("Opomena pred tužbu / ovrhu")
+    prikazi_obavijest_o_obradi("dokument")
 
     zastupanje = zaglavlje_sastavljaca()
 

@@ -3,6 +3,7 @@
 # Drustveni ugovor, Odluka skupstine, Prijenos udjela, NDA, Zapisnik uprave
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, zaglavlje_sastavljaca, prikazi_dokument, clause_builder, doc_selectbox, audit_kwargs, napuni_primjerom
 from generatori.trgovacko import (
     generiraj_drustveni_ugovor,
@@ -19,6 +20,7 @@ from generatori.trgovacko import (
 def render_trgovacko():
     """Glavna render funkcija za modul Trgovacko pravo."""
     st.header("Trgovačko pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

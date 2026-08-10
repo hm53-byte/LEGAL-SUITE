@@ -2,6 +2,7 @@
 # STRANICA: Zalbe
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, provjeri_rok_zalbe, napuni_primjerom, audit_kwargs
 from generatori.zalbe import generiraj_zalbu_pro
 from pristojbe import pristojba_zalba
@@ -9,6 +10,7 @@ from pristojbe import pristojba_zalba
 
 def render_zalbe():
     st.header("Žalba na presudu")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
     napuni_primjerom('zalba_presuda', '')

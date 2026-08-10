@@ -2,6 +2,7 @@
 # STRANICE/NN_PRETRAGA.PY - Pretraga Narodnih novina / baza zakona
 # =============================================================================
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from api_nn import KLJUCNI_ZAKONI, pretrazi_nn, generiraj_nn_link, _DEMO_REZULTATI
 
 
@@ -55,6 +56,7 @@ def render_nn_pretraga():
 
     with tab_pretraga:
         st.markdown("Pretrazite Narodne novine po kljucnim rijecima.")
+        prikazi_obavijest_o_obradi("pretraga")
 
         upit = st.text_input(
             "Pojam za pretragu",

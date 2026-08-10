@@ -2,12 +2,14 @@
 # STRANICA: Pokretnine — zalog na pokretnoj imovini
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, audit_kwargs, napuni_primjerom
 from generatori.pokretnine import generiraj_zalog_pokretnine, generiraj_zalog_vozila
 
 
 def render_pokretnine():
     st.header("Pokretnine — zalog na pokretnoj imovini")
+    prikazi_obavijest_o_obradi("dokument")
     st.caption("Pravni temelj: ZV čl. 297, FINA Upisnik (NN 121/05). Forma: javnobilježnička ovjera.")
 
     zaglavlje_sastavljaca()

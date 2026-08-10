@@ -2,6 +2,7 @@
 # STRANICA: Upravno pravo
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, napuni_primjerom, audit_kwargs
 from generatori.upravno import (
     generiraj_zalbu_zup,
@@ -312,6 +313,7 @@ def _render_prigovor_predstavka():
 
 def render_upravno():
     st.header("Upravno pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     tab1, tab2, tab3, tab4 = st.tabs([
         "Žalba (ZUP)",

@@ -2,6 +2,7 @@
 # STRANICA: Ovrsno pravo - svi dokumenti
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, odabir_suda, unos_tocaka, zaglavlje_sastavljaca, napuni_primjerom, doc_selectbox, audit_kwargs
 from pristojbe import pristojba_ovrha_jb, pristojba_ovrha_ovrsna_isprava
 from generatori.ovrhe import (
@@ -550,6 +551,7 @@ def _render_privremena_mjera():
 
 def render_ovrhe():
     st.header("Ovršno pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

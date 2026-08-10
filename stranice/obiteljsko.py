@@ -4,6 +4,7 @@
 # Ugovor o uzdrzavanju
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, odabir_suda, zaglavlje_sastavljaca, prikazi_dokument, doc_selectbox, napuni_primjerom, audit_kwargs
 from generatori.obiteljsko import (
     generiraj_sporazum_razvod,
@@ -17,6 +18,7 @@ from generatori.obiteljsko import (
 def render_obiteljsko():
     """Glavna render funkcija za modul Obiteljsko pravo."""
     st.header("Obiteljsko pravo")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 

@@ -2,6 +2,7 @@
 # STRANICA: Nautika (brodice, jahte)
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from pomocne import unos_stranke, prikazi_dokument, zaglavlje_sastavljaca, audit_kwargs, napuni_primjerom
 from generatori.nautika import (
     generiraj_kupoprodaju_brodice,
@@ -46,6 +47,7 @@ def _polja_brodice(prefix):
 
 def render_nautika():
     st.header("Nautika — brodice i jahte")
+    prikazi_obavijest_o_obradi("dokument")
     st.caption("Pravni temelj: Pomorski zakonik (NN 181/04 i izmjene) + ZOO. Upisnik brodica vodi nadležna Lučka kapetanija.")
 
     zaglavlje_sastavljaca()

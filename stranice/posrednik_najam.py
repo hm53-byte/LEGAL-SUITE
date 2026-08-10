@@ -3,6 +3,7 @@
 # Jedno sučelje, tri stranke, dva ugovora
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from datetime import date
 from pomocne import unos_stranke, prikazi_dokument, _escape, audit_kwargs
 from generatori.posrednik_najam import (
@@ -14,6 +15,7 @@ from generatori.posrednik_najam import (
 def render_posrednik_najam():
     """Paketno generiranje ugovora za posrednika u najmu (A-B-C)."""
     st.header("Posrednik u najmu")
+    prikazi_obavijest_o_obradi("dokument")
     st.markdown(
         "<div style='background:rgba(22,45,80,0.06);padding:1rem 1.2rem;"
         "border-radius:10px;margin-bottom:1.5rem;border-left:3px solid #162D50;'>"

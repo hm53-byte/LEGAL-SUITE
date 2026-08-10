@@ -2,6 +2,7 @@
 # STRANICA: Ugovori i Odluke
 # -----------------------------------------------------------------------------
 import streamlit as st
+from privatnost import prikazi_obavijest_o_obradi
 from datetime import date
 from pomocne import (
     unos_stranke,
@@ -528,6 +529,7 @@ def _render_potvrda_o_zaposlenju():
 def render_ugovori():
     """Glavna render funkcija za modul Ugovori i Odluke."""
     st.header("Ugovori i odluke")
+    prikazi_obavijest_o_obradi("dokument")
 
     zaglavlje_sastavljaca()
 
