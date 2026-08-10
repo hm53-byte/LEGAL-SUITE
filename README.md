@@ -141,9 +141,17 @@ pip install pytest
 python -m pytest tests/ -q
 ```
 
-U `tests/` je 282 test funkcije u 12 datoteka. Pokrivaju provjeru OIB-a,
-formatiranje iznosa, generatore, pretvorbu u DOCX, kalkulator pristojbi,
-watermark, lanac revizije i retenciju zapisa o preuzimanjima.
+U `tests/` je 13 datoteka; `pytest tests` daje 382 prošla i 5 preskočenih.
+Pokrivaju provjeru OIB-a, formatiranje iznosa, generatore, pretvorbu u DOCX,
+kalkulator pristojbi, watermark, lanac revizije, retenciju zapisa o preuzimanjima
+i obavijest o obradi po GDPR čl. 13.
+
+Pet preskočenih su stranice bez ijednog polja za unos, pa se na njima obavijest o
+obradi i ne očekuje.
+
+Pokreće se `pytest tests`, ne `pytest` iz korijena: `scripts/load_test.py` uvozi
+`playwright`, kojeg u okolini nema, pa prikupljanje testova iz korijena pukne
+prije nego išta krene.
 
 Česte greške pri pokretanju: [`docs/troubleshooting.md`](docs/troubleshooting.md).
 
