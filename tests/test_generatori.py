@@ -18,6 +18,15 @@ def _assert_valid_html(result):
     assert isinstance(result, str), f"Rezultat nije string: {type(result)}"
     assert len(result) > 50, "Rezultat prekratak - vjerovatno greska"
     assert "<div" in result or "<b>" in result or "<table" in result, "Nema HTML tagova"
+    # Dokument koji sadrzi trag iznimke je prosao kroz except i vraca poruku o
+    # gresci umjesto sadrzaja. Bez ove provjere test propusta tihi kvar tipa
+    # NameError (npr. format_eur_s_rijecima koji se koristi a nije uvezen).
+    _tragovi_greske = (
+        "NameError", "TypeError", "KeyError", "Traceback",
+        "is not defined", "GRESKA", "GREŠKA",
+    )
+    for _t in _tragovi_greske:
+        assert _t not in result, f"Dokument sadrzi trag greske: {_t!r}"
 
 
 # =============================================================================

@@ -2,7 +2,7 @@
 # GENERATORI: Ugovori (prilagodeni, standardni, radno pravo)
 # -----------------------------------------------------------------------------
 from datetime import date
-from pomocne import format_text, formatiraj_troskovnik, format_eur, _rimski_broj, u_lokativu, _padez_ime
+from pomocne import format_text, formatiraj_troskovnik, format_eur, format_eur_s_rijecima, _rimski_broj, u_lokativu, _padez_ime
 
 
 def generiraj_prilagodeni_ugovor(naslov, mjesto, datum, rok_vazenja, s1, s2, urbroj, struktura):
