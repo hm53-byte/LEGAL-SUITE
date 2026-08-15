@@ -478,8 +478,8 @@ puta nema.
 
 ### 6.3 Zašto se šest od sedam polja može popuniti odmah
 
-Ista javna riznica u datoteci `LICENSE` navodi: "Copyright (c) 2026 Hrvoje Matej.
-Sva prava pridržana." Nositelj prava na softveru nije nužno isto što i voditelj
+Ista javna riznica u datoteci `LICENSE` navodi nositelja autorskog prava
+(Copyright 2026 Hrvoje Matej). Nositelj prava na softveru nije nužno isto što i voditelj
 obrade, ali podatak o tome tko stoji iza aplikacije **već je javan u istom
 repozitoriju**. Razlog za nepopunjavanje polja "Naziv" zato nije zaštita
 identiteta, jer identitet nije zaštićen.

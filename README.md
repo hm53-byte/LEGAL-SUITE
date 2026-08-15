@@ -220,10 +220,12 @@ troškove postupka.
 
 ## Licenca
 
-Uvjeti su u datoteci [`LICENSE`](LICENSE); hrvatski tekst je mjerodavan, engleski
-je prijevod. Kod nije otvoren i sva su prava pridržana.
+Apache-2.0, vidi [`LICENSE`](LICENSE). Odnosi se na kod, predloške i tekstove
+klauzula u ovom repozitoriju.
 
-Dopušteno je čitanje i pregled koda radi uvida i ocjene, primjerice od strane
-poslodavca ili recenzenta, te fork unutar GitHuba radi iste svrhe. Korištenje
-koda ili predložaka u drugim projektima, umnožavanje izvan GitHuba, izmjena,
-distribucija i pružanje usluge trećima traže prethodno pisano dopuštenje autora.
+Do 15. 8. 2026. repozitorij je nosio vlasničku licenciju uz otvoren izvor, što
+je bilo proturječno: kod je bio javan, a upotreba zabranjena. Razriješeno je u
+korist otvorene licencije.
+
+Ono što licencija ne mijenja stoji u odjeljku iznad: izlaz aplikacije nije
+pravni savjet, a odgovornost za upotrebu dokumenta nosi onaj tko ga podnosi.
