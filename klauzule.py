@@ -53,20 +53,24 @@ KLAUZULE = [
         "naziv": "Ugovorna kazna - fiksna",
         "kategorija": "Ugovorna kazna",
         "tekst": (
-            "U slučaju neispunjenja ili neurednog ispunjenja ugovornih obveza, strana koja ne "
-            "ispuni obvezu obvezuje se drugoj strani platiti ugovornu kaznu u iznosu od "
+            "Za neispunjenje ove određene nenovčane obveze: {obveza}, dužnik te obveze "
+            "obvezuje se drugoj strani platiti ugovornu kaznu u iznosu od "
             "__________ EUR. Ugovorna kazna ne utječe na pravo na naknadu štete koja "
-            "prelazi iznos ugovorne kazne (čl. 353. ZOO)."
+            "prelazi iznos ugovorne kazne (čl. 355. ZOO). Ugovorna kazna ne primjenjuje se "
+            "na novčane obveze (čl. 350. st. 3. ZOO); izbor između ispunjenja i kazne "
+            "uređen je čl. 353. ZOO."
         ),
     },
     {
         "naziv": "Ugovorna kazna - dnevna",
         "kategorija": "Ugovorna kazna",
         "tekst": (
-            "Za svaki dan zakašnjenja u ispunjenju obveze, strana koja kasni obvezuje se "
+            "Za svaki dan zakašnjenja u ispunjenju ove određene nenovčane obveze: {obveza}, dužnik se obvezuje "
             "platiti ugovornu kaznu u iznosu od __________ EUR dnevno, ali ukupno ne više "
             "od __________% vrijednosti ugovora. Plaćanje ugovorne kazne ne oslobađa "
-            "dužnika obveze ispunjenja (čl. 354. ZOO)."
+            "dužnika obveze ispunjenja (čl. 353. st. 4. ZOO). Pri primitku zakašnjelog ispunjenja "
+            "vjerovnik bez odgađanja priopćuje da zadržava pravo na kaznu (čl. 353. st. 5. ZOO). "
+            "Kazna se ne primjenjuje na novčane obveze (čl. 350. st. 3. ZOO)."
         ),
     },
 
@@ -224,3 +228,15 @@ def dohvati_klauzulu_po_nazivu(naziv):
         if k["naziv"] == naziv:
             return k["tekst"]
     return ""
+
+
+def pripremi_kaznenu_klauzulu(naziv, obveza, vrsta_obveze):
+    """Ugovorna kazna dostupna je samo za izričito određenu nenovčanu obvezu."""
+    if vrsta_obveze != 'nenovcana':
+        raise ValueError('Ugovorna kazna ne može se ugovoriti za novčane obveze.')
+    if not obveza.strip():
+        raise ValueError('Opišite nenovčanu obvezu koju kazna osigurava.')
+    klauzula = next((k for k in KLAUZULE if k['naziv'] == naziv and k['kategorija'] == 'Ugovorna kazna'), None)
+    if klauzula is None:
+        raise ValueError('Nepoznata klauzula ugovorne kazne.')
+    return klauzula['tekst'].replace('{obveza}', obveza.strip())

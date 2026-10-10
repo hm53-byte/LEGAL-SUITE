@@ -396,17 +396,17 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
     try:
         danas = date.today().strftime("%d.%m.%Y.")
         mjesto = podaci.get("mjesto", "Zagreb")
-        glavni_duznik = podaci.get("glavni_duznik", "")
+        glavni_duznik = podaci.get("glavni_duznik", podaci.get("glavni_duznik_tekst", ""))
         broj_ugovora_kredita = podaci.get("broj_ugovora_kredita", "")
-        iznos_duga = podaci.get("iznos_duga", 0)
+        iznos_duga = podaci.get("iznos_duga", podaci.get("iznos_obveze", 0))
         valuta = podaci.get("valuta", "EUR")
         kamatna_stopa = podaci.get("kamatna_stopa", "")
         vrsta = podaci.get("vrsta", "obicno")
 
-        if vrsta == "jamac_platac":
-            forma_tekst = "SOLEMNIZACIJA S OVRŠNOM KLAUZULOM"
-        else:
-            forma_tekst = "PISANA"
+        neposredna_ovrsnost = bool(podaci.get("neposredna_ovrsnost", False))
+        forma_tekst = "PISANA IZJAVA JAMCA (čl. 105. ZOO)"
+        if neposredna_ovrsnost:
+            forma_tekst += "; za ugovorenu neposrednu ovršnost potrebna je odgovarajuća javnobilježnička isprava"
 
         clanak = 1
         parts = [
@@ -430,6 +430,10 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
         if kamatna_stopa:
             parts.append(f", uz ugovorenu kamatnu stopu od <b>{format_text(kamatna_stopa)}</b>")
         parts.append(".</div><br>")
+        parts.append(
+            f"<div class='doc-body'><b>Opis osigurane obveze:</b> {format_text(podaci.get('opis_obveze', ''))}<br>"
+            f"<b>Trajanje jamstva:</b> {format_text(podaci.get('rok_jamstva', 'do ispunjenja osigurane obveze'))}</div>"
+        )
         clanak += 1
 
         # Članak - Izjava o jamčenju
@@ -454,11 +458,11 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
         else:
             vrsta_opis = (
                 "Jamac preuzima <b>OBIČNO JAMSTVO</b> (supsidijarno) sukladno čl. 104. ZOO.<br><br>"
-                "Jamac ima pravo na beneficij reda (beneficium ordinis), tj. može zahtijevati "
-                "da Vjerovnik najprije pokuša naplatiti svoju tražbinu od glavnog dužnika, "
-                "pa tek onda od Jamca.<br><br>"
-                "Jamac ima pravo na beneficij podjele (beneficium divisionis) ako postoji "
-                "više jamaca za istu obvezu."
+                "Vjerovnik zahtijeva ispunjenje od Jamca ako glavni dužnik ne ispuni obvezu "
+                "u roku određenom u pisanom pozivu, uz iznimke iz čl. 111. st. 2. ZOO. "
+                "Stranke izričito ugovaraju supsidijarno jamstvo i za obvezu iz trgovačkog ugovora.<br><br>"
+                "Više jamaca odgovara solidarno, osim ako je ugovorom njihova odgovornost "
+                "uređena drukčije (čl. 112. ZOO)."
             )
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Vrsta jamstva)</div>"
@@ -466,24 +470,27 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
         )
         clanak += 1
 
-        # Ovršna klauzula (za jamca platca)
-        if vrsta == "jamac_platac":
+        # Neposredna ovršnost je zaseban izbor, ne posljedica samog jamstva platca.
+        if neposredna_ovrsnost:
             parts.append(
                 f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Ovršna klauzula)</div>"
-                f"<div class='justified'>Jamac platac izričito, bezuvjetno i neopozivo pristaje i dopušta da se "
+                f"<div class='justified'>Jamac izričito pristaje i dopušta da se "
                 f"radi naplate dospjele, a neplaćene tražbine iz ovog Ugovora, neposredno "
                 f"na temelju ovog Ugovora kao ovršne isprave, provede prisilna ovrha na svim "
                 f"njegovim računima kod banaka te na cjelokupnoj pokretnoj i nepokretnoj imovini, "
                 f"uključujući pljenidbu i prijenos novčanih sredstava, zapljenu pokretnina "
                 f"i prodaju nekretnina.<br><br>"
-                f"Ovaj Ugovor ima snagu ovršne isprave sukladno čl. 54. Ovršnog zakona.</div><br>"
+                f"Ova izjava sama ne čini privatni ugovor ovršnom ispravom. Neposredna ovrha "
+                f"pretpostavlja odgovarajuću javnobilježničku obradu i ispunjenje uvjeta "
+                f"iz čl. 54. i 59. Zakona o javnom bilježništvu, uz zakonska "
+                f"izuzeća i ograničenja ovrhe.</div><br>"
             )
             clanak += 1
 
         # Troškovi
         parts.append(
             f"<div class='section-title' style='text-align: center;'>Članak {clanak}. (Troškovi)</div>"
-            f"<div class='justified'>Troškove solemnizacije ovog Ugovora snosi Jamac.</div><br>"
+            f"<div class='justified'>Troškove eventualne javnobilježničke obrade ovog Ugovora snosi Jamac.</div><br>"
         )
         clanak += 1
 
@@ -503,18 +510,15 @@ def generiraj_jamstvo(vjerovnik, jamac, podaci):
             "<div class='signature-block'><b>JAMAC</b><br><br><br>______________________</div></div>"
         )
 
-        # JB ovjera za jamca platca
-        if vrsta == "jamac_platac":
+        # Prostor za javnobilježničku obradu samo ako je ovršnost izabrana.
+        if neposredna_ovrsnost:
             parts.append(
                 "<br><div style='border: 2px solid black; padding: 15px; margin-top: 30px;'>"
                 "<div class='section-title' style='text-align: center;'>"
                 "PROSTOR ZA JAVNOBILJEŽNIČKU SOLEMNIZACIJU</div>"
                 "<div class='justified' style='font-size: 10pt;'>"
-                "Ovaj Ugovor solemniziran je od strane javnog bilježnika "
-                "_________________________, pod brojem OV-_____/______, dana ____________.<br><br>"
-                "Potvrđuje se da je Jamac upozoren na pravne posljedice ovršne klauzule.<br><br>"
-                "Javni bilježnik: ______________________<br>"
-                "Pečat i potpis</div></div>"
+                "Ovaj prostor popunjava javni bilježnik nakon provedene javnobilježničke "
+                "obrade. Predložak ne potvrđuje da je solemnizacija provedena.</div></div>"
             )
 
         return "".join(parts)
@@ -1128,16 +1132,22 @@ def generiraj_predugovor(strana1, strana2, podaci):
         kapara_str = format_eur(kapara) if kapara else ''
         rok_glavnog = format_text(podaci.get('rok_sklapanja_glavnog', ''))
         bitni_uvjeti = format_text(podaci.get('bitni_uvjeti', ''))
-        forma_glavnog = format_text(podaci.get('forma_glavnog', 'pisana, s ovjerom potpisa kod javnog bilježnika'))
+        forma_glavnog = format_text(podaci.get('forma_glavnog', 'pisana; poseban oblik prema vrsti glavnog ugovora'))
+        davatelj = podaci.get('davatelj_kapare', 'strana2')
+        if davatelj not in ('strana1', 'strana2'):
+            raise ValueError('Odaberite davatelja kapare.')
+        daje, prima = ('Strana 1', 'Strana 2') if davatelj == 'strana1' else ('Strana 2', 'Strana 1')
 
         kapara_html = ""
         if kapara_str:
             kapara_html = (
                 f"<div class='section-title'>Članak 4. — KAPARA</div>"
-                f"<div class='doc-body'>Strana 1 ovime predaje, a Strana 2 prima na ime kapare iznos od "
+                f"<div class='doc-body'>{daje} predaje, a {prima} prima na ime kapare iznos od "
                 f"<b>{kapara_str}</b>. Kapara se uračunava u kupoprodajnu cijenu prilikom sklapanja glavnog "
-                f"ugovora. Ako glavni ugovor ne bude sklopljen krivnjom Strane 1, kapara ostaje Strani 2. "
-                f"Ako krivnjom Strane 2 — Strana 2 vraća dvostruku kaparu Strani 1 (ZOO čl. 303).</div>"
+                f"ugovora. Posljedice neispunjenja zbog odgovornosti davatelja odnosno primatelja "
+                f"kapare uređuju se čl. 304. ZOO, uz tamo propisana prava izbora. "
+                f"Kapara nije ugovorena kao odustatnina; njezino davanje samo po sebi ne daje "
+                f"pravo odustati od ugovora ostavljanjem ili vraćanjem dvostruke kapare.</div>"
             )
 
         cijena_html = ""
@@ -1169,8 +1179,11 @@ def generiraj_predugovor(strana1, strana2, podaci):
             f"<div class='section-title'>Članak 7. — POSLJEDICE NEISPUNJENJA</div>"
             f"<div class='doc-body'>Ako jedna strana odbije sklopiti glavni ugovor, druga strana ima pravo "
             f"zahtijevati od suda da se glavni ugovor sklopi (ZOO čl. 268 st. 4), odnosno tražiti naknadu "
-            f"štete. Pravo na sklapanje glavnog ugovora gasi se u roku od godine dana od isteka roka iz "
-            f"članka 5. (ZOO čl. 268 st. 5).</div>"
+            f"štete pod zakonskim pretpostavkama. Sklapanje glavnog ugovora može se zahtijevati "
+            f"u roku od šest mjeseci od isteka roka iz članka 5.; ako rok nije određen, od dana "
+            f"kad je prema naravi posla i okolnostima ugovor trebao biti sklopljen (čl. 268. st. 5. ZOO). "
+            f"Predugovor mora sadržavati bitne sastojke glavnog ugovora i imati oblik koji je "
+            f"pretpostavka njegove valjanosti (čl. 268. st. 2. i 3. ZOO).</div>"
             f"<div class='section-title'>Članak 8. — ZAVRŠNE ODREDBE</div>"
             f"<div class='doc-body'>Ovaj Predugovor stupa na snagu danom potpisa. Sastavljen je u "
             f"4 (četiri) primjerka, po 2 (dva) za svaku stranu. Sve eventualne sporove ugovorne strane "
@@ -1252,9 +1265,9 @@ def generiraj_raskid_najma(najmodavac, najmoprimac, podaci):
 
 
 def generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci):
-    """Raskid ugovora o djelu — ZOO cl. 633.
-    Narucitelj uvijek moze raskinuti ugovor (cl. 633 st. 1) uz placanje
-    izvrsenog rada + obeshtecenja izvodaca za izgubljenu zaradu."""
+    """Raskid voljom naručitelja prije dovršetka djela, čl. 619. ZOO."""
+    if podaci.get('djelo_dovrseno', False):
+        raise ValueError('Raskid prema čl. 619. ZOO predviđen je prije dovršetka djela.')
     try:
         mjesto = podaci.get('mjesto', 'Zagreb')
         datum = date.today().strftime('%d.%m.%Y.')
@@ -1267,25 +1280,46 @@ def generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci):
 
         ponuda_html = (
             f"<div class='doc-body'>Naručitelj nudi Izvođaču naknadu u iznosu od <b>{ponuda_str}</b> "
-            f"kojom se podmiruje vrijednost izvršenog rada i razumno obeštećenje za izgubljenu zaradu "
-            f"sukladno ZOO čl. 633 st. 2.</div>"
+            f"kao prijedlog obračuna, uz provjeru stavki prema čl. 619. ZOO; sama ponuda ne "
+            f"predstavlja sporazum o konačnom podmirenju.</div>"
         ) if ponuda_str else ""
+        obracun_html = (
+            "<div class='doc-body'>Obračun prema čl. 619. ZOO polazi od ugovorene naknade, "
+            "uz odbitak troškova koje izvođač zbog raskida nije imao te zarade ostvarene "
+            "na drugoj strani ili namjerno propuštene zarade. Već izvršene uplate iskazuju se zasebno.</div>"
+        )
+        stavke = [('ugovorena_naknada_eur', 'Ugovorena naknada'),
+                  ('ustedjeni_troskovi_eur', 'Troškovi koji nisu nastali'),
+                  ('druga_zarada_eur', 'Ostvarena druga zarada'),
+                  ('propustena_zarada_eur', 'Namjerno propuštena zarada'),
+                  ('placeno_eur', 'Već plaćeno')]
+        if all(podaci.get(k) is not None for k, _ in stavke):
+            from decimal import Decimal
+            iznosi = [Decimal(str(podaci[k])) for k, _ in stavke]
+            if any(not x.is_finite() or x < 0 for x in iznosi):
+                raise ValueError('Stavke obračuna moraju biti nenegativni konačni iznosi.')
+            ostatak = iznosi[0] - sum(iznosi[1:])
+            obracun_html += "<div class='doc-body'>" + "<br>".join(
+                f"{naziv}: {format_eur(iznos)}" for (_, naziv), iznos in zip(stavke, iznosi)
+            ) + f"<br><b>Razlika prema unesenim stavkama: {format_eur(ostatak)}</b>"
+            obracun_html += "<br>Negativna razlika nije sama po sebi utvrđenje prava na povrat.</div>"
 
         return (
             f"<div class='party-info'><b>NARUČITELJ:</b><br>{narucitelj}</div>"
             f"<div class='party-info'><b>IZVOĐAČ:</b><br>{izvodac}</div><br>"
             f"<div class='header-doc'>RASKID UGOVORA O DJELU<br>"
-            f"<span style='font-size: 11pt; font-weight: normal;'>(ZOO čl. 633)</span></div>"
+            f"<span style='font-size: 11pt; font-weight: normal;'>(ZOO čl. 619)</span></div>"
             f"<div class='doc-body'>Naručitelj ovime <b>raskida</b> Ugovor o djelu sklopljen dana "
             f"<b>{ugovor_datum}</b>, čiji je predmet bio:</div>"
             f"<div class='doc-body'>{opis_djela}</div>"
             f"<div class='section-title'>RAZLOG RASKIDA</div>"
-            f"<div class='doc-body'>{razlog if razlog else 'Naručitelj koristi pravo iz članka 633. ZOO da raskine Ugovor o djelu i prije njegovog izvršenja.'}</div>"
+            f"<div class='doc-body'>Djelo nije dovršeno. Naručitelj koristi pravo raskida voljom naručitelja iz čl. 619. ZOO. {razlog}</div>"
             f"<div class='section-title'>OBRAČUN IZVRŠENOG RADA</div>"
-            f"<div class='doc-body'>{izvrseno_html if izvrseno_html else 'Izvođač nije do dana raskida izvršio značajan dio djela.'}</div>"
+            f"<div class='doc-body'>{izvrseno_html if izvrseno_html else 'Opseg izvršenog rada potrebno je utvrditi pri obračunu.'}</div>"
+            f"{obracun_html}"
             f"{ponuda_html}"
-            f"<div class='doc-body'>Izvođač se obvezuje predati Naručitelju izvršeni dio djela, kao i sav "
-            f"materijal koji mu je predan za izvedbu, najkasnije u roku od 8 dana od primitka ovog Raskida.</div>"
+            f"<div class='doc-body'>Naručitelj predlaže dogovor o obračunu i primopredaji izvršenog "
+            f"dijela djela i materijala, uz uvažavanje prava zadržanja iz čl. 618. ZOO.</div>"
             f"<br>"
             f"<div class='justified'>U {u_lokativu(mjesto)}, dana {datum}.</div><br>"
             f"<table width='100%'><tr>"

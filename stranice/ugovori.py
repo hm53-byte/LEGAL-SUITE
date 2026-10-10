@@ -28,7 +28,7 @@ _OTKAZ_SLUG = {
     "Skrivljeno ponašanje": "skrivljeno_ponasanje",
     "Izvanredni otkaz": "izvanredni",
 }
-from klauzule import KATEGORIJE, dohvati_klauzule, dohvati_klauzulu_po_nazivu
+from klauzule import KATEGORIJE, dohvati_klauzule, dohvati_klauzulu_po_nazivu, pripremi_kaznenu_klauzulu
 from generatori.ugovori import (
     generiraj_prilagodeni_ugovor,
     generiraj_ugovor_standard,
@@ -123,8 +123,19 @@ def _render_slobodna_forma():
         if nazivi:
             odabrana = st.selectbox("Odaberite klauzulu", nazivi, key="kl_naziv")
             tekst_klauzule = dohvati_klauzulu_po_nazivu(odabrana)
-            st.text_area("Pregled klauzule", value=tekst_klauzule, height=120, disabled=True, key="kl_preview")
-            if st.button("Dodaj klauzulu kao novi dio ugovora", key="kl_dodaj"):
+            dopusteno = True
+            if kat == 'Ugovorna kazna':
+                vrsta_obveze = st.selectbox('Obveza koju kazna osigurava', ['novcana', 'nenovcana'],
+                    format_func=lambda x: 'Plaćanje novca' if x == 'novcana' else 'Nenovčana obveza', key='kl_vrsta_obveze')
+                obveza = st.text_input('Točan opis nenovčane obveze', key='kl_obveza')
+                try:
+                    tekst_klauzule = pripremi_kaznenu_klauzulu(odabrana, obveza, vrsta_obveze)
+                except ValueError as exc:
+                    st.info(str(exc))
+                    dopusteno = False
+            st.session_state['kl_preview'] = tekst_klauzule
+            st.text_area("Pregled klauzule", height=120, disabled=True, key="kl_preview")
+            if st.button("Dodaj klauzulu kao novi dio ugovora", key="kl_dodaj", disabled=not dopusteno):
                 st.session_state.custom_contract.append({
                     'naslov': odabrana,
                     'clanci': [tekst_klauzule],

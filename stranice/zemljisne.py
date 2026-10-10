@@ -288,7 +288,6 @@ def render_zemljisne():
             [
                 ("otplata_kredita", "Otplata kredita (brisovno očitovanje)"),
                 ("sudska_odluka", "Pravomoćna sudska odluka"),
-                ("zastara", "Zastara tražbine"),
                 ("nagodba", "Nagodba (sudska ili izvansudska)"),
                 ("kompenzacija", "Kompenzacija (prijeboj)"),
                 ("zakonska_hipoteka_prestanak", "Prestanak zakonske hipoteke"),

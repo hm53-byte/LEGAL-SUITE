@@ -244,6 +244,8 @@ def _render_jamstvo():
         "Rok trajanja jamstva", key="jam_rok",
         placeholder="Npr. do potpune isplate, 2 godine...",
     )
+    neposredna_ovrsnost = st.checkbox("Ugovoriti neposrednu ovršnost uz javnobilježničku obradu", key="jam_ovrsnost")
+    st.caption("Pisana izjava potrebna je za jamstvo. Neposredna ovršnost zaseban je izbor i ne nastaje samim odabirom jamca platca.")
     mjesto = st.text_input("Mjesto sklapanja", "Zagreb", key="jam_mjesto")
 
     st.markdown("---")
@@ -254,6 +256,7 @@ def _render_jamstvo():
             'opis_obveze': opis_obveze,
             'iznos_obveze': iznos_obveze,
             'rok_jamstva': rok_jamstva,
+            'neposredna_ovrsnost': neposredna_ovrsnost,
             'mjesto': mjesto,
         }
         doc = generiraj_jamstvo(s1, s2, podaci)
@@ -547,9 +550,12 @@ def _render_predugovor():
         )
         cijena = st.number_input("Cijena/vrijednost (EUR)", 0.0, step=1000.0, key="pred_cij")
         kapara = st.number_input("Kapara (EUR, opcionalno)", 0.0, step=100.0, key="pred_kap")
+        davatelj = st.selectbox("Davatelj kapare", ['strana2', 'strana1'],
+                               format_func=lambda x: "2. strana (kupac/primatelj)" if x == 'strana2' else "1. strana (prodavatelj/davatelj)", key="pred_davatelj")
+        st.caption("Ovaj predložak uređuje kaparu, a ne predujam ili kaparu kao odustatninu.")
     with col2:
         rok = st.text_input("Rok za sklapanje glavnog ugovora", placeholder="npr. 01.07.2026.", key="pred_rok")
-        forma = st.text_input("Forma glavnog ugovora", "pisana, s ovjerom potpisa kod javnog bilježnika", key="pred_for")
+        forma = st.text_input("Forma glavnog ugovora", "pisana; poseban oblik prema vrsti ugovora", key="pred_for")
         mjesto = st.text_input("Mjesto sklapanja", "Zagreb", key="pred_mj")
 
     predmet = st.text_area(
@@ -567,6 +573,7 @@ def _render_predugovor():
         podaci = {
             'vrsta_glavnog_ugovora': vrsta, 'predmet': predmet,
             'cijena_eur': cijena, 'kapara_eur': kapara,
+            'davatelj_kapare': davatelj,
             'rok_sklapanja_glavnog': rok, 'bitni_uvjeti': bitni,
             'forma_glavnog': forma, 'mjesto': mjesto,
         }
@@ -635,9 +642,10 @@ def _render_raskid_najma():
 
 
 def _render_raskid_djelo():
-    """Raskid ugovora o djelu — ZOO čl. 633."""
+    """Raskid voljom naručitelja, čl. 619. ZOO."""
     st.subheader("Raskid ugovora o djelu")
-    st.caption("ZOO čl. 633 — naručitelj uvijek može raskinuti ugovor; obvezan je platiti izvršeni rad i razumno obeštećenje.")
+    st.caption("Čl. 619. ZOO: raskid voljom naručitelja prije dovršetka djela. Naknada se obračunava uz odbitak ušteđenih troškova i druge ili namjerno propuštene zarade.")
+    nedovrseno = st.checkbox("Djelo još nije dovršeno", key="rd_nedovrseno")
     napuni_primjerom('raskid_djelo', '')
 
     narucitelj, _, _ = unos_stranke("NARUČITELJ", "rd_nar")
@@ -646,7 +654,7 @@ def _render_raskid_djelo():
     col1, col2 = st.columns(2)
     with col1:
         ugovor_datum = st.text_input("Datum sklapanja ugovora o djelu", placeholder="dd.mm.yyyy.", key="rd_ud")
-        ponuda = st.number_input("Ponuda naknade za izvršeni rad (EUR)", 0.0, step=100.0, key="rd_pon")
+        ponuda = st.number_input("Prijedlog naknade (EUR, opcionalno)", 0.0, step=100.0, key="rd_pon")
     with col2:
         mjesto = st.text_input("Mjesto", "Zagreb", key="rd_mj")
         razlog = st.text_input("Razlog raskida (opcionalno)", placeholder="npr. promjena okolnosti naručitelja", key="rd_raz")
@@ -662,11 +670,20 @@ def _render_raskid_djelo():
         height=80, key="rd_izv_o",
     )
 
-    if st.button("Generiraj raskid", type="primary"):
+    obracun = {}
+    if st.checkbox("Unijeti stavke obračuna", key="rd_obracun"):
+        for kljuc, naziv in [('ugovorena_naknada_eur', 'Ugovorena naknada'),
+                              ('ustedjeni_troskovi_eur', 'Troškovi koji nisu nastali'),
+                              ('druga_zarada_eur', 'Ostvarena druga zarada'),
+                              ('propustena_zarada_eur', 'Namjerno propuštena zarada'),
+                              ('placeno_eur', 'Već plaćeno')]:
+            obracun[kljuc] = st.number_input(naziv + ' (EUR)', min_value=0.0, key='rd_' + kljuc)
+    if st.button("Generiraj raskid", type="primary", disabled=not nedovrseno):
         podaci = {
             'ugovor_datum': ugovor_datum, 'opis_djela': opis,
             'razlog_raskida': razlog, 'izvrseno_dio': izvrseno,
             'ponuda_naknade_eur': ponuda, 'mjesto': mjesto,
+            'djelo_dovrseno': not nedovrseno, **obracun,
         }
         doc = generiraj_raskid_ugovora_djelu(narucitelj, izvodac, podaci)
         audit_input = {"narucitelj_html": narucitelj, "izvodac_html": izvodac, "podaci": podaci}

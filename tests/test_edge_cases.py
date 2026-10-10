@@ -4,6 +4,7 @@
 # -----------------------------------------------------------------------------
 import sys
 import os
+import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pomocne import _escape, format_eur, format_text, format_navodnici
@@ -326,15 +327,10 @@ class TestBrisanjeHipotekeRazlozi:
         assert "pravomoćne sudske odluke" in doc
 
     def test_zastara(self):
-        """Brisanje hipoteke s razlogom zastara mora citirati ZV."""
+        """Zastara sama ne smije stvoriti prijedlog za brisanje hipoteke."""
         from generatori.zemljisne import generiraj_brisanje_hipoteke
-        doc = generiraj_brisanje_hipoteke("Sud", "Vlasnik", {
-            'ko': 'Centar', 'ulozak': '123', 'cestica': '456',
-            'z_broj': '789', 'vjerovnik_naziv': 'Banka',
-            'razlog_brisanja': 'zastara', 'mjesto': 'Zagreb',
-        })
-        assert "zastarjela" in doc
-        assert "336. ZV" in doc
+        with pytest.raises(ValueError, match='Sama zastara'):
+            generiraj_brisanje_hipoteke("Sud", "Vlasnik", {'razlog_brisanja': 'zastara'})
 
     def test_zakonska_hipoteka(self):
         """Brisanje zakonske hipoteke mora imati specifican tekst."""

@@ -235,6 +235,8 @@ def generiraj_upis_hipoteke(sud, vjerovnik, zalozni_duznik, podaci, troskovi_dic
 
 
 def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
+    if podaci.get('razlog_brisanja') == 'zastara':
+        raise ValueError("Sama zastara tražbine nije osnova za brisanje hipoteke (čl. 222. ZOO). Odaberite ispravu koja dopušta brisanje.")
     try:
         ko = podaci.get('ko', '')
         ulozak = podaci.get('ulozak', '')
@@ -258,12 +260,6 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
                 f"<b>{format_text(vjerovnik_naziv)}</b>, temeljem pravomoćne sudske odluke "
                 f"kojom je utvrđeno da založno pravo ne postoji, odnosno da je prestalo."
             ),
-            'zastara': (
-                f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
-                f"<b>{format_text(vjerovnik_naziv)}</b>, jer je tražbina osigurana hipotekom "
-                f"zastarjela sukladno odredbama Zakona o obveznim odnosima, a time je prestalo i "
-                f"založno pravo kao akcesorni pravni odnos (čl. 336. ZV)."
-            ),
             'nagodba': (
                 f"Predlagatelj predlaže brisanje založnog prava (hipoteke) upisanog u korist "
                 f"<b>{format_text(vjerovnik_naziv)}</b>, temeljem nagodbe sklopljene između "
@@ -280,7 +276,9 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
                 f"temelj za nastanak zakonskog založnog prava."
             ),
         }
-        temelj_tekst = razlog_map.get(razlog_brisanja, razlog_map['otplata_kredita'])
+        if razlog_brisanja not in razlog_map:
+            raise ValueError("Odaberite poznatu osnovu brisanja hipoteke.")
+        temelj_tekst = razlog_map[razlog_brisanja]
 
         # Dodatni razlozi/obrazloženje
         dodatni_html = ""
@@ -294,7 +292,6 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
         prilog_map = {
             'otplata_kredita': f"<li>Brisovno očitovanje s ovjerenim potpisom {format_text(vjerovnik_naziv)} i clausulom intabulandi za brisanje</li>",
             'sudska_odluka': "<li>Pravomoćna sudska presuda/rješenje s potvrdom pravomoćnosti</li>",
-            'zastara': "<li>Dokaz o zastari tražbine (presuda, izjava, ostalo)</li><li>Brisovno očitovanje (ako postoji)</li>",
             'nagodba': "<li>Nagodba (sudska ili izvansudska) s ovjerenim potpisima</li>",
             'kompenzacija': "<li>Izjava o kompenzaciji s dokazom uručenja vjerovniku</li><li>Brisovno očitovanje (ako postoji)</li>",
             'zakonska_hipoteka_prestanak': "<li>Dokaz o prestanku uvjeta za zakonsku hipoteku</li><li>Brisovno očitovanje ili sudska odluka</li>",
@@ -310,11 +307,6 @@ def generiraj_brisanje_hipoteke(sud, vlasnik, podaci):
             'sudska_odluka': (
                 "Brisanje temeljem sudske odluke provodi se po službenoj dužnosti ili na prijedlog stranke "
                 "uz dostavu pravomoćne presude s potvrdom pravomoćnosti."
-            ),
-            'zastara': (
-                "Založno pravo je akcesorno pravo - prestaje prestankom tražbine koju osigurava. "
-                "Zastara tražbine dovodi do prestanka hipoteke (čl. 336. ZV). Ukoliko vjerovnik "
-                "ne izda brisovno očitovanje, vlasnik može pokrenuti postupak za brisanje."
             ),
             'zakonska_hipoteka_prestanak': (
                 "Zakonska hipoteka nastaje ex lege (po samom zakonu) bez upisa u zemljišnu knjigu, "

@@ -277,7 +277,7 @@ class TestObveznoExt:
         result = generiraj_raskid_ugovora_djelu(STRANKA, STRANKA2, podaci)
         _assert_valid_html(result)
         assert "RASKID UGOVORA O DJELU" in result
-        assert "ZOO čl. 633" in result
+        assert "ZOO čl. 619" in result
         assert "800,00 EUR" in result
 
     def test_raskid_kupoprodaje_neplacanje(self):
