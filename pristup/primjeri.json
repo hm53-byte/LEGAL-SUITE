@@ -1,0 +1,555 @@
+{
+ "apartmani/suglasnost_obitelji": {
+  "vlasnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "korisnik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "adresa": "Ilica 100, 10000 Zagreb",
+   "kat_opis": "1. kat, stan 4",
+   "povrsina_m2": "65",
+   "ko": "Centar",
+   "cestica": "1234/5",
+   "ulozak": "5678",
+   "mjesto": "Zagreb",
+   "srodstvo": "sin",
+   "rok_vazenja": "do opoziva",
+   "broj_smjestajnih_jedinica": "2"
+  }
+ },
+ "apartmani/suglasnost_suvlasnika": {
+  "suvlasnici": "IVAN HORVAT, OIB: 12345678901<br>MARIJA HORVAT, OIB: 98765432109",
+  "predlagatelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "podaci": {
+   "adresa": "Ilica 100, 10000 Zagreb",
+   "kat_opis": "1. kat, stan 4",
+   "povrsina_m2": "65",
+   "ko": "Centar",
+   "cestica": "1234/5",
+   "ulozak": "5678",
+   "mjesto": "Zagreb"
+  }
+ },
+ "apartmani/zahtjev_kategorizacija": {
+  "podnositelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "podaci": {
+   "adresa": "Ilica 100, 10000 Zagreb",
+   "kat_opis": "1. kat, stan 4",
+   "povrsina_m2": "65",
+   "ko": "Centar",
+   "cestica": "1234/5",
+   "ulozak": "5678",
+   "mjesto": "Zagreb",
+   "vrsta_objekta": "Apartman",
+   "zatrazena_kategorija": "4★",
+   "broj_smjestajnih_jedinica": "2",
+   "broj_kreveta": "4",
+   "mtu_klasa": "UP/I-335-02/26-01/123",
+   "mtu_datum": "15.03.2026.",
+   "opremljenost": "kuhinja, klima, WiFi",
+   "zupanija": "Primorsko-goranska"
+  }
+ },
+ "apartmani/zahtjev_mtu": {
+  "podnositelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "podaci": {
+   "adresa": "Ilica 100, 10000 Zagreb",
+   "kat_opis": "1. kat, stan 4",
+   "povrsina_m2": "65",
+   "ko": "Centar",
+   "cestica": "1234/5",
+   "ulozak": "5678",
+   "mjesto": "Zagreb",
+   "vrsta_objekta": "Apartman",
+   "broj_smjestajnih_jedinica": "2",
+   "broj_kreveta": "4",
+   "zupanija": "Primorsko-goranska"
+  }
+ },
+ "nautika/kupoprodaju_brodice": {
+  "prodavatelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "kupac": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "naziv_brodice": "Galeb",
+   "registracijska_oznaka": "RI-1234",
+   "luka_upisa": "Rijeka",
+   "lucka_kapetanija": "Lučka kapetanija Rijeka",
+   "proizvodjac": "Bénéteau",
+   "model": "Antares 8",
+   "godina_proizvodnje": "2018",
+   "duljina_m": "7,80",
+   "motor": "Mercury Verado 200",
+   "snaga_kw": "147",
+   "serijski_broj_trupa": "BAH12345D818",
+   "mjesto": "Rijeka",
+   "cijena_eur": 75000.0,
+   "rok_predaje": "8 dana",
+   "tereti": "bez tereta",
+   "nacin_placanja": "jednokratno"
+  }
+ },
+ "nautika/punomoc_prodaje_brodice": {
+  "vlastodavac": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "punomocnik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "naziv_brodice": "Galeb",
+   "registracijska_oznaka": "RI-1234",
+   "luka_upisa": "Rijeka",
+   "lucka_kapetanija": "Lučka kapetanija Rijeka",
+   "proizvodjac": "Bénéteau",
+   "model": "Antares 8",
+   "godina_proizvodnje": "2018",
+   "duljina_m": "7,80",
+   "motor": "Mercury Verado 200",
+   "snaga_kw": "147",
+   "serijski_broj_trupa": "BAH12345D818",
+   "mjesto": "Rijeka",
+   "minimalna_cijena_eur": 65000.0,
+   "rok_vazenja": "12 mjeseci"
+  }
+ },
+ "nautika/tabularnu_brodice": {
+  "prodavatelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "kupac": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "naziv_brodice": "Galeb",
+   "registracijska_oznaka": "RI-1234",
+   "luka_upisa": "Rijeka",
+   "lucka_kapetanija": "Lučka kapetanija Rijeka",
+   "proizvodjac": "Bénéteau",
+   "model": "Antares 8",
+   "godina_proizvodnje": "2018",
+   "duljina_m": "7,80",
+   "motor": "Mercury Verado 200",
+   "snaga_kw": "147",
+   "serijski_broj_trupa": "BAH12345D818",
+   "mjesto": "Rijeka",
+   "datum_ugovora": "01.05.2026."
+  }
+ },
+ "nautika/zalog_brodice": {
+  "vjerovnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "zalozni_duznik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "naziv_brodice": "Galeb",
+   "registracijska_oznaka": "RI-1234",
+   "luka_upisa": "Rijeka",
+   "lucka_kapetanija": "Lučka kapetanija Rijeka",
+   "proizvodjac": "Bénéteau",
+   "model": "Antares 8",
+   "godina_proizvodnje": "2018",
+   "duljina_m": "7,80",
+   "motor": "Mercury Verado 200",
+   "snaga_kw": "147",
+   "serijski_broj_trupa": "BAH12345D818",
+   "mjesto": "Rijeka",
+   "iznos_trazbine_eur": 50000.0,
+   "kamatna_stopa": "zakonska zatezna",
+   "rok_dospijeca": "31.12.2027.",
+   "osnova_trazbine": "Ugovor o zajmu"
+  }
+ },
+ "obiteljsko/bracni_ugovor": {
+  "strana1": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "strana2": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "mjesto": "Zagreb",
+   "vrsta": "bracni",
+   "imovina_items": [
+    {
+     "opis": "Stan",
+     "vrsta": "nekretnina",
+     "vlasnik": "Zajedničko",
+     "zk_podaci": {}
+    }
+   ],
+   "clausula_intabulandi": true
+  }
+ },
+ "obiteljsko/sporazum_razvod": {
+  "predlagatelj1": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "predlagatelj2": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "mjesto": "SUD",
+   "datum_braka": "01.01.2010.",
+   "mjesto_braka": "Zagreb",
+   "djeca": [],
+   "ima_savjetovanje": true,
+   "plan_roditeljske_skrbi": "",
+   "petitum": "Razvod"
+  }
+ },
+ "obvezno/cesiju": {
+  "cedent": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "cesionar": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "iznos_trazbine": 1000,
+   "opis_trazbine": "Dug",
+   "duznik_naziv": "Duznik",
+   "pravni_temelj": "Ugovor",
+   "jamstvo_veritet": true,
+   "jamstvo_bonitet": false,
+   "notifikacija_duznika": true,
+   "naknada": 900,
+   "mjesto": "Zagreb"
+  }
+ },
+ "obvezno/darovanje": {
+  "darovatelj": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "obdarenik": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "predmet_tip": "pokretnina_s_predajom",
+   "predmet_opis": "Čćžšđ nakit sa škatuljom",
+   "vrijednost": 5000,
+   "dozivotno_uzivanje": false,
+   "mjesto": "Čakovec"
+  }
+ },
+ "obvezno/predugovor": {
+  "strana1": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "strana2": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "vrsta_glavnog_ugovora": "kupoprodajni ugovor",
+   "predmet": "Stan u Zagrebu, 65 m²",
+   "cijena_eur": 200000.0,
+   "kapara_eur": 20000.0,
+   "rok_sklapanja_glavnog": "01.07.2026.",
+   "forma_glavnog": "pisana s ovjerom",
+   "mjesto": "Zagreb"
+  }
+ },
+ "obvezno/raskid_kupoprodaje": {
+  "prodavatelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "kupac": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "razlog_tip": "neplacanje",
+   "ugovor_datum": "01.04.2026.",
+   "predmet": "VW Golf, ZG-1234-AB",
+   "opis_neispunjenja": "Kupac nije platio cijenu",
+   "cijena_eur": 8000.0,
+   "rok_ostavljen": "20.04.2026.",
+   "mjesto": "Zagreb"
+  }
+ },
+ "obvezno/raskid_najma": {
+  "najmodavac": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "najmoprimac": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "vrsta_raskida": "redoviti",
+   "ugovor_datum": "01.01.2025.",
+   "adresa_najma": "Ilica 50, Zagreb",
+   "otkazni_rok": "30 dana",
+   "datum_iseljenja": "15.05.2026.",
+   "mjesto": "Zagreb"
+  }
+ },
+ "obvezno/raskid_ugovora_djelu": {
+  "narucitelj": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "izvodac": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "ugovor_datum": "15.03.2026.",
+   "opis_djela": "Izrada drvene terase",
+   "razlog_raskida": "Promjena okolnosti",
+   "ponuda_naknade_eur": 800.0,
+   "mjesto": "Zagreb"
+  }
+ },
+ "opomene/opomenu": {
+  "vrsta": "tuzba",
+  "vjerovnik": "",
+  "duznik": "",
+  "trazbina": {
+   "glavnica": 0
+  },
+  "podaci": {},
+  "zastupanje": ""
+ },
+ "ovrhe/ovrhu_ovrsna_isprava": {
+  "sud": "SUD",
+  "ovrhovoditelj": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "ovrsenik": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "iznos": 5000,
+   "ovrsna_isprava": "Presuda",
+   "datum_isprave": "01.01.2025.",
+   "sredstvo_ovrhe": "nekretnina",
+   "opis_sredstva": "Stan"
+  },
+  "troskovi_dict": {
+   "stavka": 100,
+   "pdv": 25,
+   "pristojba": 50
+  }
+ },
+ "ovrhe/prigovor_ovrhe": {
+  "sud": "SUD",
+  "ovrsenik": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "ovrhovoditelj": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "broj_rjesenja": "Ovr-1/2025",
+   "datum_rjesenja": "01.01.2025.",
+   "razlozi": "Test"
+  },
+  "troskovi_dict": {
+   "stavka": 50,
+   "pdv": 0,
+   "pristojba": 0
+  }
+ },
+ "pokretnine/zalog_pokretnine": {
+  "vjerovnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "zalozni_duznik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "opis_predmeta": "CNC stroj XYZ Model A1",
+   "identifikacija": "SN-998877",
+   "procjena_vrijednosti_eur": 25000.0,
+   "iznos_trazbine_eur": 15000.0,
+   "kamatna_stopa": "zakonska zatezna",
+   "rok_dospijeca": "31.12.2027.",
+   "osnova_trazbine": "Ugovor o zajmu",
+   "mjesto_pohrane": "Skladište d.d., Zagreb",
+   "oblik_zaloga": "bezdrzavinski",
+   "mjesto": "Zagreb"
+  }
+ },
+ "pokretnine/zalog_vozila": {
+  "vjerovnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "zalozni_duznik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "marka": "Volkswagen",
+   "model": "Golf",
+   "godina_proizvodnje": "2020",
+   "registracijska_oznaka": "ZG-1234-AB",
+   "broj_sasije_vin": "WVWZZZ1KZ8W123456",
+   "broj_motora": "CBA1234",
+   "boja": "srebrna metalik",
+   "prijedeni_km": "85.000",
+   "procjena_vrijednosti_eur": 18000.0,
+   "iznos_trazbine_eur": 12000.0,
+   "kamatna_stopa": "zakonska zatezna",
+   "rok_dospijeca": "31.12.2027.",
+   "osnova_trazbine": "Ugovor o zajmu",
+   "mjesto": "Zagreb"
+  }
+ },
+ "potrosaci/prigovor_racunu": {
+  "potrosac": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "podaci": {
+   "sektor": "telekom",
+   "davatelj": "A1 HRVATSKA d.o.o.",
+   "davatelj_adresa": "Vrtni put 1, Zagreb",
+   "broj_racuna": "12345/2026",
+   "datum_racuna": "15.04.2026.",
+   "razdoblje": "ožujak 2026.",
+   "sporni_iznos_eur": 45.5,
+   "ukupno_racun_eur": 89.2,
+   "razlog_prigovora": "Naplaćena usluga koju nisam koristio",
+   "broj_korisnika": "987654321",
+   "mjesto": "Zagreb"
+  }
+ },
+ "potrosaci/prijavu_inspekciji": {
+  "podnositelj": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "podaci": {
+   "inspekcija": "Trzisna inspekcija",
+   "prijavljenik": "Trgovac",
+   "opis_krsenja": "Lazno oglasavanje",
+   "dokazi": [
+    "Screenshot"
+   ],
+   "mjesto": "Zagreb"
+  }
+ },
+ "potrosaci/reklamaciju": {
+  "potrosac": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "podaci": {
+   "trgovac": "Trgovac d.o.o.",
+   "proizvod": "Laptop",
+   "datum_kupnje": "01.01.2025.",
+   "opis_nedostatka": "Ne radi",
+   "zahtjev": "zamjena",
+   "mjesto": "Zagreb",
+   "broj_racuna": "R-1/25"
+  }
+ },
+ "punomoci/punomoc": {
+  "vrsta": "opca",
+  "vlastodavac": "",
+  "punomocnik": "",
+  "podaci": {}
+ },
+ "trgovacko/nda": {
+  "strana_a": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "strana_b": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "predmet": "Poslovne informacije",
+   "trajanje": "2 godine",
+   "ugovorna_kazna": 10000,
+   "mjesto": "Zagreb"
+  }
+ },
+ "trgovacko/prodaju_poduzeca": {
+  "prodavatelj": "Prodavatelj d.o.o.",
+  "kupac": "Kupac d.o.o.",
+  "podaci": {
+   "kupoprodajna_cijena": 100000,
+   "cap_odgovornosti_posto": 20,
+   "survival_period_godina": 2,
+   "ugovorna_kazna": 10000
+  },
+  "sekcije_redoslijed": null
+ },
+ "trgovacko/zalog_udjela": {
+  "zalozni_vjerovnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "zalozni_duznik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "drustvo": "NOVA TVRTKA d.o.o.",
+  "podaci": {
+   "oib_drustva": "99999999999",
+   "mbs_drustva": "12345678",
+   "sjediste_drustva": "Vukovarska 5, Zagreb",
+   "nominalni_iznos_eur": 50000.0,
+   "postotak_udjela": "50%",
+   "iznos_trazbine_eur": 30000.0,
+   "kamatna_stopa": "5% godišnje",
+   "rok_dospijeca": "31.12.2027.",
+   "osnova_trazbine": "Ugovor o zajmu od 01.05.2026.",
+   "glasacka_prava": "duznik",
+   "dividenda_kome": "duznik",
+   "mjesto": "Zagreb"
+  }
+ },
+ "tuzbe/tuzbu_pro": {
+  "sud": "SUD",
+  "zastupanje": "",
+  "tuzitelj": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "tuzenik": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "vps": 0.0,
+  "vrsta": "",
+  "data": {
+   "cinjenice": "",
+   "dokazi": "",
+   "datum_dospijeca": ""
+  },
+  "troskovi_dict": {
+   "stavka": 0,
+   "pdv": 0,
+   "pristojba": 0
+  }
+ },
+ "ugovori/ugovor_o_radu": {
+  "poslodavac": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "radnik": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "podaci": {
+   "radno_mjesto": "Developer",
+   "placa": 2000,
+   "pocetak_rada": "01.01.2025.",
+   "trajanje": "neodredeno",
+   "mjesto_rada": "Zagreb",
+   "radno_vrijeme": "puno"
+  }
+ },
+ "upravno/zahtjev_informacije": {
+  "podnositelj": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "podaci": {
+   "tijelo": "Grad Zagreb",
+   "informacije_opis": "Podaci",
+   "nacin_pristupa": "email",
+   "pravni_interes": "",
+   "mjesto": "Zagreb"
+  }
+ },
+ "upravno/zalbu_zup": {
+  "zalitelj": "",
+  "podaci": {}
+ },
+ "zalbe/zalbu_pro": {
+  "sud_prvi": "",
+  "sud_drugi": "",
+  "stranke": {
+   "tuzitelj": "",
+   "tuzenik": ""
+  },
+  "podaci_o_presudi": {
+   "broj": "",
+   "datum": "",
+   "opseg": "",
+   "mjesto": ""
+  },
+  "razlozi": [],
+  "tekst_obrazlozenja": "",
+  "troskovnik": {
+   "stavka": 0,
+   "pdv": 0,
+   "pristojba": 0
+  }
+ },
+ "zemljisne/brisanje_hipoteke": {
+  "sud": "Sud",
+  "vlasnik": "Vlasnik",
+  "podaci": {
+   "ko": "Centar",
+   "ulozak": "123",
+   "cestica": "456",
+   "z_broj": "789",
+   "vjerovnik_naziv": "Banka",
+   "razlog_brisanja": "otplata_kredita",
+   "mjesto": "Zagreb"
+  }
+ },
+ "zemljisne/brisovno_ocitovanje": {
+  "vjerovnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "vlasnik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "ko": "Centar",
+   "ulozak": "5678",
+   "cestica": "1234/5",
+   "opis_nekretnine": "stan površine 65 m²",
+   "z_broj": "Z-1234/2018",
+   "datum_upisa": "15.06.2018.",
+   "iznos_trazbine": "100.000,00 EUR",
+   "razlog_prestanka": "isplate cjelokupne tražbine",
+   "mjesto": "Zagreb"
+  }
+ },
+ "zemljisne/punomoc_prodaje_nekretnine": {
+  "vlastodavac": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "punomocnik": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "ko": "Centar",
+   "ulozak": "5678",
+   "cestica": "1234/5",
+   "opis_nekretnine": "stan površine 65 m²",
+   "adresa": "Ilica 100, Zagreb",
+   "povrsina_m2": "65",
+   "minimalna_cijena_eur": 200000.0,
+   "rok_vazenja": "12 mjeseci",
+   "mjesto": "Zagreb"
+  }
+ },
+ "zemljisne/tabularnu_doc": {
+  "prod": "<b>Test Stranka</b><br>Adresa: Test 1<br>OIB: 12345678901",
+  "kup": "<b>Test Stranka 2</b><br>Adresa: Test 2<br>OIB: 98765432109",
+  "ko": "Zagreb",
+  "cest": "1234",
+  "ul": "100",
+  "opis": "Stan",
+  "dat": "01.01.2025."
+ },
+ "zemljisne/upis_plodouzivanja": {
+  "sud": "Općinski sud u Zagrebu",
+  "vlasnik": "<b>IVAN HORVAT</b><br>OIB: 12345678901<br>Ilica 1, Zagreb",
+  "plodouzivatelj": "<b>MARKO MARIĆ</b><br>OIB: 98765432109<br>Splitska 2, Split",
+  "podaci": {
+   "ko": "Centar",
+   "ulozak": "5678",
+   "cestica": "1234/5",
+   "opis_nekretnine": "stan površine 65 m²",
+   "opseg": "puno plodouživanje",
+   "pravni_temelj": "Ugovor o osnivanju plodouživanja od 01.05.2026.",
+   "naknada": "bez naknade",
+   "trajanje": "doživotno",
+   "mjesto": "Zagreb"
+  },
+  "troskovi_dict": {
+   "pristojba": 200.0
+  }
+ }
+}

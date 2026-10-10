@@ -141,7 +141,8 @@ pip install pytest
 python -m pytest tests/ -q
 ```
 
-U `tests/` je 13 datoteka; `pytest tests` daje 382 prošla i 5 preskočenih.
+U `tests/` je 14 datoteka; uz instaliran `mcp` (`requirements-pristup.txt`) `pytest tests` daje 472 prošla i
+5 preskočenih (mjereno 10. 10. 2026.), a bez njega se `tests/test_pristup.py` preskače.
 Pokrivaju provjeru OIB-a, formatiranje iznosa, generatore, pretvorbu u DOCX,
 kalkulator pristojbi, watermark, lanac revizije, retenciju zapisa o preuzimanjima
 i obavijest o obradi po GDPR čl. 13.
@@ -154,6 +155,33 @@ Pokreće se `pytest tests`, ne `pytest` iz korijena: `scripts/load_test.py` uvoz
 prije nego išta krene.
 
 Česte greške pri pokretanju: [`docs/troubleshooting.md`](docs/troubleshooting.md).
+
+### Vanjski pristup: MCP i CLI
+
+Isti generatori dostupni su bez Streamlit sučelja, u paketu `pristup/`:
+
+- `pristup/katalog.py` čita sve funkcije `generiraj_*` (82 dokumenta) i iz njihova koda izvlači polja:
+  ključeve objekata, datume, popise i dopuštene izbore. Primjer argumenata dolazi iz prvog uspješnog poziva u
+  testovima (`pristup/primjeri.json`, 38 dokumenata; obnavlja se pomoću `scripts/skupi_primjere.py`) ili se
+  složi iz pročitanih polja. Test provjerava da svaki od 82 dokumenta nastaje iz svojeg primjera.
+- `pristup/mcp_posluzitelj.py` je MCP poslužitelj (Streamable HTTP, `/mcp`) s alatima `katalog`,
+  `opis_dokumenta`, `generiraj_dokument`, `provjeri_oib`, `pristojba`, `sudovi` i `klauzule`. Gotov `.docx`
+  dostupan je preko poveznice `/preuzmi/<token>` ograničeno vrijeme (zadano 24 sata), a zatim se briše.
+- `pristup/cli.py` daje iste operacije iz naredbenog retka.
+
+```bash
+pip install -r requirements.txt -r requirements-pristup.txt
+python -m pristup.cli katalog ovrha
+python -m pristup.cli primjer opomene/opomenu > ulaz.json
+python -m pristup.cli generiraj opomene/opomenu ulaz.json -o opomena.docx
+python -m pristup.mcp_posluzitelj      # http://127.0.0.1:8620/mcp
+```
+
+U Claudeu se poslužitelj dodaje kao prilagođeni konektor (Settings, Connectors) s adresom
+`https://<javna adresa>/mcp`. Javna adresa za poveznice na `.docx` zadaje se varijablom `LEGAL_JAVNA_ADRESA`.
+
+Ni ovdje nema jezičnog modela: poslužitelj samo popunjava obrasce. Dokument i vrijednosti polja bira pozivatelj,
+čovjek kroz CLI ili Claude kroz MCP. Dnevnik bilježi samo naziv alata i oznaku dokumenta, ne vrijednosti polja.
 
 ## Struktura repozitorija
 
