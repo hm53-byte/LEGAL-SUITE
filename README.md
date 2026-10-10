@@ -248,12 +248,14 @@ troškove postupka.
 
 ## Licenca
 
-Apache-2.0, vidi [`LICENSE`](LICENSE). Odnosi se na kod, predloške i tekstove
-klauzula u ovom repozitoriju.
+Vlasnički softver, sva prava pridržana, vidi [`LICENSE`](LICENSE). Odnosi se na
+kod, predloške, tekstove klauzula, podatkovne tablice i dokumentaciju. Dopušteni
+su uvid u kod i korištenje javnog sučelja (web, MCP, CLI) za izradu vlastitih
+dokumenata; preuzimanje koda ili predložaka u druge projekte nije.
 
-Do 15. 8. 2026. repozitorij je nosio vlasničku licenciju uz otvoren izvor, što
-je bilo proturječno: kod je bio javan, a upotreba zabranjena. Razriješeno je u
-korist otvorene licencije.
+Od 15. 8. do 10. 10. 2026. repozitorij je nosio licenciju Apache-2.0. Verzije
+objavljene u tom razdoblju ostaju pod tom licencijom za one koji su ih tada
+preuzeli; ova licencija vrijedi za sve kasnije verzije.
 
 Ono što licencija ne mijenja stoji u odjeljku iznad: izlaz aplikacije nije
 pravni savjet, a odgovornost za upotrebu dokumenta nosi onaj tko ga podnosi.
